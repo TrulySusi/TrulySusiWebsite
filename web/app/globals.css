@@ -14,7 +14,10 @@
   --font-body: var(--font-body-src), -apple-system, "Segoe UI", sans-serif;
 }
 
+/* Navy-dominant: the site's primary ground is blue (navy), with coral red
+   as the strong accent and cream/lilac/sage used more sparingly, for
+   isolated light panels and secondary highlights rather than as the base. */
 body {
-  background: var(--color-cream);
-  color: var(--color-navy);
+  background: var(--color-navy);
+  color: var(--color-cream);
 }

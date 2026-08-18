@@ -59,6 +59,17 @@ export function productImageUrl(storagePath: string) {
   return `${base}/storage/v1/object/public/${PRODUCT_IMAGE_BUCKET}/${storagePath}`;
 }
 
+/**
+ * Temporary — random placeholder photo, stable per seed (so a given
+ * product doesn't visually change on every reload). Real photography
+ * hasn't been assigned to most sections yet; swap callers back to
+ * `productImageUrl` (real Supabase Storage photos, already wired and
+ * working for Mysore Pak) once it has.
+ */
+export function placeholderImageUrl(seed: string, width = 800, height = 800) {
+  return `https://picsum.photos/seed/${encodeURIComponent(seed)}/${width}/${height}`;
+}
+
 /** Lowest active-variant price — what a product card shows as "from ₹__". */
 export function startingPrice(variants: ProductVariant[]) {
   const active = variants.filter((v) => v.is_active);

@@ -16,7 +16,7 @@ export default async function ShopPage() {
         <span className="mb-6 inline-block font-body text-xs font-medium uppercase tracking-[0.32em] text-coral">
           The Sweets
         </span>
-        <h1 className="font-display text-5xl text-navy sm:text-6xl">
+        <h1 className="font-display text-5xl text-cream sm:text-6xl">
           Made fresh in Salem.
           <br />
           Shipped across India.
@@ -24,7 +24,7 @@ export default async function ShopPage() {
       </div>
 
       {products.length === 0 ? (
-        <p className="mt-16 font-body text-navy/60">
+        <p className="mt-16 font-body text-cream/60">
           Nothing&rsquo;s live yet — check back shortly.
         </p>
       ) : (

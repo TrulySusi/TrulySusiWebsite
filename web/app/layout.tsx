@@ -29,7 +29,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${displayFont.variable} ${bodyFont.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-cream text-navy font-body">
+      <body className="min-h-full flex flex-col bg-navy text-cream font-body">
         <SiteHeader />
         {children}
       </body>
