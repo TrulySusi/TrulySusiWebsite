@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand palette — locked, see TRULY SUSI'S FINAL LOGO/BRAND COLOURS.png */
+  --color-navy: #041c35;
+  --color-lilac: #eacae8;
+  --color-coral: #e2372b;
+  --color-cream: #fdece2;
+  --color-sage: #8ab284;
+
+  /* Font tokens. To swap in the licensed Operetta 18 / Acumin Variable later,
+     only app/layout.tsx needs to change — these token names stay the same. */
+  --font-display: var(--font-display-src), Georgia, "Iowan Old Style", serif;
+  --font-body: var(--font-body-src), -apple-system, "Segoe UI", sans-serif;
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-navy);
+}

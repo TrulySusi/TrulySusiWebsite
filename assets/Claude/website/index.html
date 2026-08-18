@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Truly Susi · Sweeter Together</title>
+<meta name="description" content="Homemade Tamil sweets, made by hand in Salem. Susi's recipes. Shipped across India.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #041C35;
+    --lavender: #EACAE8;
+    --red: #E2372B;
+    --blush: #FDECE2;
+    --sage: #8AB284;
+    --serif: 'Cormorant Garamond', 'Georgia', serif;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    color: var(--navy);
+    background: var(--blush);
+    line-height: 1.65;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection { background: var(--navy); color: var(--blush); }
+
+  /* ============= TYPE ============= */
+  h1, h2, h3, .display {
+    font-family: var(--serif);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    line-height: 1.08;
+    color: var(--navy);
+  }
+  h1 { font-size: clamp(3rem, 7vw, 6rem); font-weight: 500; }
+  h2 { font-size: clamp(2.4rem, 5vw, 4.2rem); }
+  h3 { font-size: clamp(1.5rem, 2.4vw, 2.1rem); }
+
+  p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--navy);
+    opacity: 0.78;
+    max-width: 56ch;
+  }
+
+  .eyebrow {
+    font-family: var(--sans);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.36em;
+    text-transform: uppercase;
+    color: var(--red);
+    display: inline-block;
+    margin-bottom: 28px;
+  }
+
+  .container { max-width: 1180px; margin: 0 auto; padding: 0 40px; }
+  @media (max-width: 720px) { .container { padding: 0 24px; } }
+
+  /* ============= BUTTONS ============= */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 17px 36px;
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    border-radius: 0;
+  }
+  .btn-primary { background: var(--navy); color: var(--blush); }
+  .btn-primary:hover { background: var(--red); transform: translateY(-2px); }
+  .btn-outline { background: transparent; color: var(--navy); border-color: var(--navy); }
+  .btn-outline:hover { background: var(--navy); color: var(--blush); }
+  .btn-arrow::after {
+    content: '→';
+    font-family: var(--serif);
+    font-size: 1.1rem;
+    margin-left: 2px;
+    transition: transform 0.3s ease;
+  }
+  .btn-arrow:hover::after { transform: translateX(4px); }
+
+  /* ============= NAV ============= */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 22px 40px;
+    background: rgba(253, 236, 226, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid rgba(4, 28, 53, 0.06);
+  }
+  nav .brand {
+    font-family: var(--serif);
+    font-size: 1.45rem;
+    font-weight: 600;
+    font-style: italic;
+    color: var(--navy);
+    letter-spacing: -0.01em;
+    text-decoration: none;
+  }
+  nav ul { list-style: none; display: flex; gap: 44px; }
+  nav a {
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--navy);
+    text-decoration: none;
+    transition: opacity 0.2s;
+    opacity: 0.7;
+  }
+  nav a:hover { opacity: 1; color: var(--red); }
+  @media (max-width: 800px) {
+    nav { padding: 18px 24px; }
+    nav ul { display: none; }
+  }
+
+  /* ============= HERO ============= */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 160px 32px 100px;
+    position: relative;
+  }
+  .hero-content { max-width: 920px; }
+  .hero-mark {
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--red);
+    border-radius: 50%;
+    margin-bottom: 40px;
+  }
+  .hero h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    margin-bottom: 36px;
+  }
+  .hero h1 em {
+    font-style: italic;
+    font-weight: 500;
+  }
+  .hero-tag {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    color: var(--navy);
+    opacity: 0.65;
+    margin-bottom: 64px;
+    letter-spacing: 0.01em;
+  }
+  .hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+  .scroll-cue {
+    position: absolute; bottom: 48px; left: 50%; transform: translateX(-50%);
+    font-family: var(--sans);
+    font-size: 0.62rem;
+    letter-spacing: 0.4em;
+    color: var(--navy);
+    opacity: 0.32;
+    text-transform: uppercase;
+    animation: drift 3s ease-in-out infinite;
+  }
+  @keyframes drift {
+    0%, 100% { transform: translate(-50%, 0); opacity: 0.32; }
+    50% { transform: translate(-50%, 6px); opacity: 0.5; }
+  }
+
+  /* ============= SECTION RHYTHM ============= */
+  section.padded { padding: 160px 0; }
+  @media (max-width: 800px) { section.padded { padding: 100px 0; } }
+
+  .section-divider {
+    width: 60px; height: 1px;
+    background: var(--navy);
+    opacity: 0.2;
+    margin: 0 auto;
+  }
+
+  /* ============= MEET SUSI ============= */
+  .meet-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 100px;
+    align-items: center;
+  }
+  .meet-image-wrap {
+    position: relative;
+    aspect-ratio: 4/5;
+  }
+  .meet-image {
+    position: absolute; inset: 0;
+    background-size: cover;
+    background-position: center;
+    filter: contrast(1.02) saturate(0.95);
+  }
+  .meet-text h2 { margin-bottom: 40px; }
+  .meet-text p { margin-bottom: 22px; }
+  .pull-quote {
+    margin-top: 56px;
+    padding-top: 48px;
+    border-top: 1px solid rgba(4, 28, 53, 0.18);
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(1.5rem, 2.6vw, 2.2rem);
+    line-height: 1.35;
+    color: var(--navy);
+    max-width: none;
+  }
+  @media (max-width: 900px) {
+    .meet-grid { grid-template-columns: 1fr; gap: 56px; }
+  }
+
+  /* ============= THE SWEETS ============= */
+  .sweets-header { text-align: center; max-width: 720px; margin: 0 auto 96px; }
+  .sweets-header p { margin: 16px auto 0; }
+
+  .sweets-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+  .sweet-card {
+    background: transparent;
+    transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .sweet-card:hover { transform: translateY(-8px); }
+  .sweet-image-wrap {
+    aspect-ratio: 1/1;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 28px;
+  }
+  .sweet-image {
+    position: absolute; inset: 0;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .sweet-card:hover .sweet-image { transform: scale(1.04); }
+  .sweet-placeholder {
+    position: absolute; inset: 0;
+    background: rgba(4, 28, 53, 0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--navy);
+    opacity: 0.5;
+    font-style: italic;
+    font-family: var(--serif);
+    font-size: 1.05rem;
+  }
+  .sweet-card h3 { margin-bottom: 10px; font-size: 1.65rem; }
+  .sweet-card .meta {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 18px;
+  }
+  .sweet-card .price {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--red);
+  }
+  .sweet-card p { font-size: 0.96rem; opacity: 0.75; margin-bottom: 24px; }
+  .sweet-card a.order-link {
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--navy);
+    text-decoration: none;
+    border-bottom: 1px solid var(--navy);
+    padding-bottom: 4px;
+    transition: all 0.2s;
+  }
+  .sweet-card a.order-link:hover { color: var(--red); border-color: var(--red); }
+
+  .sweets-footer {
+    margin-top: 88px;
+    text-align: center;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--navy);
+    opacity: 0.65;
+  }
+  .sweets-footer a {
+    color: var(--red);
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+  }
+  @media (max-width: 900px) {
+    .sweets-grid { grid-template-columns: 1fr; gap: 48px; }
+  }
+
+  /* ============= HOW TO ORDER ============= */
+  .order-header { text-align: center; margin-bottom: 96px; }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 88px;
+  }
+  .step {
+    padding: 48px 36px;
+    border: 1px solid rgba(4, 28, 53, 0.14);
+    transition: all 0.3s ease;
+  }
+  .step:hover {
+    border-color: var(--navy);
+    background: rgba(4, 28, 53, 0.02);
+  }
+  .step-num {
+    font-family: var(--serif);
+    font-size: 3.5rem;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--red);
+    line-height: 1;
+    margin-bottom: 32px;
+  }
+  .step h3 { margin-bottom: 12px; font-size: 1.3rem; }
+  .step p { font-size: 0.95rem; opacity: 0.7; }
+
+  .order-cta { text-align: center; }
+  @media (max-width: 900px) {
+    .steps-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ============= FIND US ============= */
+  .find-us { text-align: center; }
+  .find-us h2 { margin-bottom: 80px; }
+
+  .contact-list {
+    list-style: none;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+  .contact-list li {
+    padding: 28px 0;
+    border-bottom: 1px solid rgba(4, 28, 53, 0.14);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 24px;
+  }
+  .contact-list li:last-child { border-bottom: none; }
+  .contact-list .label {
+    font-family: var(--sans);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--navy);
+    opacity: 0.55;
+  }
+  .contact-list .value {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.25rem;
+    color: var(--navy);
+  }
+  .contact-list .value a {
+    color: var(--navy);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s;
+  }
+  .contact-list .value a:hover { color: var(--red); border-bottom-color: var(--red); }
+
+  /* ============= FOOTER ============= */
+  footer {
+    padding: 80px 32px 60px;
+    text-align: center;
+    border-top: 1px solid rgba(4, 28, 53, 0.08);
+  }
+  footer .footer-mark {
+    width: 4px; height: 4px;
+    background: var(--red);
+    border-radius: 50%;
+    margin: 0 auto 24px;
+  }
+  footer .footer-brand {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+    color: var(--navy);
+  }
+  footer .footer-meta {
+    font-family: var(--sans);
+    font-size: 0.7rem;
+    color: var(--navy);
+    opacity: 0.45;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  /* ============= PLACEHOLDERS ============= */
+  .ph {
+    color: var(--red);
+    opacity: 0.6;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<!-- ============= NAV ============= -->
+<nav>
+  <a href="#" class="brand">Truly Susi</a>
+  <ul>
+    <li><a href="#meet-susi">Story</a></li>
+    <li><a href="#sweets">Sweets</a></li>
+    <li><a href="#order">Order</a></li>
+    <li><a href="#find-us">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ============= HERO ============= -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-mark"></div>
+    <h1>Homemade Tamil sweets,<br>made by hand <em>in&nbsp;Salem.</em></h1>
+    <div class="hero-tag">Sweeter together.</div>
+    <div class="hero-cta">
+      <a href="https://wa.me/91XXXXXXXXXX" class="btn btn-primary btn-arrow">Order on WhatsApp</a>
+      <a href="#meet-susi" class="btn btn-outline">Our Story</a>
+    </div>
+  </div>
+  <div class="scroll-cue">Scroll</div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ============= MEET SUSI ============= -->
+<section class="padded" id="meet-susi">
+  <div class="container">
+    <div class="meet-grid">
+      <div class="meet-image-wrap">
+        <div class="meet-image" style="background-image: url('assets/susi_hands.jpg');"></div>
+      </div>
+      <div class="meet-text">
+        <span class="eyebrow">Our Story</span>
+        <h2>Meet Susi.</h2>
+        <p style="margin-top: 36px;">She is someone who brings warmth into a room before she's even said hello. Someone who feels the people around her — notices the quiet ones, asks about your day before her own, and remembers the one thing you mentioned liking six months ago.</p>
+        <p>Feeding people is what makes her happiest. Not because anyone asked her to. Because she gets to.</p>
+        <p>Her cooking has been known in this family, on this street, for decades. Not because she was selling it. Just because she made it. And people kept coming back for more.</p>
+        <div class="pull-quote">
+          "Some sweets you eat. This&nbsp;one, you remember."
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ============= THE SWEETS ============= -->
+<section class="padded" id="sweets">
+  <div class="container">
+    <div class="sweets-header">
+      <span class="eyebrow">The Sweets</span>
+      <h2>Made fresh in Salem.<br>Shipped across India.</h2>
+    </div>
+
+    <div class="sweets-grid">
+
+      <div class="sweet-card">
+        <div class="sweet-image-wrap">
+          <div class="sweet-image" style="background-image: url('assets/badam_halwa.jpg');"></div>
+        </div>
+        <h3>Badam Halwa</h3>
+        <div class="meta">
+          <span class="price">₹<span class="ph">___</span> · 250g</span>
+        </div>
+        <p>Slow-cooked almonds, ghee, and patience. The recipe Susi has been making the longest.</p>
+        <a href="https://wa.me/91XXXXXXXXXX?text=Hi%20I%27d%20like%20to%20order%20Badam%20Halwa" class="order-link">Order on WhatsApp →</a>
+      </div>
+
+      <div class="sweet-card">
+        <div class="sweet-image-wrap">
+          <div class="sweet-image" style="background-image: url('assets/mysore_pak.jpg');"></div>
+        </div>
+        <h3>Mysore Pak</h3>
+        <div class="meta">
+          <span class="price">₹<span class="ph">___</span> · 250g</span>
+        </div>
+        <p>Soft. Ghee-rich. Melt-in-the-mouth. The way it was meant to be made.</p>
+        <a href="https://wa.me/91XXXXXXXXXX?text=Hi%20I%27d%20like%20to%20order%20Mysore%20Pak" class="order-link">Order on WhatsApp →</a>
+      </div>
+
+      <div class="sweet-card">
+        <div class="sweet-image-wrap">
+          <div class="sweet-placeholder">Photo soon</div>
+        </div>
+        <h3>Thenkulal</h3>
+        <div class="meta">
+          <span class="price">₹<span class="ph">___</span> · 250g</span>
+        </div>
+        <p>The festival sweet most have forgotten. Susi hasn't.</p>
+        <a href="https://wa.me/91XXXXXXXXXX?text=Hi%20I%27d%20like%20to%20order%20Thenkulal" class="order-link">Order on WhatsApp →</a>
+      </div>
+
+    </div>
+
+    <p class="sweets-footer">More recipes coming as she's ready. Follow <a href="https://instagram.com/trulysusi" target="_blank">@trulysusi</a>.</p>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ============= HOW TO ORDER ============= -->
+<section class="padded" id="order">
+  <div class="container">
+    <div class="order-header">
+      <span class="eyebrow">How to Order</span>
+      <h2>Three steps.<br>One sweet kitchen.</h2>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>Message us</h3>
+        <p>Tell us what you'd like, your delivery city, and when you need it.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>We confirm within an hour</h3>
+        <p>Availability, total cost, and delivery timeline.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>We make it fresh</h3>
+        <p>Hand-packed and shipped within the week, anywhere in India.</p>
+      </div>
+    </div>
+
+    <div class="order-cta">
+      <a href="https://wa.me/91XXXXXXXXXX" class="btn btn-primary btn-arrow">Start an Order</a>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ============= FIND US ============= -->
+<section class="padded find-us" id="find-us">
+  <div class="container">
+    <span class="eyebrow">Find Us</span>
+    <h2>From our kitchen<br>to yours.</h2>
+
+    <ul class="contact-list">
+      <li>
+        <span class="label">WhatsApp</span>
+        <span class="value"><a href="https://wa.me/91XXXXXXXXXX"><span class="ph">+91 XXXXX XXXXX</span></a></span>
+      </li>
+      <li>
+        <span class="label">Instagram</span>
+        <span class="value"><a href="https://instagram.com/trulysusi" target="_blank">@trulysusi</a></span>
+      </li>
+      <li>
+        <span class="label">Email</span>
+        <span class="value"><a href="mailto:hello@trulysusi.com"><span class="ph">hello@trulysusi.com</span></a></span>
+      </li>
+      <li>
+        <span class="label">Kitchen</span>
+        <span class="value">Salem, Tamil Nadu</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============= FOOTER ============= -->
+<footer>
+  <div class="footer-mark"></div>
+  <div class="footer-brand">Truly Susi</div>
+  <div class="footer-meta">© 2026 · Salem, Tamil Nadu</div>
+</footer>
+
+</body>
+</html>

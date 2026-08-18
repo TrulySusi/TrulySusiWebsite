@@ -1,0 +1,15 @@
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# editor
+.vscode/
+.idea/
+
+# env files anywhere in the repo
+.env
+.env.*
+!.env.example
+assets/Claude/reels/
+assets/Claude/Trend Scans/
+assets/Claude/CONTENT_TRACKER.xlsx
