@@ -1,6 +1,12 @@
 -- Truly Susi's — initial schema
 -- Paste into the Supabase SQL editor (or run via `supabase db push`) once
 -- the project exists. Matches Section 2 of truly-susi-website.md.
+--
+-- This file is the from-scratch baseline. Once a project has run it,
+-- further changes ship as numbered files in migrations/ — this file's
+-- table bodies are kept in sync with those so a fresh project only ever
+-- needs this one file, but an existing project should run the migration
+-- instead of re-running this whole script.
 
 -- ---------- enums ----------
 create type product_status as enum ('draft', 'active', 'archived');
@@ -32,6 +38,8 @@ create table products (
   status product_status not null default 'draft',
   is_featured boolean not null default false,
   sort_order int not null default 0,
+  nutrition_per_100g jsonb,   -- lab panel, constant across box sizes; see migrations/0002
+  serving_size_g int,         -- weight of one piece, e.g. 10
   created_at timestamptz not null default now()
 );
 
@@ -53,7 +61,8 @@ create table product_images (
   product_id uuid not null references products(id) on delete cascade,
   storage_path text not null,
   alt_text text,
-  sort_order int not null default 0
+  sort_order int not null default 0,
+  unique (product_id, storage_path)
 );
 
 -- ---------- customers ----------
