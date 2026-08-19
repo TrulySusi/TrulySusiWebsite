@@ -153,7 +153,7 @@ export default async function Home() {
           </div>
           <div className="mt-10 grid grid-cols-[repeat(auto-fill,minmax(220px,260px))] gap-x-8 gap-y-14">
             {favourites.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product.id} product={product} showDescription={false} />
             ))}
           </div>
         </section>

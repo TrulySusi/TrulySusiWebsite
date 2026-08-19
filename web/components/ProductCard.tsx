@@ -10,7 +10,14 @@ import {
 } from "@/lib/catalog-shared";
 import { useCartStore } from "@/lib/cart-store";
 
-export function ProductCard({ product }: { product: ProductSummary }) {
+export function ProductCard({
+  product,
+  showDescription = true,
+}: {
+  product: ProductSummary;
+  /** Menu grid shows a truncated description; favourites cards don't. */
+  showDescription?: boolean;
+}) {
   const price = startingPrice(product.product_variants);
   const variant = defaultVariant(product.product_variants);
   const addItem = useCartStore((s) => s.addItem);
@@ -65,8 +72,8 @@ export function ProductCard({ product }: { product: ProductSummary }) {
           </button>
         )}
       </div>
-      {product.short_description && (
-        <p className="mt-2 max-w-[38ch] font-body text-sm leading-relaxed text-navy/70">
+      {showDescription && product.short_description && (
+        <p className="mt-2 line-clamp-2 font-body text-sm leading-relaxed text-navy/70">
           {product.short_description}
         </p>
       )}
