@@ -10,14 +10,7 @@ import {
 } from "@/lib/catalog-shared";
 import { useCartStore } from "@/lib/cart-store";
 
-export function ProductCard({
-  product,
-  showDescription = true,
-}: {
-  product: ProductSummary;
-  /** Menu grid shows a truncated description; favourites cards don't. */
-  showDescription?: boolean;
-}) {
+export function ProductCard({ product }: { product: ProductSummary }) {
   const price = startingPrice(product.product_variants);
   const variant = defaultVariant(product.product_variants);
   const addItem = useCartStore((s) => s.addItem);
@@ -56,10 +49,15 @@ export function ProductCard({
           </span>
         )}
         <h3 className="mt-2 font-display text-2xl text-navy">{product.name}</h3>
-        <div className="mt-1.5 flex items-center justify-between gap-3">
+        {product.short_description && (
+          <p className="mt-1.5 line-clamp-2 font-body text-sm leading-relaxed text-navy/60">
+            {product.short_description}
+          </p>
+        )}
+        <div className="mt-3 flex items-center justify-between gap-3">
           {price !== null ? (
-            <span className="whitespace-nowrap font-display text-base italic text-coral">
-              from &#8377;{price.toFixed(0)}
+            <span className="whitespace-nowrap font-body text-base font-bold text-navy">
+              From &#8377;{price.toFixed(0)}
             </span>
           ) : (
             <span />
@@ -68,17 +66,12 @@ export function ProductCard({
             <button
               type="button"
               onClick={handleQuickAdd}
-              className="rounded-full bg-navy/8 px-4 py-1.5 font-body text-xs font-semibold text-navy transition-colors hover:bg-navy hover:text-cream"
+              className="rounded-full bg-coral/15 px-4 py-1.5 font-body text-xs font-semibold text-navy transition-colors hover:bg-navy hover:text-cream"
             >
               Add
             </button>
           )}
         </div>
-        {showDescription && product.short_description && (
-          <p className="mt-2 line-clamp-2 font-body text-sm leading-relaxed text-navy/70">
-            {product.short_description}
-          </p>
-        )}
       </div>
     </Link>
   );
