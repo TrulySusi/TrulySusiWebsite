@@ -14,10 +14,10 @@
   --font-body: var(--font-body-src), -apple-system, "Segoe UI", sans-serif;
 }
 
-/* Navy-dominant: the site's primary ground is blue (navy), with coral red
-   as the strong accent and cream/lilac/sage used more sparingly, for
-   isolated light panels and secondary highlights rather than as the base. */
+/* Warm, cream-dominant: matches the original brand deck and the food-industry
+   research (navy-dark read as fintech, not food). Navy is ink, coral is the
+   appetite-driving accent, lilac/sage are secondary highlights. */
 body {
-  background: var(--color-navy);
-  color: var(--color-cream);
+  background: var(--color-cream);
+  color: var(--color-navy);
 }
