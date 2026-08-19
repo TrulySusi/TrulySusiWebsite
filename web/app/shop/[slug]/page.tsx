@@ -76,6 +76,16 @@ export default async function ProductPage({ params }: Props) {
             </p>
           )}
 
+          {product.ingredients && (
+            <p className="mt-5 font-body text-sm text-navy/70">
+              <span className="font-semibold text-navy">Contains: </span>
+              {product.ingredients}
+            </p>
+          )}
+          {product.allergen_info && (
+            <p className="mt-1.5 font-body text-xs text-navy/50">{product.allergen_info}</p>
+          )}
+
           <div className="mt-8">
             <VariantSelector
               variants={product.product_variants}
@@ -84,38 +94,13 @@ export default async function ProductPage({ params }: Props) {
             />
           </div>
 
-          {(product.ingredients || product.shelf_life_days) && (
-            <dl className="mt-10 space-y-3 border-t border-navy/10 pt-6">
-              {product.ingredients && (
-                <div className="flex gap-4 font-body text-sm">
-                  <dt className="w-28 shrink-0 text-navy/50">Ingredients</dt>
-                  <dd className="text-navy/80">{product.ingredients}</dd>
-                </div>
-              )}
-              {product.allergen_info && (
-                <div className="flex gap-4 font-body text-sm">
-                  <dt className="w-28 shrink-0 text-navy/50">Allergens</dt>
-                  <dd className="text-navy/80">{product.allergen_info}</dd>
-                </div>
-              )}
-              {product.shelf_life_days && (
-                <div className="flex gap-4 font-body text-sm">
-                  <dt className="w-28 shrink-0 text-navy/50">Best before</dt>
-                  <dd className="text-navy/80">
-                    {product.shelf_life_days} days from packing, stored cool and dry
-                  </dd>
-                </div>
-              )}
-            </dl>
+          {product.shelf_life_days && (
+            <p className="mt-2 font-body text-xs text-navy/45">
+              Best before {product.shelf_life_days} days from packing, stored cool and dry.
+            </p>
           )}
         </div>
       </div>
-
-      {product.description && (
-        <p className="mt-20 max-w-3xl border-t border-navy/10 pt-12 font-display text-2xl italic leading-snug text-navy/85">
-          {product.description}
-        </p>
-      )}
 
       {product.nutrition_per_100g && (
         <div className="mt-16 max-w-md">

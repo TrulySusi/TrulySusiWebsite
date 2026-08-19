@@ -42,11 +42,13 @@ export function VariantSelector({
     setJustAdded(true);
   }
 
+  const lineTotal = selected ? selected.price_inr * qty : null;
+
   return (
     <div>
       <fieldset>
         <legend className="font-body text-xs font-medium uppercase tracking-[0.22em] text-navy/50">
-          Size
+          Quantity
         </legend>
         <div className="mt-3 flex flex-wrap gap-2">
           {active.map((variant) => {
@@ -69,22 +71,6 @@ export function VariantSelector({
           })}
         </div>
       </fieldset>
-
-      <div className="mt-6 flex items-baseline gap-4">
-        <span className="font-display text-3xl italic text-coral">
-          {selected ? `₹${selected.price_inr.toFixed(0)}` : "—"}
-        </span>
-        {selected && selected.stock_qty <= 5 && selected.stock_qty > 0 && (
-          <span className="font-body text-xs uppercase tracking-wide text-coral/80">
-            Only {selected.stock_qty} left
-          </span>
-        )}
-        {selected && selected.stock_qty === 0 && (
-          <span className="font-body text-xs uppercase tracking-wide text-navy/50">
-            Out of stock
-          </span>
-        )}
-      </div>
 
       <div className="mt-6 flex items-center gap-4">
         <div className="flex items-center rounded-full bg-navy/6">
@@ -109,15 +95,36 @@ export function VariantSelector({
           </button>
         </div>
 
-        <button
-          type="button"
-          onClick={handleAddToCart}
-          disabled={!selected || selected.stock_qty === 0}
-          className="flex-1 rounded-full bg-navy px-6 py-3 font-body text-xs font-semibold uppercase tracking-[0.2em] text-cream transition-colors hover:bg-navy/90 disabled:cursor-not-allowed disabled:bg-navy/15 disabled:text-navy/40"
-        >
-          {justAdded ? "Added ✓" : "Add to cart"}
-        </button>
+        <span className="font-display text-2xl text-navy">
+          {lineTotal !== null ? `₹${lineTotal.toFixed(0)}` : "—"}
+        </span>
+
+        {selected && selected.stock_qty <= 5 && selected.stock_qty > 0 && (
+          <span className="font-body text-xs uppercase tracking-wide text-coral/80">
+            Only {selected.stock_qty} left
+          </span>
+        )}
+        {selected && selected.stock_qty === 0 && (
+          <span className="font-body text-xs uppercase tracking-wide text-navy/50">
+            Out of stock
+          </span>
+        )}
       </div>
+
+      <button
+        type="button"
+        onClick={handleAddToCart}
+        disabled={!selected || selected.stock_qty === 0}
+        className="mt-6 w-full rounded-full bg-navy px-6 py-4 font-body text-sm font-semibold text-cream transition-colors hover:bg-navy/90 disabled:cursor-not-allowed disabled:bg-navy/15 disabled:text-navy/40"
+      >
+        {justAdded
+          ? "Added ✓"
+          : lineTotal !== null
+            ? `Add to cart — ₹${lineTotal.toFixed(0)}`
+            : "Add to cart"}
+      </button>
+
+      <p className="mt-4 font-body text-xs text-navy/45">Packed fresh to order.</p>
     </div>
   );
 }
