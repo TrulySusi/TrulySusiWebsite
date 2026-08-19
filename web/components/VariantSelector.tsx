@@ -1,14 +1,46 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ProductVariant } from "@/lib/catalog-shared";
+import { useCartStore } from "@/lib/cart-store";
 
-export function VariantSelector({ variants }: { variants: ProductVariant[] }) {
+export function VariantSelector({
+  variants,
+  productSlug,
+  productName,
+}: {
+  variants: ProductVariant[];
+  productSlug: string;
+  productName: string;
+}) {
   const active = variants.filter((v) => v.is_active);
   const initial = active.find((v) => v.is_default) ?? active[0] ?? null;
   const [selectedId, setSelectedId] = useState(initial?.id ?? null);
   const [qty, setQty] = useState(1);
+  const [justAdded, setJustAdded] = useState(false);
   const selected = active.find((v) => v.id === selectedId) ?? null;
+  const addItem = useCartStore((s) => s.addItem);
+
+  useEffect(() => {
+    if (!justAdded) return;
+    const t = setTimeout(() => setJustAdded(false), 2000);
+    return () => clearTimeout(t);
+  }, [justAdded]);
+
+  function handleAddToCart() {
+    if (!selected) return;
+    addItem(
+      {
+        variantId: selected.id,
+        productSlug,
+        productName,
+        variantLabel: selected.label,
+        priceInr: selected.price_inr,
+      },
+      qty,
+    );
+    setJustAdded(true);
+  }
 
   return (
     <div>
@@ -79,11 +111,11 @@ export function VariantSelector({ variants }: { variants: ProductVariant[] }) {
 
         <button
           type="button"
-          disabled
-          title="Online ordering opens soon — for now, order on WhatsApp"
-          className="flex-1 cursor-not-allowed rounded-full bg-navy/15 px-6 py-3 font-body text-xs font-medium uppercase tracking-[0.2em] text-navy/40"
+          onClick={handleAddToCart}
+          disabled={!selected || selected.stock_qty === 0}
+          className="flex-1 rounded-full bg-navy px-6 py-3 font-body text-xs font-semibold uppercase tracking-[0.2em] text-cream transition-colors hover:bg-navy/90 disabled:cursor-not-allowed disabled:bg-navy/15 disabled:text-navy/40"
         >
-          Add to cart — coming soon
+          {justAdded ? "Added ✓" : "Add to cart"}
         </button>
       </div>
     </div>

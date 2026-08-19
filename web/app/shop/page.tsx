@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { getActiveProducts, getCategories } from "@/lib/catalog";
 import { MenuGrid } from "@/components/MenuGrid";
 
@@ -7,9 +8,12 @@ export const metadata: Metadata = {
   description: "Homemade Tamil sweets, made fresh in Salem and shipped across India.",
 };
 
-export default async function ShopPage() {
+type Props = { searchParams: Promise<{ q?: string }> };
+
+export default async function ShopPage({ searchParams }: Props) {
+  const { q } = await searchParams;
   const [products, categories] = await Promise.all([
-    getActiveProducts(),
+    getActiveProducts(q),
     getCategories(),
   ]);
 
@@ -21,6 +25,16 @@ export default async function ShopPage() {
           Made in small batches, always fresh.
         </p>
       </div>
+
+      {q?.trim() && (
+        <p className="mt-8 font-body text-sm text-navy/60">
+          {products.length > 0 ? "Results" : "No results"} for &ldquo;{q}&rdquo;
+          {" · "}
+          <Link href="/shop" className="text-coral hover:text-navy">
+            Clear search
+          </Link>
+        </p>
+      )}
 
       <div className="mt-10">
         <MenuGrid categories={categories} products={products} />

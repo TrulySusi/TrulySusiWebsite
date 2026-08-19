@@ -77,7 +77,11 @@ export default async function ProductPage({ params }: Props) {
           )}
 
           <div className="mt-8">
-            <VariantSelector variants={product.product_variants} />
+            <VariantSelector
+              variants={product.product_variants}
+              productSlug={product.slug}
+              productName={product.name}
+            />
           </div>
 
           {(product.ingredients || product.shelf_life_days) && (

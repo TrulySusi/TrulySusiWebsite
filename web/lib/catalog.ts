@@ -11,14 +11,20 @@ const SUMMARY_SELECT = `
   categories ( name )
 `;
 
-export async function getActiveProducts(): Promise<ProductSummary[]> {
+export async function getActiveProducts(search?: string): Promise<ProductSummary[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  let query = supabase
     .from("products")
     .select(SUMMARY_SELECT)
     .eq("status", "active")
     .order("sort_order");
 
+  if (search?.trim()) {
+    const term = `%${search.trim()}%`;
+    query = query.or(`name.ilike.${term},short_description.ilike.${term}`);
+  }
+
+  const { data, error } = await query;
   if (error) throw error;
   return data as unknown as ProductSummary[];
 }
