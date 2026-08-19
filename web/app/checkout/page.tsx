@@ -65,7 +65,7 @@ export default function CheckoutEntryPage() {
           onSubmit={handleLogin}
           className="flex flex-col rounded-2xl border border-navy/10 bg-white p-7"
         >
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-coral/10 text-navy">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blush text-navy">
             <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5">
               <circle cx="10" cy="7" r="3" />
               <path d="M4 17c0-3 2.7-5 6-5s6 2 6 5" strokeLinecap="round" />
@@ -82,7 +82,7 @@ export default function CheckoutEntryPage() {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-5 rounded-lg bg-cream px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 focus:ring-navy/20"
+            className="mt-5 rounded-lg bg-blush px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 focus:ring-navy/20"
           />
           <input
             type="password"
@@ -90,10 +90,10 @@ export default function CheckoutEntryPage() {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mt-3 rounded-lg bg-cream px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 focus:ring-navy/20"
+            className="mt-3 rounded-lg bg-blush px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 focus:ring-navy/20"
           />
 
-          {error && <p className="mt-3 font-body text-xs text-coral">{error}</p>}
+          {error && <p className="mt-3 font-body text-xs text-brass">{error}</p>}
 
           <button
             type="submit"
@@ -105,10 +105,10 @@ export default function CheckoutEntryPage() {
         </form>
 
         <div className="flex flex-col rounded-2xl border border-navy/10 bg-white p-7">
-          <span className="inline-block w-fit rounded-full bg-coral/10 px-2.5 py-1 font-body text-[10px] font-semibold uppercase tracking-wider text-coral">
+          <span className="inline-block w-fit rounded-full bg-blush px-2.5 py-1 font-body text-[10px] font-semibold uppercase tracking-wider text-brass">
             Fastest
           </span>
-          <div className="mt-4 flex h-11 w-11 items-center justify-center rounded-xl bg-coral/10 text-navy">
+          <div className="mt-4 flex h-11 w-11 items-center justify-center rounded-xl bg-blush text-navy">
             <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
               <path d="M11 2 4 12h5l-1 6 7-10h-5l1-6Z" />
             </svg>
@@ -122,7 +122,7 @@ export default function CheckoutEntryPage() {
           <button
             type="button"
             onClick={() => router.push("/checkout/delivery")}
-            className="mt-8 rounded-full bg-cream px-6 py-3.5 font-body text-sm font-semibold text-navy transition-colors hover:bg-navy/8"
+            className="mt-8 rounded-full bg-blush px-6 py-3.5 font-body text-sm font-semibold text-navy transition-colors hover:bg-navy/8"
           >
             Continue as guest
           </button>

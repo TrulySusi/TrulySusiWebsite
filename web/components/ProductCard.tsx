@@ -44,7 +44,7 @@ export function ProductCard({ product }: { product: ProductSummary }) {
       </div>
       <div className="border-t border-navy/12 p-4">
         {product.categories?.name && (
-          <span className="inline-block rounded-full bg-coral/10 px-2.5 py-1 font-body text-[10px] font-semibold uppercase tracking-wider text-coral">
+          <span className="inline-block rounded-full bg-blush px-2.5 py-1 font-body text-[10px] font-semibold uppercase tracking-wider text-brass">
             {product.categories.name}
           </span>
         )}
@@ -66,7 +66,7 @@ export function ProductCard({ product }: { product: ProductSummary }) {
             <button
               type="button"
               onClick={handleQuickAdd}
-              className="rounded-full bg-coral/15 px-4 py-1.5 font-body text-xs font-semibold text-navy transition-colors hover:bg-navy hover:text-cream"
+              className="rounded-full bg-brass/15 px-4 py-1.5 font-body text-xs font-semibold text-navy transition-colors hover:bg-navy hover:text-cream"
             >
               Add
             </button>

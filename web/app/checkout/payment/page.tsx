@@ -79,7 +79,7 @@ export default function PaymentPage() {
         </button>
         <Link
           href="/checkout/delivery"
-          className="mt-4 block font-body text-xs text-navy/50 hover:text-coral"
+          className="mt-4 block font-body text-xs text-navy/50 hover:text-brass"
         >
           ← Edit delivery details
         </Link>

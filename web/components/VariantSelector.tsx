@@ -100,7 +100,7 @@ export function VariantSelector({
         </span>
 
         {selected && selected.stock_qty <= 5 && selected.stock_qty > 0 && (
-          <span className="font-body text-xs uppercase tracking-wide text-coral/80">
+          <span className="font-body text-xs uppercase tracking-wide text-brass/80">
             Only {selected.stock_qty} left
           </span>
         )}

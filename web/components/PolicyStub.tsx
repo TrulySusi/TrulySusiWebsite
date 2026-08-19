@@ -13,7 +13,7 @@ export function PolicyStub({
       </p>
       <p className="mt-5 font-body text-[15px] leading-relaxed text-navy/70">
         Questions in the meantime -  write to{" "}
-        <a href="mailto:feedback@trulysusi.in" className="text-coral hover:text-navy">
+        <a href="mailto:feedback@trulysusi.in" className="text-brass hover:text-navy">
           feedback@trulysusi.in
         </a>
         .

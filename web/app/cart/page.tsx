@@ -61,7 +61,7 @@ export default function CartPage() {
               <div className="min-w-0 flex-1">
                 <Link
                   href={`/shop/${item.productSlug}`}
-                  className="font-display text-xl text-navy hover:text-coral"
+                  className="font-display text-xl text-navy hover:text-brass"
                 >
                   {item.productName}
                 </Link>
@@ -90,7 +90,7 @@ export default function CartPage() {
                 </button>
               </div>
 
-              <span className="w-20 text-right font-display text-lg italic text-coral">
+              <span className="w-20 text-right font-display text-lg italic text-brass">
                 &#8377;{(item.priceInr * item.quantity).toFixed(0)}
               </span>
 
@@ -98,7 +98,7 @@ export default function CartPage() {
                 type="button"
                 onClick={() => removeItem(item.variantId)}
                 aria-label="Remove item"
-                className="rounded-full p-2 text-navy/40 transition-colors hover:bg-coral/10 hover:text-coral"
+                className="rounded-full p-2 text-navy/40 transition-colors hover:bg-brass/10 hover:text-brass"
               >
                 <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4">
                   <path d="M4 6h12" strokeLinecap="round" />

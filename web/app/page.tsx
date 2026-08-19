@@ -63,7 +63,7 @@ export default async function Home() {
           <div className="absolute inset-0 bg-navy/75" />
         </div>
         <div className="relative mx-auto max-w-2xl px-6 py-28 text-center sm:px-10">
-          <span className="inline-block rounded-full bg-white/10 px-3.5 py-1.5 font-body text-[11px] font-semibold uppercase tracking-wider text-coral">
+          <span className="inline-block rounded-full bg-white/10 px-3.5 py-1.5 font-body text-[11px] font-semibold uppercase tracking-wider text-brass">
             Homemade Tamil Sweets &middot; Salem
           </span>
           <h1 className="mt-6 font-display text-6xl font-medium text-white sm:text-7xl">
@@ -93,7 +93,7 @@ export default async function Home() {
 
       {/* Our Story */}
       <section id="our-story" className="mx-auto max-w-2xl px-6 py-20 text-center sm:px-10">
-        <span className="font-body text-xs font-semibold uppercase tracking-[0.28em] text-coral">
+        <span className="font-body text-xs font-semibold uppercase tracking-[0.28em] text-brass">
           Our Story
         </span>
         <h2 className="mt-4 font-display text-5xl italic text-navy sm:text-6xl">
@@ -124,7 +124,7 @@ export default async function Home() {
               className="rounded-2xl bg-white p-7 shadow-[0_1px_2px_rgba(4,28,53,.04),0_8px_24px_-12px_rgba(4,28,53,.12)]"
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sage/20 text-sage">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blush text-brass">
                   <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" className="h-5 w-5">
                     {p.icon}
                   </svg>
@@ -148,7 +148,7 @@ export default async function Home() {
             <h2 className="font-display text-3xl text-navy">This week&rsquo;s favourites</h2>
             <Link
               href="/shop"
-              className="font-body text-sm font-medium text-coral hover:text-navy"
+              className="font-body text-sm font-medium text-brass hover:text-navy"
             >
               View all →
             </Link>

@@ -30,7 +30,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${displayFont.variable} ${bodyFont.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-paper text-navy font-body">
+      <body className="min-h-full flex flex-col bg-cream text-navy font-body">
         <SiteHeader />
         <div className="flex-1">{children}</div>
         <SiteFooter />

@@ -24,7 +24,7 @@ export function CartIcon() {
         <circle cx="13.5" cy="17" r="1" fill="currentColor" stroke="none" />
       </svg>
       {count > 0 && (
-        <span className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-coral px-1 font-body text-[10px] font-semibold text-cream">
+        <span className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-brass px-1 font-body text-[10px] font-semibold text-cream">
           {count}
         </span>
       )}

@@ -46,7 +46,7 @@ export default async function ProductPage({ params }: Props) {
     <main className="mx-auto max-w-6xl px-6 py-16 sm:px-10">
       <Link
         href="/shop"
-        className="font-body text-xs font-medium uppercase tracking-[0.22em] text-navy/50 transition-colors hover:text-coral"
+        className="font-body text-xs font-medium uppercase tracking-[0.22em] text-navy/50 transition-colors hover:text-brass"
       >
         ← Back to products
       </Link>
@@ -65,7 +65,7 @@ export default async function ProductPage({ params }: Props) {
 
         <div>
           {product.categories?.name && (
-            <span className="inline-block rounded-full bg-coral/10 px-2.5 py-1 font-body text-[10px] font-semibold uppercase tracking-wider text-coral">
+            <span className="inline-block rounded-full bg-blush px-2.5 py-1 font-body text-[10px] font-semibold uppercase tracking-wider text-brass">
               {product.categories.name}
             </span>
           )}

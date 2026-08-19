@@ -42,8 +42,8 @@ export function SiteHeader() {
                   <Link
                     href={link.href}
                     aria-current={active ? "page" : undefined}
-                    className={`font-body text-xs font-medium uppercase tracking-[0.22em] transition-colors hover:text-coral ${
-                      active ? "text-coral" : "text-cream/70"
+                    className={`font-body text-xs font-medium uppercase tracking-[0.22em] transition-colors hover:text-brass ${
+                      active ? "text-brass" : "text-cream/70"
                     }`}
                   >
                     {link.label}

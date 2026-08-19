@@ -1,16 +1,11 @@
 @import "tailwindcss";
 
 @theme {
-  /* Brand palette — locked, see TRULY SUSI'S FINAL LOGO/BRAND COLOURS.png */
-  --color-navy: #041c35;
-  --color-lilac: #eacae8;
-  --color-coral: #e2372b;
-  --color-cream: #fdece2;
-  --color-sage: #8ab284;
-
-  /* Page ground. Was a lighter near-white for a while — read as plain
-     white, not cream, so this is now the true locked cream swatch. */
-  --color-paper: var(--color-cream);
+  /* Brand palette v2 — locked 2026-08-19: navy/cream/brass/blush/white. */
+  --color-navy: #1c2b4a;   /* text, headers, buttons, footer background */
+  --color-cream: #faf3e9;  /* page background */
+  --color-brass: #c98a2f;  /* accent, dividers, highlights */
+  --color-blush: #fdece2;  /* secondary accent, soft tints/badges */
 
   /* Font tokens. To swap in the licensed Operetta 18 / Acumin Variable later,
      only app/layout.tsx needs to change — these token names stay the same. */
@@ -18,10 +13,7 @@
   --font-body: var(--font-body-src), -apple-system, "Segoe UI", sans-serif;
 }
 
-/* Warm, cream-dominant: matches the original brand deck and the food-industry
-   research (navy-dark read as fintech, not food). Navy is ink, coral is the
-   appetite-driving accent, lilac/sage are secondary highlights. */
 body {
-  background: var(--color-paper);
+  background: var(--color-cream);
   color: var(--color-navy);
 }

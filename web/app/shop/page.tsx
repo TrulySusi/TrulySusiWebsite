@@ -30,7 +30,7 @@ export default async function ShopPage({ searchParams }: Props) {
         <p className="mt-8 font-body text-sm text-navy/60">
           {products.length > 0 ? "Results" : "No results"} for &ldquo;{q}&rdquo;
           {" · "}
-          <Link href="/shop" className="text-coral hover:text-navy">
+          <Link href="/shop" className="text-brass hover:text-navy">
             Clear search
           </Link>
         </p>
