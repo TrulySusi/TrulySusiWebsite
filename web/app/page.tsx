@@ -79,7 +79,7 @@ export default async function Home() {
               href="/shop"
               className="rounded-full bg-white px-7 py-3.5 font-body text-sm font-semibold text-navy transition-colors hover:bg-white/90"
             >
-              Explore the menu
+              Explore the products
             </Link>
             <Link
               href="#our-story"

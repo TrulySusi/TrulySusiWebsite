@@ -27,7 +27,7 @@ export default function CartPage() {
           href="/shop"
           className="mt-8 inline-block rounded-full bg-navy px-7 py-3.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-navy/90"
         >
-          Explore the menu
+          Explore the products
         </Link>
       </main>
     );

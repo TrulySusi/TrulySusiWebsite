@@ -4,7 +4,7 @@ import { CartIcon } from "@/components/CartIcon";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
-  { href: "/shop", label: "Menu" },
+  { href: "/shop", label: "Products" },
   { href: "/track-order", label: "Track Order" },
 ];
 

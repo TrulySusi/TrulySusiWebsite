@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const BRAND_LINKS = [
   { href: "/#our-story", label: "Our Story" },
-  { href: "/shop", label: "Menu" },
+  { href: "/shop", label: "Products" },
   { href: "/track-order", label: "Track Order" },
 ];
 

@@ -48,7 +48,7 @@ export default async function ProductPage({ params }: Props) {
         href="/shop"
         className="font-body text-xs font-medium uppercase tracking-[0.22em] text-navy/50 transition-colors hover:text-coral"
       >
-        ← Back to menu
+        ← Back to products
       </Link>
 
       <div className="mt-8 grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16">

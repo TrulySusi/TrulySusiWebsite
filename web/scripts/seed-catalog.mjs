@@ -107,10 +107,19 @@ async function main() {
 
   const categoryId = await upsertCategory({
     slug: "sweets",
-    name: "Sweets",
+    name: "Sweet",
     sort_order: 0,
   });
-  console.log("category ready:", categoryId);
+  // Empty on purpose — no real savoury product/pricing exists yet. Having
+  // the category exist is what makes the All/Sweet/Savoury filter show up
+  // on the menu; it'll just show "nothing here yet" until a real savoury
+  // item is added.
+  await upsertCategory({
+    slug: "savoury",
+    name: "Savoury",
+    sort_order: 1,
+  });
+  console.log("categories ready:", categoryId);
 
   // ---- Mysore Pak — full label data confirmed 2026-08-18 ----
   const mysorePakId = await upsertProduct(categoryId, {
@@ -155,6 +164,20 @@ async function main() {
     sortOrder: 0,
   });
   console.log("mysore pak ready:", mysorePakId);
+
+  // ---- Badam Halwa — placeholder, still waiting on real pricing/label data ----
+  const badamHalwaId = await upsertProduct(categoryId, {
+    slug: "badam-halwa",
+    name: "Badam Halwa",
+    short_description:
+      "Slow-cooked almonds, ghee, and patience. The recipe Susi has been making the longest.",
+    description: null,
+    ingredients: null,
+    status: "draft",
+    is_featured: false,
+    sort_order: 2,
+  });
+  console.log("badam halwa ready (draft, no pricing yet):", badamHalwaId);
 
   // ---- Thenkulal — placeholder, details to follow ----
   const thenkulalId = await upsertProduct(categoryId, {
