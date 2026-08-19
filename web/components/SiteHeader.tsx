@@ -11,8 +11,8 @@ const NAV_LINKS = [
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 bg-paper">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-5 sm:px-10">
-        <Link href="/" className="relative block h-8 w-36 shrink-0">
+      <div className="mx-auto grid max-w-6xl grid-cols-3 items-center gap-6 px-6 py-5 sm:px-10">
+        <Link href="/" className="relative block h-8 w-36 shrink-0 justify-self-start">
           <Image
             src="/brand/wordmark-navy.png"
             alt="Truly Susi's"
@@ -22,8 +22,9 @@ export function SiteHeader() {
             priority
           />
         </Link>
-        <nav>
-          <ul className="flex items-center gap-8">
+
+        <nav className="justify-self-center">
+          <ul className="flex items-center gap-9">
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
                 <Link
@@ -36,7 +37,8 @@ export function SiteHeader() {
             ))}
           </ul>
         </nav>
-        <div className="flex flex-1 items-center justify-end gap-3">
+
+        <div className="flex items-center justify-self-end gap-3">
           <form action="/shop" method="GET" className="relative hidden sm:block">
             <svg
               viewBox="0 0 20 20"
@@ -52,7 +54,7 @@ export function SiteHeader() {
               type="search"
               name="q"
               placeholder="Search sweets"
-              className="w-48 rounded-full bg-navy/6 py-2 pl-10 pr-4 font-body text-sm text-navy placeholder:text-navy/45 focus:outline-none focus:ring-1 focus:ring-navy/25 lg:w-64"
+              className="w-40 rounded-full bg-navy/6 py-2 pl-10 pr-4 font-body text-sm text-navy placeholder:text-navy/45 focus:outline-none focus:ring-1 focus:ring-navy/25 lg:w-56"
             />
           </form>
           <CartIcon />

@@ -48,57 +48,34 @@ export default async function Home() {
 
   return (
     <main>
-      {/* Our Story */}
-      <section id="our-story" className="mx-auto max-w-6xl px-6 pt-16 pb-20 sm:px-10">
-        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-white shadow-[0_1px_2px_rgba(4,28,53,.04),0_8px_24px_-12px_rgba(4,28,53,.12)] lg:order-2">
-            <Image
-              src={placeholderImageUrl("meet-susi", 700)}
-              alt="Susi, in her kitchen"
-              fill
-              sizes="(min-width: 1024px) 50vw, 100vw"
-              priority
-              className="object-cover"
-            />
-          </div>
-          <div className="lg:order-1">
-            <span className="font-body text-xs font-semibold uppercase tracking-[0.28em] text-coral">
-              Our Story
-            </span>
-            <h1 className="mt-4 font-display text-4xl text-navy sm:text-[2.75rem]">
-              Truly Susi&rsquo;s begins with Susi.
-            </h1>
-            <p className="mt-5 max-w-md font-body text-[15px] leading-relaxed text-navy/70">
-              Born from a mother&rsquo;s lifelong love for feeding people well,
-              Truly Susi&rsquo;s turns family recipes into deeply comforting,
-              homemade food meant to be shared beyond the home.
-            </p>
-
-            <div className="mt-9 grid grid-cols-1 gap-6 border-t border-navy/10 pt-7 sm:grid-cols-2">
-              <div>
-                <span className="font-body text-[11px] font-semibold uppercase tracking-[0.22em] text-navy/45">
-                  Vision
-                </span>
-                <p className="mt-2 font-body text-sm leading-relaxed text-navy/70">
-                  To share the joy of food, family, and home with global
-                  audiences while keeping tradition alive in a modern,
-                  thoughtful way.
-                </p>
-              </div>
-              <div>
-                <span className="font-body text-[11px] font-semibold uppercase tracking-[0.22em] text-navy/45">
-                  Mission
-                </span>
-                <p className="mt-2 font-body text-sm leading-relaxed text-navy/70">
-                  Connecting people to their roots and each other through
-                  the shared love of good, wholesome food.
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-9 border-t border-navy/10 pt-7 font-display text-2xl italic leading-snug text-navy">
-              &ldquo;Some sweets you eat. This one, you remember.&rdquo;
-            </div>
+      {/* Our Story — full-bleed background image, swap the src below for
+          the client's own photo once shared; everything else stays. */}
+      <section id="our-story" className="relative overflow-hidden">
+        <div className="absolute inset-0">
+          <Image
+            src={placeholderImageUrl("meet-susi", 1600)}
+            alt=""
+            fill
+            sizes="100vw"
+            priority
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-navy/75" />
+        </div>
+        <div className="relative mx-auto max-w-2xl px-6 py-28 text-center sm:px-10">
+          <span className="font-body text-xs font-semibold uppercase tracking-[0.28em] text-coral">
+            Our Story
+          </span>
+          <h1 className="mt-4 font-display text-4xl text-white sm:text-[2.75rem]">
+            Truly Susi&rsquo;s begins with Susi.
+          </h1>
+          <p className="mx-auto mt-5 max-w-md font-body text-[15px] leading-relaxed text-white/85">
+            Born from a mother&rsquo;s lifelong love for feeding people well,
+            Truly Susi&rsquo;s turns family recipes into deeply comforting,
+            homemade food meant to be shared beyond the home.
+          </p>
+          <div className="mx-auto mt-9 max-w-md border-t border-white/25 pt-7 font-display text-2xl italic leading-snug text-white">
+            &ldquo;Some sweets you eat. This one, you remember.&rdquo;
           </div>
         </div>
       </section>
