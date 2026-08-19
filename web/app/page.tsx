@@ -48,12 +48,12 @@ export default async function Home() {
 
   return (
     <main>
-      {/* Our Story — full-bleed background image, swap the src below for
-          the client's own photo once shared; everything else stays. */}
-      <section id="our-story" className="relative overflow-hidden">
+      {/* Hero — full-bleed background image, swap the src below for the
+          client's own photo once shared; everything else stays. */}
+      <section className="relative overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src={placeholderImageUrl("meet-susi", 1600)}
+            src={placeholderImageUrl("home-hero", 1600)}
             alt=""
             fill
             sizes="100vw"
@@ -63,62 +63,49 @@ export default async function Home() {
           <div className="absolute inset-0 bg-navy/75" />
         </div>
         <div className="relative mx-auto max-w-2xl px-6 py-28 text-center sm:px-10">
-          <span className="font-body text-xs font-semibold uppercase tracking-[0.28em] text-coral">
-            Our Story
+          <span className="inline-block rounded-full bg-white/10 px-3.5 py-1.5 font-body text-[11px] font-semibold uppercase tracking-wider text-coral">
+            Homemade Tamil Sweets &middot; Salem
           </span>
-          <h1 className="mt-4 font-display text-4xl text-white sm:text-[2.75rem]">
-            Truly Susi&rsquo;s begins with Susi.
+          <h1 className="mt-6 font-display text-6xl font-medium text-white sm:text-7xl">
+            Sweeter together.
           </h1>
-          <p className="mx-auto mt-5 max-w-md font-body text-[15px] leading-relaxed text-white/85">
-            Born from a mother&rsquo;s lifelong love for feeding people well,
-            Truly Susi&rsquo;s turns family recipes into deeply comforting,
-            homemade food meant to be shared beyond the home.
+          <p className="mx-auto mt-5 max-w-md font-body text-base leading-relaxed text-white/85">
+            Badam Halwa slow-cooked in ghee, Mysore Pak stirred until it
+            just holds its shape, and Thenkulal fried the way festivals
+            call for — made by hand in Salem, shipped anywhere in India.
           </p>
-          <div className="mx-auto mt-9 max-w-md border-t border-white/25 pt-7 font-display text-2xl italic leading-snug text-white">
-            &ldquo;Some sweets you eat. This one, you remember.&rdquo;
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Link
+              href="/shop"
+              className="rounded-full bg-white px-7 py-3.5 font-body text-sm font-semibold text-navy transition-colors hover:bg-white/90"
+            >
+              Explore the menu
+            </Link>
+            <Link
+              href="#our-story"
+              className="rounded-full border border-white/40 px-7 py-3.5 font-body text-sm font-semibold text-white transition-colors hover:bg-white/10"
+            >
+              Our story
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Hero */}
-      <section className="mx-auto max-w-6xl px-6 py-20 sm:px-10">
-        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          <div>
-            <span className="inline-block rounded-full bg-coral/10 px-3.5 py-1.5 font-body text-[11px] font-semibold uppercase tracking-wider text-coral">
-              Homemade Tamil Sweets &middot; Salem
-            </span>
-            <h2 className="mt-6 font-display text-6xl font-medium text-navy sm:text-7xl">
-              Sweeter together.
-            </h2>
-            <p className="mt-5 max-w-lg font-body text-base leading-relaxed text-navy/70">
-              Badam Halwa slow-cooked in ghee, Mysore Pak stirred until it
-              just holds its shape, and Thenkulal fried the way festivals
-              call for — made by hand in Salem, shipped anywhere in India.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                href="/shop"
-                className="rounded-full bg-navy px-7 py-3.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-navy/90"
-              >
-                Explore the menu
-              </Link>
-              <Link
-                href="#our-story"
-                className="rounded-full border border-navy/15 bg-white px-7 py-3.5 font-body text-sm font-semibold text-navy transition-colors hover:border-navy/30"
-              >
-                Our story
-              </Link>
-            </div>
-          </div>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-white shadow-[0_1px_2px_rgba(4,28,53,.04),0_8px_24px_-12px_rgba(4,28,53,.12)]">
-            <Image
-              src={placeholderImageUrl("home-hero", 900)}
-              alt="Truly Susi's sweets"
-              fill
-              sizes="(min-width: 1024px) 50vw, 100vw"
-              className="object-cover"
-            />
-          </div>
+      {/* Our Story */}
+      <section id="our-story" className="mx-auto max-w-2xl px-6 py-20 text-center sm:px-10">
+        <span className="font-body text-xs font-semibold uppercase tracking-[0.28em] text-coral">
+          Our Story
+        </span>
+        <h2 className="mt-4 font-display text-4xl text-navy sm:text-[2.75rem]">
+          Truly Susi&rsquo;s begins with Susi.
+        </h2>
+        <p className="mx-auto mt-5 max-w-md font-body text-[15px] leading-relaxed text-navy/70">
+          Born from a mother&rsquo;s lifelong love for feeding people well,
+          Truly Susi&rsquo;s turns family recipes into deeply comforting,
+          homemade food meant to be shared beyond the home.
+        </p>
+        <div className="mx-auto mt-9 max-w-md border-t border-navy/10 pt-7 font-display text-2xl italic leading-snug text-navy">
+          &ldquo;Some sweets you eat. This one, you remember.&rdquo;
         </div>
       </section>
 
