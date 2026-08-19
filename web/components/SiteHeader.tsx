@@ -11,13 +11,15 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 border-b border-navy/8 bg-paper/90 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 sm:px-10">
         <Link href="/" className="flex items-center gap-2.5">
-          <Image
-            src="/brand/icon-navy.png"
-            alt=""
-            width={28}
-            height={32}
-            className="h-8 w-7 object-contain"
-          />
+          <span className="relative block h-8 w-7 shrink-0">
+            <Image
+              src="/brand/icon-navy.png"
+              alt=""
+              fill
+              sizes="28px"
+              className="object-contain"
+            />
+          </span>
           <span className="font-display text-2xl italic font-semibold text-navy">
             Truly Susi&rsquo;s
           </span>
