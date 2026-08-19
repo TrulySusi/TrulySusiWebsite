@@ -123,15 +123,17 @@ export default async function Home() {
               key={p.title}
               className="rounded-2xl bg-white p-7 shadow-[0_1px_2px_rgba(4,28,53,.04),0_8px_24px_-12px_rgba(4,28,53,.12)]"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sage/20 text-sage">
-                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" className="h-5 w-5">
-                  {p.icon}
-                </svg>
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sage/20 text-sage">
+                  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" className="h-5 w-5">
+                    {p.icon}
+                  </svg>
+                </div>
+                <h3 className="font-body text-base font-semibold text-navy">
+                  {p.title}
+                </h3>
               </div>
-              <h3 className="mt-4 font-body text-base font-semibold text-navy">
-                {p.title}
-              </h3>
-              <p className="mt-1.5 font-body text-sm leading-relaxed text-navy/65">
+              <p className="mt-3 font-body text-sm leading-relaxed text-navy/65">
                 {p.body}
               </p>
             </div>
