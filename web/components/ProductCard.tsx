@@ -11,7 +11,7 @@ export function ProductCard({ product }: { product: ProductSummary }) {
 
   return (
     <Link href={`/shop/${product.slug}`} className="group block">
-      <div className="relative aspect-square overflow-hidden bg-navy/4">
+      <div className="relative aspect-square overflow-hidden rounded-xl bg-white shadow-[0_1px_2px_rgba(4,28,53,.04),0_8px_24px_-12px_rgba(4,28,53,.12)] transition-shadow group-hover:shadow-[0_1px_2px_rgba(4,28,53,.06),0_12px_28px_-12px_rgba(4,28,53,.2)]">
         <Image
           src={placeholderImageUrl(product.slug)}
           alt={product.name}

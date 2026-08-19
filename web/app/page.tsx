@@ -55,7 +55,7 @@ export default async function Home() {
             <span className="inline-block rounded-full bg-coral/10 px-3.5 py-1.5 font-body text-[11px] font-semibold uppercase tracking-wider text-coral">
               Homemade Tamil Sweets &middot; Salem
             </span>
-            <h1 className="mt-6 font-display text-6xl italic text-navy sm:text-7xl">
+            <h1 className="mt-6 font-display text-6xl font-medium text-navy sm:text-7xl">
               Sweeter together.
             </h1>
             <p className="mt-5 max-w-lg font-body text-base leading-relaxed text-navy/70">
@@ -72,15 +72,15 @@ export default async function Home() {
               </Link>
               <Link
                 href="#meet-susi"
-                className="rounded-full bg-navy/6 px-7 py-3.5 font-body text-sm font-semibold text-navy transition-colors hover:bg-navy/10"
+                className="rounded-full border border-navy/15 bg-white px-7 py-3.5 font-body text-sm font-semibold text-navy transition-colors hover:border-navy/30"
               >
                 Our story
               </Link>
             </div>
           </div>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-navy/4">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-white shadow-[0_1px_2px_rgba(4,28,53,.04),0_8px_24px_-12px_rgba(4,28,53,.12)]">
             <Image
-              src={placeholderImageUrl("home-hero", 900, 675)}
+              src={placeholderImageUrl("home-hero", 900)}
               alt="Truly Susi's sweets"
               fill
               sizes="(min-width: 1024px) 50vw, 100vw"
@@ -101,7 +101,10 @@ export default async function Home() {
         </div>
         <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-3">
           {PILLARS.map((p) => (
-            <div key={p.title} className="rounded-2xl bg-navy/4 p-7">
+            <div
+              key={p.title}
+              className="rounded-2xl bg-white p-7 shadow-[0_1px_2px_rgba(4,28,53,.04),0_8px_24px_-12px_rgba(4,28,53,.12)]"
+            >
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-coral/10 text-coral">
                 <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" className="h-5 w-5">
                   {p.icon}
@@ -141,9 +144,9 @@ export default async function Home() {
       {/* Meet Susi */}
       <section id="meet-susi" className="mx-auto max-w-6xl px-6 py-20 sm:px-10">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-navy/4">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-white shadow-[0_1px_2px_rgba(4,28,53,.04),0_8px_24px_-12px_rgba(4,28,53,.12)]">
             <Image
-              src={placeholderImageUrl("meet-susi", 700, 875)}
+              src={placeholderImageUrl("meet-susi", 700)}
               alt="Susi, in her kitchen"
               fill
               sizes="(min-width: 1024px) 50vw, 100vw"

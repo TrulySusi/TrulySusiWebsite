@@ -16,11 +16,11 @@ const nextConfig: NextConfig = {
             },
           ]
         : []),
-      // Temporary — random placeholder photos until real photography is
-      // assigned per section. Swap out in components/ProductCard.tsx and
-      // app/shop/[slug]/page.tsx when that's ready.
-      { protocol: "https" as const, hostname: "picsum.photos" },
-      { protocol: "https" as const, hostname: "fastly.picsum.photos" },
+      // Temporary — curated, relevant Wikimedia Commons photos until real
+      // photography is assigned per section. See lib/catalog-shared.ts
+      // (COMMONS_FILE_BY_SEED) for the mapping and swap-out point.
+      { protocol: "https" as const, hostname: "commons.wikimedia.org" },
+      { protocol: "https" as const, hostname: "upload.wikimedia.org" },
     ],
   },
 };

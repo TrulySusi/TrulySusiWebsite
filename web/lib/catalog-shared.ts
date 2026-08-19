@@ -70,14 +70,34 @@ export function productImageUrl(storagePath: string) {
 }
 
 /**
- * Temporary — random placeholder photo, stable per seed (so a given
- * product doesn't visually change on every reload). Real photography
- * hasn't been assigned to most sections yet; swap callers back to
- * `productImageUrl` (real Supabase Storage photos, already wired and
- * working for Mysore Pak) once it has.
+ * Temporary — real, relevant Indian-sweets photography from Wikimedia
+ * Commons (freely licensed), standing in until real product/lifestyle
+ * photography is assigned. Curated by hand rather than pulled from a
+ * generic random-image service, so what shows is actually a sweet /
+ * relevant scene, not an arbitrary unrelated stock photo.
+ *
+ * Swap callers back to `productImageUrl` (real Supabase Storage photos,
+ * already wired and working for Mysore Pak) once real photography exists
+ * for a given slot.
  */
-export function placeholderImageUrl(seed: string, width = 800, height = 800) {
-  return `https://picsum.photos/seed/${encodeURIComponent(seed)}/${width}/${height}`;
+const COMMONS_FILE_BY_SEED: Record<string, string> = {
+  // Home hero — "Wheat Halwa of Salem": glossy macro shot, and literally
+  // photographed in Salem, where the brand is from.
+  "home-hero": "Wheat Halwa of Salem.jpg",
+  // Meet Susi — an assorted-sweets spread on a home kitchen counter.
+  // Deliberately not a photo of an unrelated real person standing in
+  // for Susi; this is a kitchen/process scene instead.
+  "meet-susi": "Assorted Indian Sweets.jpg",
+  "mysore-pak": "Mysore pak.jpg",
+  thenkulal: "Traditional Murukku, a must have for festivals such as Deepavali.jpg",
+  "badam-halwa": "Tirunelveli halwa.jpg",
+};
+
+const COMMONS_FALLBACK_FILE = "Assorted Indian Sweets.jpg";
+
+export function placeholderImageUrl(seed: string, width = 800) {
+  const file = COMMONS_FILE_BY_SEED[seed] ?? COMMONS_FALLBACK_FILE;
+  return `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(file)}?width=${width}`;
 }
 
 /** Lowest active-variant price — what a product card shows as "from ₹__". */

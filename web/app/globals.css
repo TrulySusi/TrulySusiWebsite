@@ -8,6 +8,12 @@
   --color-cream: #fdece2;
   --color-sage: #8ab284;
 
+  /* Near-white page ground — matches the Claude Design reference (much
+     lighter than the full-strength cream swatch above). --color-cream
+     stays the true locked brand chip for badges/accents; this is the
+     large-surface neutral. */
+  --color-paper: #fdf8f5;
+
   /* Font tokens. To swap in the licensed Operetta 18 / Acumin Variable later,
      only app/layout.tsx needs to change — these token names stay the same. */
   --font-display: var(--font-display-src), Georgia, "Iowan Old Style", serif;
@@ -18,6 +24,6 @@
    research (navy-dark read as fintech, not food). Navy is ink, coral is the
    appetite-driving accent, lilac/sage are secondary highlights. */
 body {
-  background: var(--color-cream);
+  background: var(--color-paper);
   color: var(--color-navy);
 }

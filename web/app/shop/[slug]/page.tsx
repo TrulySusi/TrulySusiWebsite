@@ -52,9 +52,9 @@ export default async function ProductPage({ params }: Props) {
       </Link>
 
       <div className="mt-8 grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16">
-        <div className="relative aspect-square overflow-hidden bg-navy/4">
+        <div className="relative aspect-square overflow-hidden rounded-2xl bg-white shadow-[0_1px_2px_rgba(4,28,53,.04),0_8px_24px_-12px_rgba(4,28,53,.12)]">
           <Image
-            src={placeholderImageUrl(slug, 1000, 1000)}
+            src={placeholderImageUrl(slug, 1000)}
             alt={product.name}
             fill
             sizes="(min-width: 1024px) 50vw, 100vw"
