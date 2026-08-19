@@ -97,9 +97,15 @@ export default function CartPage() {
               <button
                 type="button"
                 onClick={() => removeItem(item.variantId)}
-                className="font-body text-xs font-medium uppercase tracking-wide text-navy/40 transition-colors hover:text-coral"
+                aria-label="Remove item"
+                className="rounded-full p-2 text-navy/40 transition-colors hover:bg-coral/10 hover:text-coral"
               >
-                Remove
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4">
+                  <path d="M4 6h12" strokeLinecap="round" />
+                  <path d="M8 6V4.5A1.5 1.5 0 0 1 9.5 3h1A1.5 1.5 0 0 1 12 4.5V6" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M5.5 6.5 6 16a1.5 1.5 0 0 0 1.5 1.4h5a1.5 1.5 0 0 0 1.5-1.4l.5-9.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M8.3 9.5v4.5M11.7 9.5v4.5" strokeLinecap="round" />
+                </svg>
               </button>
             </div>
           ))}
