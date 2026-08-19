@@ -11,7 +11,7 @@ const NAV_LINKS = [
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 bg-paper">
-      <div className="mx-auto grid max-w-6xl grid-cols-3 items-center gap-6 px-6 py-5 sm:px-10">
+      <div className="mx-auto grid max-w-7xl grid-cols-3 items-center gap-6 px-6 py-5 sm:px-10">
         <Link href="/" className="relative block h-8 w-36 shrink-0 justify-self-start">
           <Image
             src="/brand/wordmark-navy.png"
