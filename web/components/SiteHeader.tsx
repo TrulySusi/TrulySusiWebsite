@@ -10,11 +10,11 @@ const NAV_LINKS = [
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-50 bg-paper">
+    <header className="sticky top-0 z-50 bg-navy">
       <div className="mx-auto grid max-w-7xl grid-cols-3 items-center gap-6 px-6 py-5 sm:px-10">
         <Link href="/" className="relative block h-8 w-36 shrink-0 justify-self-start">
           <Image
-            src="/brand/wordmark-navy.png"
+            src="/brand/wordmark-cream.png"
             alt="Truly Susi's"
             fill
             sizes="144px"
@@ -29,7 +29,7 @@ export function SiteHeader() {
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="font-body text-xs font-medium uppercase tracking-[0.22em] text-navy/70 transition-colors hover:text-coral"
+                  className="font-body text-xs font-medium uppercase tracking-[0.22em] text-cream/70 transition-colors hover:text-coral"
                 >
                   {link.label}
                 </Link>
@@ -45,7 +45,7 @@ export function SiteHeader() {
               fill="none"
               stroke="currentColor"
               strokeWidth="1.5"
-              className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-navy/40"
+              className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-cream/45"
             >
               <circle cx="9" cy="9" r="6" />
               <path d="m17 17-3.5-3.5" strokeLinecap="round" />
@@ -54,7 +54,7 @@ export function SiteHeader() {
               type="search"
               name="q"
               placeholder="Search sweets"
-              className="w-40 rounded-full bg-navy/6 py-2 pl-10 pr-4 font-body text-sm text-navy placeholder:text-navy/45 focus:outline-none focus:ring-1 focus:ring-navy/25 lg:w-56"
+              className="w-40 rounded-full bg-cream/10 py-2 pl-10 pr-4 font-body text-sm text-cream placeholder:text-cream/45 focus:outline-none focus:ring-1 focus:ring-cream/30 lg:w-56"
             />
           </form>
           <CartIcon />

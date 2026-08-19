@@ -16,7 +16,7 @@ export function CartIcon() {
     <Link
       href="/cart"
       aria-label={`Cart, ${count} item${count === 1 ? "" : "s"}`}
-      className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-navy/15 text-navy transition-colors hover:border-navy/30"
+      className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-cream/25 text-cream transition-colors hover:border-cream/45"
     >
       <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-[18px] w-[18px]">
         <path d="M3 5h1.6L6 13.5a1.5 1.5 0 0 0 1.5 1.25h6a1.5 1.5 0 0 0 1.48-1.24L16 6.5H5.1" strokeLinecap="round" strokeLinejoin="round" />
