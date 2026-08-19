@@ -96,7 +96,7 @@ export default async function Home() {
         <span className="font-body text-xs font-semibold uppercase tracking-[0.28em] text-coral">
           Our Story
         </span>
-        <h2 className="mt-4 font-display text-4xl text-navy sm:text-[2.75rem]">
+        <h2 className="mt-4 font-display text-5xl italic text-navy sm:text-6xl">
           Truly Susi&rsquo;s begins with Susi.
         </h2>
         <p className="mx-auto mt-5 max-w-md font-body text-[15px] leading-relaxed text-navy/70">
@@ -123,7 +123,7 @@ export default async function Home() {
               key={p.title}
               className="rounded-2xl bg-white p-7 shadow-[0_1px_2px_rgba(4,28,53,.04),0_8px_24px_-12px_rgba(4,28,53,.12)]"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-coral/10 text-coral">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sage/20 text-sage">
                 <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" className="h-5 w-5">
                   {p.icon}
                 </svg>
