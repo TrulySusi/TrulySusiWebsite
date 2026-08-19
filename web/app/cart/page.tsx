@@ -121,14 +121,12 @@ export default function CartPage() {
             <span className="text-navy/70">Delivery</span>
             <span className="text-navy/50">Calculated at checkout</span>
           </div>
-          <button
-            type="button"
-            disabled
-            title="Online checkout opens soon — for now, order on WhatsApp"
-            className="mt-6 w-full cursor-not-allowed rounded-full bg-navy/15 px-6 py-3.5 font-body text-sm font-semibold uppercase tracking-[0.15em] text-navy/40"
+          <Link
+            href="/checkout"
+            className="mt-6 block w-full rounded-full bg-navy px-6 py-3.5 text-center font-body text-sm font-semibold uppercase tracking-[0.15em] text-cream transition-colors hover:bg-navy/90"
           >
-            Checkout — coming soon
-          </button>
+            Proceed to checkout
+          </Link>
         </div>
       </div>
     </main>
