@@ -7,7 +7,7 @@ import { placeholderImageUrl } from "@/lib/catalog";
 const PILLARS = [
   {
     title: "Care & Craftsmanship",
-    body: "Small batches, stirred and watched by hand — nothing rushed.",
+    body: "Small batches, stirred and watched by hand, nothing rushed.",
     icon: (
       <path
         d="M10 17.5s-6.5-4.06-6.5-8.75A3.75 3.75 0 0 1 10 6.4a3.75 3.75 0 0 1 6.5 2.35c0 4.69-6.5 8.75-6.5 8.75Z"
@@ -19,7 +19,7 @@ const PILLARS = [
   },
   {
     title: "Honesty & Transparency",
-    body: "Every label lists what's actually inside — no shortcuts.",
+    body: "Every label lists what's actually inside , no shortcuts.",
     icon: (
       <path
         d="M10 2.5 16.5 5v4.5c0 4.14-2.79 7.36-6.5 8-3.71-.64-6.5-3.86-6.5-8V5L10 2.5Zm-2.4 7.6 1.8 1.8 3.2-3.6"
@@ -72,7 +72,7 @@ export default async function Home() {
           <p className="mx-auto mt-5 max-w-md font-body text-base leading-relaxed text-white/85">
             Badam Halwa slow-cooked in ghee, Mysore Pak stirred until it
             just holds its shape, and Thenkulal fried the way festivals
-            call for — made by hand in Salem, shipped anywhere in India.
+            call for made by hand in Salem, shipped anywhere in India.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link

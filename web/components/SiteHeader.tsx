@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { CartIcon } from "@/components/CartIcon";
 
 const NAV_LINKS = [
@@ -8,7 +11,14 @@ const NAV_LINKS = [
   { href: "/track-order", label: "Track Order" },
 ];
 
+function isActivePath(pathname: string, href: string) {
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export function SiteHeader() {
+  const pathname = usePathname();
+
   return (
     <header className="sticky top-0 z-50 bg-navy">
       <div className="mx-auto grid max-w-7xl grid-cols-3 items-center gap-6 px-6 py-5 sm:px-10">
@@ -25,16 +35,22 @@ export function SiteHeader() {
 
         <nav className="justify-self-center">
           <ul className="flex items-center gap-9">
-            {NAV_LINKS.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="font-body text-xs font-medium uppercase tracking-[0.22em] text-cream/70 transition-colors hover:text-coral"
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
+            {NAV_LINKS.map((link) => {
+              const active = isActivePath(pathname, link.href);
+              return (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    aria-current={active ? "page" : undefined}
+                    className={`font-body text-xs font-medium uppercase tracking-[0.22em] transition-colors hover:text-coral ${
+                      active ? "text-coral" : "text-cream/70"
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </nav>
 

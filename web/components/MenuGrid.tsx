@@ -51,7 +51,7 @@ export function MenuGrid({
 
       {filtered.length === 0 ? (
         <p className="mt-16 font-body text-navy/60">
-          Nothing here yet — check back shortly.
+          Nothing here yet -  check back shortly.
         </p>
       ) : (
         <div className="mt-12 grid grid-cols-[repeat(auto-fill,minmax(220px,280px))] gap-x-8 gap-y-14">
