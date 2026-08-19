@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 const BRAND_LINKS = [
-  { href: "/#meet-susi", label: "Our Story" },
+  { href: "/#our-story", label: "Our Story" },
   { href: "/shop", label: "Menu" },
   { href: "/track-order", label: "Track Order" },
 ];
