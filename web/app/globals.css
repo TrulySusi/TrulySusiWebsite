@@ -41,17 +41,9 @@ body {
   --os-handle-perpendicular-size: 100%;
 }
 
-.os-theme-light.os-theme-truly-susi.os-scrollbar-vertical .os-scrollbar-track {
-  /* Brass reads on both the cream page background and the navy hero/footer
-     sections — a navy dash disappeared entirely against navy backgrounds. */
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent 0px,
-    transparent 13px,
-    rgba(201, 138, 47, 0.55) 13px,
-    rgba(201, 138, 47, 0.55) 14.5px
-  );
-}
+/* No full-height dash background on the native track — the dash cluster
+   is a small, self-contained group of marks drawn by DocumentScrollbar
+   that travels with the Kuruvi icon, not a rail spanning the whole page. */
 
 @keyframes kuruvi-hop {
   0% {
