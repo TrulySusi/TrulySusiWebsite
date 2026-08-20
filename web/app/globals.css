@@ -6,6 +6,8 @@
   --color-cream: #faf3e9;  /* page background */
   --color-brass: #c98a2f;  /* accent, dividers, highlights */
   --color-blush: #fdece2;  /* secondary accent, soft tints/badges */
+  --color-sage: #8ab284;   /* tertiary accent — used sparingly, e.g. the
+                              "Why Truly Susi's" pillar icons */
 
   /* Font tokens. To swap in the licensed Operetta 18 / Acumin Variable later,
      only app/layout.tsx needs to change — these token names stay the same. */
