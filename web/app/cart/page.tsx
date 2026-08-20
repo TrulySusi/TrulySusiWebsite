@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCartStore, cartSubtotal } from "@/lib/cart-store";
-import { placeholderImageUrl } from "@/lib/catalog-shared";
 
 export default function CartPage() {
   const items = useCartStore((s) => s.items);
@@ -23,7 +22,7 @@ export default function CartPage() {
       <main className="mx-auto max-w-xl px-6 py-24 text-center sm:px-10">
         <h1 className="font-display text-4xl text-navy">Your cart is empty</h1>
         <p className="mt-4 font-body text-navy/60">
-          Nothing here yet — go find something sweet.
+          Nothing here yet. Go find something sweet.
         </p>
         <Link
           href="/shop"
@@ -50,7 +49,7 @@ export default function CartPage() {
             >
               <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-navy/4">
                 <Image
-                  src={placeholderImageUrl(item.productSlug)}
+                  src={item.imageUrl}
                   alt={item.productName}
                   fill
                   sizes="64px"

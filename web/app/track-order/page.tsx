@@ -31,7 +31,7 @@ export default function TrackOrderPage() {
 
       {submitted && (
         <p className="mt-6 font-body text-sm text-navy/70">
-          Order tracking isn&rsquo;t live yet — once online checkout opens,
+          Order tracking isn&rsquo;t live yet. Once online checkout opens,
           your order status will show up here. For now, every order is
           confirmed and updated directly over WhatsApp or email.
         </p>

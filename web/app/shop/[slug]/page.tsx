@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const product = await getProductBySlug(slug);
   if (!product) return {};
   return {
-    title: `${product.name} — Truly Susi's`,
+    title: `${product.name} · Truly Susi's`,
     description: product.short_description ?? undefined,
   };
 }
@@ -95,6 +95,7 @@ export default async function ProductPage({ params }: Props) {
               variants={product.product_variants}
               productSlug={product.slug}
               productName={product.name}
+              imageUrl={productPhotoUrl(product)}
             />
           </div>
 

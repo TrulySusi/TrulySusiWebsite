@@ -4,7 +4,7 @@ import { getActiveProducts, getCategories } from "@/lib/catalog";
 import { MenuGrid } from "@/components/MenuGrid";
 
 export const metadata: Metadata = {
-  title: "Products — Truly Susi's",
+  title: "Products · Truly Susi's",
   description: "Homemade Tamil sweets, made fresh in Salem and shipped across India.",
 };
 

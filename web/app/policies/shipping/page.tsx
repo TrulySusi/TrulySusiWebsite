@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PolicyStub } from "@/components/PolicyStub";
 
-export const metadata: Metadata = { title: "Shipping & Delivery — Truly Susi's" };
+export const metadata: Metadata = { title: "Shipping & Delivery · Truly Susi's" };
 
 export default function ShippingPage() {
   return (

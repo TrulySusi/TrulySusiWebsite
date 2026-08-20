@@ -27,6 +27,7 @@ export function ProductCard({ product }: { product: ProductSummary }) {
       productName: product.name,
       variantLabel: variant.label,
       priceInr: variant.price_inr,
+      imageUrl: productPhotoUrl(product),
     });
   }
 

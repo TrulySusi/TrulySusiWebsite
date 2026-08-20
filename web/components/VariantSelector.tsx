@@ -8,10 +8,12 @@ export function VariantSelector({
   variants,
   productSlug,
   productName,
+  imageUrl,
 }: {
   variants: ProductVariant[];
   productSlug: string;
   productName: string;
+  imageUrl: string;
 }) {
   const active = variants.filter((v) => v.is_active);
   const initial = active.find((v) => v.is_default) ?? active[0] ?? null;
@@ -36,6 +38,7 @@ export function VariantSelector({
         productName,
         variantLabel: selected.label,
         priceInr: selected.price_inr,
+        imageUrl,
       },
       qty,
     );
@@ -96,7 +99,7 @@ export function VariantSelector({
         </div>
 
         <span className="font-display text-2xl text-navy">
-          {lineTotal !== null ? `₹${lineTotal.toFixed(0)}` : "—"}
+          {lineTotal !== null ? `₹${lineTotal.toFixed(0)}` : ""}
         </span>
 
         {selected && selected.stock_qty <= 5 && selected.stock_qty > 0 && (
@@ -120,7 +123,7 @@ export function VariantSelector({
         {justAdded
           ? "Added ✓"
           : lineTotal !== null
-            ? `Add to cart — ₹${lineTotal.toFixed(0)}`
+            ? `Add to cart · ₹${lineTotal.toFixed(0)}`
             : "Add to cart"}
       </button>
 

@@ -10,6 +10,7 @@ export type CartItem = {
   variantLabel: string;
   priceInr: number;
   quantity: number;
+  imageUrl: string;
 };
 
 type CartState = {
@@ -57,7 +58,14 @@ export const useCartStore = create<CartState>()(
       },
       clear: () => set({ items: [] }),
     }),
-    { name: "truly-susis-cart" },
+    {
+      name: "truly-susis-cart",
+      // v2 added imageUrl (snapshotted at add-time so the cart always shows
+      // the same photo the product card/PDP did). Old carts predate that
+      // field — drop them rather than show a broken/blank image.
+      version: 2,
+      migrate: (state) => ({ ...(state as CartState), items: [] }),
+    },
   ),
 );
 

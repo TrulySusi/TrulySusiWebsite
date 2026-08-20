@@ -50,8 +50,8 @@ export default function PaymentPage() {
       <div className="mx-auto mt-10 max-w-md rounded-2xl border border-navy/10 bg-white p-7 text-center">
         <h1 className="font-display text-2xl text-navy">Online payment is almost here</h1>
         <p className="mt-3 font-body text-sm leading-relaxed text-navy/60">
-          We&rsquo;re finishing up secure payment for the site. Your delivery details are saved —
-          checkout will open here as soon as payment is live.
+          We&rsquo;re finishing up secure payment for the site. Your delivery details are saved,
+          and checkout will open here as soon as payment is live.
         </p>
 
         <dl className="mt-6 space-y-2 border-y border-navy/10 py-5 text-left font-body text-sm">
@@ -77,7 +77,7 @@ export default function PaymentPage() {
           title="Online payment opens soon"
           className="mt-6 w-full cursor-not-allowed rounded-full bg-navy/15 px-6 py-3.5 font-body text-sm font-semibold text-navy/40"
         >
-          Payment — coming soon
+          Payment (coming soon)
         </button>
         <Link
           href="/checkout/delivery"

@@ -35,7 +35,7 @@ export default function CheckoutEntryPage() {
     });
 
     if (authError || !data.user) {
-      setError(authError?.message ?? "Couldn't log in — please try again.");
+      setError(authError?.message ?? "Couldn't log in. Please try again.");
       setSubmitting(false);
       return;
     }
@@ -55,7 +55,7 @@ export default function CheckoutEntryPage() {
       <div className="text-center">
         <h1 className="font-display text-4xl text-navy">How would you like to check out?</h1>
         <p className="mt-3 font-body text-navy/60">
-          Log in to track orders faster, or continue as a guest — either way you can place this
+          Log in to track orders faster, or continue as a guest. Either way, you can place this
           order.
         </p>
       </div>
@@ -115,7 +115,7 @@ export default function CheckoutEntryPage() {
           </div>
           <h2 className="mt-4 font-display text-2xl text-navy">Continue as guest</h2>
           <p className="mt-1 font-body text-sm text-navy/60">
-            No account needed — enter your delivery details next and place your order in under a
+            No account needed. Enter your delivery details next and place your order in under a
             minute.
           </p>
 

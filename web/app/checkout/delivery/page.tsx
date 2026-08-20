@@ -243,7 +243,7 @@ export default function DeliveryDetailsPage() {
               ))}
             </select>
             <textarea
-              placeholder="Delivery instructions (optional) — e.g. leave with security, call before delivery"
+              placeholder="Delivery instructions (optional), e.g. leave with security, call before delivery"
               value={form.notes}
               onChange={(e) => update("notes", e.target.value)}
               rows={2}

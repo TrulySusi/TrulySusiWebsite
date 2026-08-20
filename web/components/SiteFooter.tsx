@@ -79,7 +79,7 @@ export function SiteFooter() {
                   static (non-linked) icons until those exist. */}
               <span
                 aria-hidden="true"
-                title="Facebook — coming soon"
+                title="Facebook (coming soon)"
                 className="flex h-8 w-8 items-center justify-center rounded-full bg-cream/10 text-cream/50"
               >
                 <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-3.5 w-3.5">
@@ -88,7 +88,7 @@ export function SiteFooter() {
               </span>
               <span
                 aria-hidden="true"
-                title="LinkedIn — coming soon"
+                title="LinkedIn (coming soon)"
                 className="flex h-8 w-8 items-center justify-center rounded-full bg-cream/10 text-cream/50"
               >
                 <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-3.5 w-3.5">
