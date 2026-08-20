@@ -20,30 +20,16 @@ body {
   color: var(--color-navy);
 }
 
-/* Auto-hide overlay scrollbar (OverlayScrollbars) restyled as a "pin
-   trail" — a dotted track with a round pin handle — in brand colors.
-   Extends the library's built-in light theme rather than rebuilding the
-   box model from scratch. */
-.os-theme-light.os-theme-truly-susi {
-  --os-size: 14px;
-  --os-padding-perpendicular: 3px;
-  --os-padding-axis: 4px;
-  --os-track-border-radius: 10px;
-  --os-handle-border-radius: 50%;
-  /* Transparent on purpose — the real handle still does the actual
-     dragging/click-to-scroll work, but the DocumentScrollbar component
-     draws a hopping Kuruvi icon on top of it as the visible indicator. */
-  --os-handle-bg: transparent;
-  --os-handle-bg-hover: transparent;
-  --os-handle-bg-active: transparent;
-  --os-handle-min-size: 14px;
-  --os-handle-max-size: 14px;
-  --os-handle-perpendicular-size: 100%;
+/* Native scrollbar hidden entirely — SectionNav (web/components/SectionNav.tsx)
+   is the only visible scroll-adjacent UI now: a small fixed index of named
+   page sections, not a drag-scroll rail. Native wheel/keyboard/touch
+   scrolling is untouched, just chromeless. */
+html {
+  scrollbar-width: none;
 }
-
-/* No full-height dash background on the native track — the dash cluster
-   is a small, self-contained group of marks drawn by DocumentScrollbar
-   that travels with the Kuruvi icon, not a rail spanning the whole page. */
+html::-webkit-scrollbar {
+  display: none;
+}
 
 @keyframes kuruvi-hop {
   0% {

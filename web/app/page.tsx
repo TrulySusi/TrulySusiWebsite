@@ -49,7 +49,7 @@ export default async function Home() {
     <main>
       {/* Hero — full-bleed background image, the client's own illustrated
           sweet-making scene. */}
-      <section className="relative overflow-hidden">
+      <section id="home-hero" data-nav-section="Home" className="relative overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src="/brand/05_sweet_making.png"
@@ -91,7 +91,7 @@ export default async function Home() {
       </section>
 
       {/* Our Story */}
-      <section id="our-story" className="mx-auto max-w-5xl px-6 py-20 sm:px-10">
+      <section id="our-story" data-nav-section="Our Story" className="mx-auto max-w-5xl px-6 py-20 sm:px-10">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[420px_1fr]">
           <Image
             src="/brand/susi_photo.jpg"
@@ -120,7 +120,7 @@ export default async function Home() {
       </section>
 
       {/* Why Truly Susi's */}
-      <section className="mx-auto max-w-6xl px-6 py-16 sm:px-10">
+      <section id="why-truly-susis" data-nav-section="Why Truly Susi's" className="mx-auto max-w-6xl px-6 py-16 sm:px-10">
         <div className="text-center">
           <h2 className="font-display text-3xl text-navy">Why Truly Susi&rsquo;s</h2>
           <p className="mt-2 font-body text-sm text-navy/60">
@@ -152,7 +152,7 @@ export default async function Home() {
       </section>
 
       {/* Kuruvi — the brand's little-messenger mascot */}
-      <section>
+      <section id="kuruvi" data-nav-section="Kuruvi">
         <div className="mx-auto max-w-2xl px-6 py-16 text-center sm:px-10">
           <Image
             src="/brand/06_kuruvi.png"
@@ -175,7 +175,7 @@ export default async function Home() {
 
       {/* Favourites */}
       {favourites.length > 0 && (
-        <section className="mx-auto max-w-6xl px-6 py-16 sm:px-10">
+        <section id="favourites" data-nav-section="Favourites" className="mx-auto max-w-6xl px-6 py-16 sm:px-10">
           <div className="flex items-baseline justify-between">
             <h2 className="font-display text-3xl text-navy">This week&rsquo;s favourites</h2>
             <Link
