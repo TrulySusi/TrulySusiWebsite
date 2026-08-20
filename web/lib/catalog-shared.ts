@@ -100,6 +100,20 @@ export function placeholderImageUrl(seed: string, width = 800) {
   return `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(file)}?width=${width}`;
 }
 
+/**
+ * Real product photo when one's been uploaded (product_images, sorted so
+ * index 0 is the cover shot), otherwise the Wikimedia placeholder. Use this
+ * instead of calling placeholderImageUrl directly so cards/PDP pick up real
+ * photography automatically as it's added, product by product.
+ */
+export function productPhotoUrl(product: {
+  slug: string;
+  product_images: ProductImage[];
+}) {
+  const cover = [...product.product_images].sort((a, b) => a.sort_order - b.sort_order)[0];
+  return cover ? productImageUrl(cover.storage_path) : placeholderImageUrl(product.slug);
+}
+
 // Tamil-script product names, confirmed from the client's own pre-launch
 // site (agent-6a27e90e6ed607732e9739cc--trulysusiin.netlify.app) — real
 // brand copy, not a translation guess. Only add an entry here once the

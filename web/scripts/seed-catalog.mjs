@@ -158,10 +158,16 @@ async function main() {
     { label: "500g box", weight_grams: 500, sku: "TS-MYSPAK-500", price_inr: 475.0, stock_qty: 15, is_default: false, is_active: true },
   ]);
   await upsertProductImage(mysorePakId, {
+    localPath: "../public/brand/mysore_pak_image.png",
+    storagePath: "mysore-pak/mysore_pak_hero.png",
+    altText: "Mysore Pak, stacked pieces on a brass plate with a Truly Susi jar",
+    sortOrder: 0,
+  });
+  await upsertProductImage(mysorePakId, {
     localPath: "../public/seed/mysore_pak.jpg",
     storagePath: "mysore-pak/mysore_pak.jpg",
     altText: "Mysore Pak, stacked pieces in a box",
-    sortOrder: 0,
+    sortOrder: 1,
   });
   console.log("mysore pak ready:", mysorePakId);
 
@@ -177,7 +183,13 @@ async function main() {
     is_featured: false,
     sort_order: 2,
   });
-  console.log("badam halwa ready (draft, no pricing yet):", badamHalwaId);
+  await upsertProductImage(badamHalwaId, {
+    localPath: "../public/brand/badam_halwa_image.png",
+    storagePath: "badam-halwa/badam_halwa_hero.png",
+    altText: "Badam Halwa in a brass kadai with almonds and a Truly Susi ghee jar",
+    sortOrder: 0,
+  });
+  console.log("badam halwa ready (draft — image only, no pricing yet):", badamHalwaId);
 
   // ---- Thenkulal — placeholder, details to follow ----
   const thenkulalId = await upsertProduct(categoryId, {

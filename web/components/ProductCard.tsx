@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   defaultVariant,
-  placeholderImageUrl,
+  productPhotoUrl,
   startingPrice,
   tamilName,
   type ProductSummary,
@@ -37,7 +37,7 @@ export function ProductCard({ product }: { product: ProductSummary }) {
     >
       <div className="relative aspect-square bg-navy/4">
         <Image
-          src={placeholderImageUrl(product.slug)}
+          src={productPhotoUrl(product)}
           alt={product.name}
           fill
           sizes="(min-width: 768px) 33vw, 100vw"

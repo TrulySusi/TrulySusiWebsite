@@ -152,7 +152,7 @@ export default async function Home() {
       </section>
 
       {/* Kuruvi — the brand's little-messenger mascot */}
-      <section className="bg-blush/50">
+      <section>
         <div className="mx-auto max-w-2xl px-6 py-16 text-center sm:px-10">
           <Image
             src="/brand/06_kuruvi.png"
@@ -163,12 +163,12 @@ export default async function Home() {
           />
           <h2 className="mt-6 font-display text-3xl text-navy">Meet our Kuruvi</h2>
           <p className="mx-auto mt-4 max-w-md font-body text-[15px] leading-relaxed text-navy/70">
-            In Tamil, குருவி means House Sparrow &mdash; the little bird that always finds its way
+            In Tamil, குருவி means House Sparrow, the little bird that always finds its way
             home. Our Kuruvi is the messenger that flies between Susi&rsquo;s kitchen and your
             doorstep, carrying something sweet every time.
           </p>
           <p className="mt-4 font-body text-xs uppercase tracking-[0.2em] text-navy/45">
-            குருவி &mdash; The Little Messenger
+            குருவி -  The Little Messenger
           </p>
         </div>
       </section>
