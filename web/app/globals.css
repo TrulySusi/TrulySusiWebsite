@@ -30,9 +30,12 @@ body {
   --os-padding-axis: 4px;
   --os-track-border-radius: 10px;
   --os-handle-border-radius: 50%;
-  --os-handle-bg: var(--color-navy);
-  --os-handle-bg-hover: var(--color-brass);
-  --os-handle-bg-active: var(--color-brass);
+  /* Transparent on purpose — the real handle still does the actual
+     dragging/click-to-scroll work, but the DocumentScrollbar component
+     draws a hopping Kuruvi icon on top of it as the visible indicator. */
+  --os-handle-bg: transparent;
+  --os-handle-bg-hover: transparent;
+  --os-handle-bg-active: transparent;
   --os-handle-min-size: 14px;
   --os-handle-max-size: 14px;
   --os-handle-perpendicular-size: 100%;
@@ -48,6 +51,22 @@ body {
   );
 }
 
-.os-theme-light.os-theme-truly-susi .os-scrollbar-handle {
-  box-shadow: 0 0 0 3px var(--color-cream);
+@keyframes kuruvi-hop {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  35% {
+    transform: translateY(-5px) rotate(-10deg) scale(1.08);
+  }
+  65% {
+    transform: translateY(1px) rotate(5deg) scale(0.96);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+}
+
+.kuruvi-hop {
+  animation: kuruvi-hop 320ms ease-out;
+  transform-origin: 50% 80%;
 }
