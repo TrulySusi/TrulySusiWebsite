@@ -19,3 +19,17 @@ body {
   background: var(--color-cream);
   color: var(--color-navy);
 }
+
+/* Auto-hide overlay scrollbar (OverlayScrollbars) recolored to the brand
+   palette — navy thumb at rest, brass on hover/drag. Extends the library's
+   built-in light theme rather than rebuilding the box model from scratch. */
+.os-theme-light.os-theme-truly-susi {
+  --os-size: 10px;
+  --os-padding-perpendicular: 2px;
+  --os-padding-axis: 2px;
+  --os-track-border-radius: 10px;
+  --os-handle-border-radius: 10px;
+  --os-handle-bg: rgba(28, 43, 74, 0.35);
+  --os-handle-bg-hover: rgba(201, 138, 47, 0.6);
+  --os-handle-bg-active: rgba(201, 138, 47, 0.8);
+}

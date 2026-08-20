@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { DocumentScrollbar } from "@/components/DocumentScrollbar";
+import "overlayscrollbars/overlayscrollbars.css";
 import "./globals.css";
 
 // Free substitutes for the licensed Operetta 18 / Acumin Variable pairing —
@@ -31,6 +33,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${displayFont.variable} ${bodyFont.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-cream text-navy font-body">
+        <DocumentScrollbar />
         <SiteHeader />
         <div className="flex-1">{children}</div>
         <SiteFooter />
