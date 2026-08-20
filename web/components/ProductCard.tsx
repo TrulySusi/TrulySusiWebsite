@@ -6,6 +6,7 @@ import {
   defaultVariant,
   placeholderImageUrl,
   startingPrice,
+  tamilName,
   type ProductSummary,
 } from "@/lib/catalog-shared";
 import { useCartStore } from "@/lib/cart-store";
@@ -13,6 +14,7 @@ import { useCartStore } from "@/lib/cart-store";
 export function ProductCard({ product }: { product: ProductSummary }) {
   const price = startingPrice(product.product_variants);
   const variant = defaultVariant(product.product_variants);
+  const tamil = tamilName(product.slug);
   const addItem = useCartStore((s) => s.addItem);
 
   function handleQuickAdd(e: React.MouseEvent) {
@@ -49,6 +51,7 @@ export function ProductCard({ product }: { product: ProductSummary }) {
           </span>
         )}
         <h3 className="mt-2 font-display text-2xl text-navy">{product.name}</h3>
+        {tamil && <p className="font-body text-sm text-navy/45">{tamil}</p>}
         {product.short_description && (
           <p className="mt-1.5 line-clamp-2 font-body text-sm leading-relaxed text-navy/60">
             {product.short_description}

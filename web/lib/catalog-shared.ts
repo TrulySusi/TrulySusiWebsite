@@ -100,6 +100,20 @@ export function placeholderImageUrl(seed: string, width = 800) {
   return `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(file)}?width=${width}`;
 }
 
+// Tamil-script product names, confirmed from the client's own pre-launch
+// site (agent-6a27e90e6ed607732e9739cc--trulysusiin.netlify.app) — real
+// brand copy, not a translation guess. Only add an entry here once the
+// client has confirmed the exact spelling; leaving a product out just
+// means no Tamil name shows for it yet.
+const TAMIL_NAME_BY_SLUG: Record<string, string> = {
+  "mysore-pak": "மைசூர் பாக்",
+  "badam-halwa": "பாதாம் அல்வா",
+};
+
+export function tamilName(slug: string): string | null {
+  return TAMIL_NAME_BY_SLUG[slug] ?? null;
+}
+
 /** Lowest active-variant price — what a product card shows as "from ₹__". */
 export function startingPrice(variants: ProductVariant[]) {
   const active = variants.filter((v) => v.is_active);

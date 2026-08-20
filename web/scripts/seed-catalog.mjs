@@ -126,7 +126,7 @@ async function main() {
     slug: "mysore-pak",
     name: "Mysore Pak",
     short_description:
-      "Soft. Ghee-rich. Melt-in-the-mouth. The way it was meant to be made.",
+      "Rich, melt-in-your-mouth ghee fudge with the perfect crumble. Gram flour, pure ghee, and patience. No substitutes — the way it was always meant to taste.",
     description: BRAND_STORY,
     ingredients: "Ghee, Sugar, Gram Flour, Water",
     allergen_info: "Contains dairy (ghee).",
@@ -170,7 +170,7 @@ async function main() {
     slug: "badam-halwa",
     name: "Badam Halwa",
     short_description:
-      "Slow-cooked almonds, ghee, and patience. The recipe Susi has been making the longest.",
+      "Slow-cooked almond halwa, silky and fragrant with saffron and cardamom. A labour of love that takes hours — so you can savour it in seconds.",
     description: null,
     ingredients: null,
     status: "draft",

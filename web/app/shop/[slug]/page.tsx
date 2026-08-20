@@ -6,6 +6,7 @@ import {
   getProductBySlug,
   getRelatedProducts,
   placeholderImageUrl,
+  tamilName,
 } from "@/lib/catalog";
 import { VariantSelector } from "@/components/VariantSelector";
 import { ProductCard } from "@/components/ProductCard";
@@ -70,6 +71,9 @@ export default async function ProductPage({ params }: Props) {
             </span>
           )}
           <h1 className="mt-3 font-display text-5xl text-navy">{product.name}</h1>
+          {tamilName(slug) && (
+            <p className="mt-0.5 font-body text-base text-navy/45">{tamilName(slug)}</p>
+          )}
           {product.short_description && (
             <p className="mt-4 max-w-[42ch] font-body text-base leading-relaxed text-navy/70">
               {product.short_description}
