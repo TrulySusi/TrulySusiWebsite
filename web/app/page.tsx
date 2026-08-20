@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { getFeaturedProducts } from "@/lib/catalog";
 import { ProductCard } from "@/components/ProductCard";
-import { placeholderImageUrl } from "@/lib/catalog";
 
 const PILLARS = [
   {
@@ -48,19 +47,19 @@ export default async function Home() {
 
   return (
     <main>
-      {/* Hero — full-bleed background image, swap the src below for the
-          client's own photo once shared; everything else stays. */}
+      {/* Hero — full-bleed background image, the client's own illustrated
+          kitchen scene. */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src={placeholderImageUrl("home-hero", 1600)}
+            src="/brand/04_cooking_kitchen.png"
             alt=""
             fill
             sizes="100vw"
             priority
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-navy/75" />
+          <div className="absolute inset-0 bg-navy/45" />
         </div>
         <div className="relative mx-auto max-w-2xl px-6 py-28 text-center sm:px-10">
           <span className="inline-block rounded-full bg-white/10 px-3.5 py-1.5 font-body text-[11px] font-semibold uppercase tracking-wider text-brass">
