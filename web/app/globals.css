@@ -20,33 +20,16 @@ body {
   color: var(--color-navy);
 }
 
-/* Native scrollbar hidden entirely — SectionNav (web/components/SectionNav.tsx)
-   is the only visible scroll-adjacent UI now: a small fixed index of named
-   page sections, not a drag-scroll rail. Native wheel/keyboard/touch
-   scrolling is untouched, just chromeless. */
-html {
-  scrollbar-width: none;
-}
-html::-webkit-scrollbar {
-  display: none;
-}
-
-@keyframes kuruvi-hop {
-  0% {
-    transform: translateY(0) rotate(0deg) scale(1);
-  }
-  35% {
-    transform: translateY(-5px) rotate(-10deg) scale(1.08);
-  }
-  65% {
-    transform: translateY(1px) rotate(5deg) scale(0.96);
-  }
-  100% {
-    transform: translateY(0) rotate(0deg) scale(1);
-  }
-}
-
-.kuruvi-hop {
-  animation: kuruvi-hop 320ms ease-out;
-  transform-origin: 50% 80%;
+/* Auto-hide overlay scrollbar (OverlayScrollbars) recolored to the brand
+   palette — navy thumb at rest, brass on hover/drag. Extends the library's
+   built-in light theme rather than rebuilding the box model from scratch. */
+.os-theme-light.os-theme-truly-susi {
+  --os-size: 10px;
+  --os-padding-perpendicular: 2px;
+  --os-padding-axis: 2px;
+  --os-track-border-radius: 10px;
+  --os-handle-border-radius: 10px;
+  --os-handle-bg: rgba(28, 43, 74, 0.35);
+  --os-handle-bg-hover: rgba(201, 138, 47, 0.6);
+  --os-handle-bg-active: rgba(201, 138, 47, 0.8);
 }
