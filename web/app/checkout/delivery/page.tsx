@@ -3,8 +3,19 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/lib/cart-store";
-import { emptyDelivery, useCheckoutStore, type DeliveryDetails } from "@/lib/checkout-store";
+import {
+  emptyDelivery,
+  useCheckoutStore,
+  type AddressLabel,
+  type DeliveryDetails,
+} from "@/lib/checkout-store";
 import { createClient } from "@/lib/supabase/client";
+import { INDIA_STATES, lookupPincode } from "@/lib/india";
+
+const ADDRESS_LABELS: AddressLabel[] = ["Home", "Work", "Other"];
+
+const fieldClass =
+  "rounded-lg bg-blush px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 focus:ring-navy/20";
 
 export default function DeliveryDetailsPage() {
   const router = useRouter();
@@ -30,17 +41,41 @@ export default function DeliveryDetailsPage() {
 
   if (!mounted || items.length === 0) return null;
 
-  function update(field: keyof DeliveryDetails, value: string) {
+  function update<K extends keyof DeliveryDetails>(field: K, value: DeliveryDetails[K]) {
     setForm((f) => ({ ...f, [field]: value }));
+  }
+
+  function updatePincode(value: string) {
+    setForm((f) => ({ ...f, pincode: value }));
+    if (/^\d{6}$/.test(value.trim())) {
+      lookupPincode(value.trim()).then((result) => {
+        if (result) setForm((f) => ({ ...f, city: result.city, state: result.state }));
+      });
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const filled = Object.values(form).every((v) => v.trim().length > 0);
+    const required: Array<keyof DeliveryDetails> = [
+      "firstName",
+      "lastName",
+      "phone",
+      "line1",
+      "line2",
+      "pincode",
+      "city",
+      "state",
+    ];
+    const filled = required.every((k) => form[k].trim().length > 0);
+    const phoneValid = /^\d{10}$/.test(form.phone.trim());
+    const altPhoneValid = !form.alternatePhone.trim() || /^\d{10}$/.test(form.alternatePhone.trim());
     const pincodeValid = /^\d{6}$/.test(form.pincode.trim());
-    if (!filled || !pincodeValid) {
-      setError("Please fill every field (pincode must be 6 digits).");
+
+    if (!filled || !phoneValid || !altPhoneValid || !pincodeValid) {
+      setError(
+        "Please fill every required field (phone numbers must be 10 digits, pincode must be 6 digits).",
+      );
       return;
     }
     setError(null);
@@ -62,12 +97,19 @@ export default function DeliveryDetailsPage() {
 
       const row = {
         customer_id: user.id,
-        full_name: form.fullName,
+        full_name: `${form.firstName} ${form.lastName}`.trim(),
+        first_name: form.firstName,
+        last_name: form.lastName,
         phone: form.phone,
-        line1: form.addressLine,
+        alternate_phone: form.alternatePhone || null,
+        label: form.label,
+        line1: form.line1,
+        line2: form.line2,
+        landmark: form.landmark || null,
         city: form.city,
-        state: "",
+        state: form.state,
         pincode: form.pincode,
+        notes: form.notes || null,
         is_default: true,
       };
 
@@ -112,37 +154,100 @@ export default function DeliveryDetailsPage() {
             <h1 className="font-display text-2xl text-navy">Delivery details</h1>
           </div>
 
-          <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="mt-6 flex flex-wrap gap-2">
+            {ADDRESS_LABELS.map((label) => (
+              <button
+                key={label}
+                type="button"
+                onClick={() => update("label", label)}
+                aria-pressed={form.label === label}
+                className={`rounded-full px-5 py-2 font-body text-sm font-medium transition-colors ${
+                  form.label === label ? "bg-navy text-cream" : "bg-navy/6 text-navy hover:bg-navy/10"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
             <input
-              placeholder="Full name"
-              value={form.fullName}
-              onChange={(e) => update("fullName", e.target.value)}
-              className="rounded-lg bg-blush px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 focus:ring-navy/20"
+              placeholder="First name"
+              value={form.firstName}
+              onChange={(e) => update("firstName", e.target.value)}
+              className={fieldClass}
+            />
+            <input
+              placeholder="Last name"
+              value={form.lastName}
+              onChange={(e) => update("lastName", e.target.value)}
+              className={fieldClass}
             />
             <input
               placeholder="Phone number"
+              inputMode="numeric"
               value={form.phone}
               onChange={(e) => update("phone", e.target.value)}
-              className="rounded-lg bg-blush px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 focus:ring-navy/20"
+              className={fieldClass}
             />
             <input
-              placeholder="Address line"
-              value={form.addressLine}
-              onChange={(e) => update("addressLine", e.target.value)}
-              className="sm:col-span-2 rounded-lg bg-blush px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 focus:ring-navy/20"
+              placeholder="Alternate phone (optional)"
+              inputMode="numeric"
+              value={form.alternatePhone}
+              onChange={(e) => update("alternatePhone", e.target.value)}
+              className={fieldClass}
             />
             <input
-              placeholder="City"
-              value={form.city}
-              onChange={(e) => update("city", e.target.value)}
-              className="rounded-lg bg-blush px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 focus:ring-navy/20"
+              placeholder="House / Flat / Building no."
+              value={form.line1}
+              onChange={(e) => update("line1", e.target.value)}
+              className={`sm:col-span-2 ${fieldClass}`}
+            />
+            <input
+              placeholder="Street / Area / Locality"
+              value={form.line2}
+              onChange={(e) => update("line2", e.target.value)}
+              className={`sm:col-span-2 ${fieldClass}`}
+            />
+            <input
+              placeholder="Landmark (optional)"
+              value={form.landmark}
+              onChange={(e) => update("landmark", e.target.value)}
+              className={`sm:col-span-2 ${fieldClass}`}
             />
             <input
               placeholder="Pincode"
               inputMode="numeric"
               value={form.pincode}
-              onChange={(e) => update("pincode", e.target.value)}
-              className="rounded-lg bg-blush px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 focus:ring-navy/20"
+              onChange={(e) => updatePincode(e.target.value)}
+              className={fieldClass}
+            />
+            <input
+              placeholder="City"
+              value={form.city}
+              onChange={(e) => update("city", e.target.value)}
+              className={fieldClass}
+            />
+            <select
+              value={form.state}
+              onChange={(e) => update("state", e.target.value)}
+              className={`sm:col-span-2 ${fieldClass} ${form.state ? "text-navy" : "text-navy/40"}`}
+            >
+              <option value="" disabled>
+                State
+              </option>
+              {INDIA_STATES.map((s) => (
+                <option key={s} value={s} className="text-navy">
+                  {s}
+                </option>
+              ))}
+            </select>
+            <textarea
+              placeholder="Delivery instructions (optional) — e.g. leave with security, call before delivery"
+              value={form.notes}
+              onChange={(e) => update("notes", e.target.value)}
+              rows={2}
+              className={`sm:col-span-2 resize-none ${fieldClass}`}
             />
           </div>
 

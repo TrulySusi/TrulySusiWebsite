@@ -20,12 +20,12 @@ export default function PaymentPage() {
       router.replace("/cart");
       return;
     }
-    if (!delivery.fullName) {
+    if (!delivery.firstName) {
       router.replace("/checkout/delivery");
     }
-  }, [mounted, items.length, delivery.fullName, router]);
+  }, [mounted, items.length, delivery.firstName, router]);
 
-  if (!mounted || items.length === 0 || !delivery.fullName) return null;
+  if (!mounted || items.length === 0 || !delivery.firstName) return null;
 
   const subtotal = cartSubtotal(items);
 
@@ -57,7 +57,9 @@ export default function PaymentPage() {
         <dl className="mt-6 space-y-2 border-y border-navy/10 py-5 text-left font-body text-sm">
           <div className="flex justify-between">
             <dt className="text-navy/60">Delivering to</dt>
-            <dd className="text-navy">{delivery.fullName}, {delivery.city}</dd>
+            <dd className="text-navy">
+              {delivery.firstName} {delivery.lastName}, {delivery.city}
+            </dd>
           </div>
           <div className="flex justify-between">
             <dt className="text-navy/60">Items</dt>

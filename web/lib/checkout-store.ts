@@ -3,20 +3,36 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+export type AddressLabel = "Home" | "Work" | "Other";
+
 export type DeliveryDetails = {
-  fullName: string;
+  firstName: string;
+  lastName: string;
   phone: string;
-  addressLine: string;
-  city: string;
+  alternatePhone: string;
+  label: AddressLabel;
+  line1: string;
+  line2: string;
+  landmark: string;
   pincode: string;
+  city: string;
+  state: string;
+  notes: string;
 };
 
 export const emptyDelivery: DeliveryDetails = {
-  fullName: "",
+  firstName: "",
+  lastName: "",
   phone: "",
-  addressLine: "",
-  city: "",
+  alternatePhone: "",
+  label: "Home",
+  line1: "",
+  line2: "",
+  landmark: "",
   pincode: "",
+  city: "",
+  state: "",
+  notes: "",
 };
 
 type CheckoutState = {

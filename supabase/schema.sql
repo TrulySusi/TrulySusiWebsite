@@ -77,13 +77,19 @@ create table customers (
 create table addresses (
   id uuid primary key default gen_random_uuid(),
   customer_id uuid references customers(id) on delete cascade,
-  full_name text not null,
+  full_name text not null,       -- convenience display name, derived from first_name + last_name
+  first_name text,
+  last_name text,
   phone text not null,
-  line1 text not null,
-  line2 text,
+  alternate_phone text,          -- see migrations/0004
+  label text not null default 'Home',  -- Home / Work / Other, see migrations/0004
+  line1 text not null,           -- house/flat/building no.
+  line2 text,                    -- street/area/locality
+  landmark text,                 -- see migrations/0004
   city text not null,
   state text not null,
   pincode text not null,
+  notes text,                    -- delivery instructions, see migrations/0004
   is_default boolean not null default false
 );
 
