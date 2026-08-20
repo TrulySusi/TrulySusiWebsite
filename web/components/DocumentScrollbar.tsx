@@ -7,25 +7,25 @@ import { OverlayScrollbars } from "overlayscrollbars";
 // pattern in globals.css — keep these in sync.
 const DASH_SPACING = 14.5;
 
-// Applies the auto-hide overlay scrollbar site-wide (mounted once here in
-// the root layout, so every route gets it) and layers a small Kuruvi icon
-// on top that hops from dash to dash as you scroll, instead of gliding
-// smoothly like a normal thumb. The real OverlayScrollbars handle stays
-// functional (drag, click-track, keyboard) but is made fully transparent
-// in globals.css — Kuruvi is the only thing you see move.
+// Applies the overlay scrollbar site-wide (mounted once here in the root
+// layout, so every route gets it) and layers a small Kuruvi icon on top
+// that hops from dash to dash as you scroll, instead of gliding smoothly
+// like a normal thumb. The real OverlayScrollbars handle stays functional
+// (drag, click-track, keyboard) but is made fully transparent in
+// globals.css — Kuruvi is the only thing you see move.
+//
+// Deliberately NOT auto-hiding: this is meant to be a persistent, visible
+// bit of brand delight, not a subtle utility scrollbar that hides itself.
 export function DocumentScrollbar() {
   const [top, setTop] = useState(0);
-  const [visible, setVisible] = useState(false);
   const [hopKey, setHopKey] = useState(0);
   const lastDash = useRef(-1);
-  const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const instance = OverlayScrollbars(document.body, {
       scrollbars: {
         theme: "os-theme-light os-theme-truly-susi",
-        autoHide: "leave",
-        autoHideDelay: 400,
+        autoHide: "never",
       },
     });
 
@@ -40,10 +40,6 @@ export function DocumentScrollbar() {
         setHopKey((k) => k + 1);
       }
       setTop(dashIndex * DASH_SPACING);
-
-      setVisible(true);
-      if (hideTimer.current) clearTimeout(hideTimer.current);
-      hideTimer.current = setTimeout(() => setVisible(false), 400);
     }
 
     updatePosition();
@@ -54,16 +50,13 @@ export function DocumentScrollbar() {
       instance.destroy();
       window.removeEventListener("scroll", updatePosition);
       window.removeEventListener("resize", updatePosition);
-      if (hideTimer.current) clearTimeout(hideTimer.current);
     };
   }, []);
 
   return (
     <div
       aria-hidden="true"
-      className={`pointer-events-none fixed right-0 top-0 z-60 h-4 w-3.5 transition-[top,opacity] duration-200 ${
-        visible ? "opacity-100" : "opacity-0"
-      }`}
+      className="pointer-events-none fixed right-0 top-0 z-60 h-4 w-3.5 transition-[top] duration-200"
       style={{ top, transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)" }}
     >
       {/* Remounting on hopKey change re-triggers the CSS hop animation */}
