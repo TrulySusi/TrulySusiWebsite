@@ -20,16 +20,34 @@ body {
   color: var(--color-navy);
 }
 
-/* Auto-hide overlay scrollbar (OverlayScrollbars) recolored to the brand
-   palette — navy thumb at rest, brass on hover/drag. Extends the library's
-   built-in light theme rather than rebuilding the box model from scratch. */
+/* Auto-hide overlay scrollbar (OverlayScrollbars) restyled as a "pin
+   trail" — a dotted track with a round pin handle — in brand colors.
+   Extends the library's built-in light theme rather than rebuilding the
+   box model from scratch. */
 .os-theme-light.os-theme-truly-susi {
-  --os-size: 10px;
-  --os-padding-perpendicular: 2px;
-  --os-padding-axis: 2px;
+  --os-size: 14px;
+  --os-padding-perpendicular: 3px;
+  --os-padding-axis: 4px;
   --os-track-border-radius: 10px;
-  --os-handle-border-radius: 10px;
-  --os-handle-bg: rgba(28, 43, 74, 0.35);
-  --os-handle-bg-hover: rgba(201, 138, 47, 0.6);
-  --os-handle-bg-active: rgba(201, 138, 47, 0.8);
+  --os-handle-border-radius: 50%;
+  --os-handle-bg: var(--color-navy);
+  --os-handle-bg-hover: var(--color-brass);
+  --os-handle-bg-active: var(--color-brass);
+  --os-handle-min-size: 14px;
+  --os-handle-max-size: 14px;
+  --os-handle-perpendicular-size: 100%;
+}
+
+.os-theme-light.os-theme-truly-susi.os-scrollbar-vertical .os-scrollbar-track {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 13px,
+    rgba(28, 43, 74, 0.35) 13px,
+    rgba(28, 43, 74, 0.35) 14.5px
+  );
+}
+
+.os-theme-light.os-theme-truly-susi .os-scrollbar-handle {
+  box-shadow: 0 0 0 3px var(--color-cream);
 }

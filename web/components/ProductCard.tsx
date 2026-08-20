@@ -51,7 +51,7 @@ export function ProductCard({ product }: { product: ProductSummary }) {
           </span>
         )}
         <h3 className="mt-2 font-display text-2xl text-navy">{product.name}</h3>
-        {tamil && <p className="font-body text-sm text-navy/45">{tamil}</p>}
+        {tamil && <p className="font-body text-xs text-sage">{tamil}</p>}
         {product.short_description && (
           <p className="mt-1.5 line-clamp-2 font-body text-sm leading-relaxed text-navy/60">
             {product.short_description}
