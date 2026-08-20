@@ -171,25 +171,33 @@ async function main() {
   });
   console.log("mysore pak ready:", mysorePakId);
 
-  // ---- Badam Halwa — placeholder, still waiting on real pricing/label data ----
+  // ---- Badam Halwa — full pricing confirmed 2026-08-20 (₹1,400/kg, MRP
+  // rounded up to the nearest ₹5) ----
   const badamHalwaId = await upsertProduct(categoryId, {
     slug: "badam-halwa",
     name: "Badam Halwa",
     short_description:
       "Slow-cooked almond halwa, silky and fragrant with saffron and cardamom. A labour of love that takes hours — so you can savour it in seconds.",
-    description: null,
-    ingredients: null,
-    status: "draft",
+    description: BRAND_STORY,
+    ingredients: "Almonds, Ghee, Sugar, Cardamom, Saffron",
+    allergen_info: "Contains dairy (ghee) and tree nuts (almonds).",
+    status: "active",
     is_featured: false,
     sort_order: 2,
   });
+  await upsertVariants(badamHalwaId, [
+    { label: "100g box", weight_grams: 100, sku: "TS-BDMHLW-100", price_inr: 150.0, stock_qty: 15, is_default: false, is_active: true },
+    { label: "200g box", weight_grams: 200, sku: "TS-BDMHLW-200", price_inr: 295.0, stock_qty: 15, is_default: false, is_active: true },
+    { label: "250g box", weight_grams: 250, sku: "TS-BDMHLW-250", price_inr: 370.0, stock_qty: 15, is_default: true, is_active: true },
+    { label: "500g box", weight_grams: 500, sku: "TS-BDMHLW-500", price_inr: 735.0, stock_qty: 15, is_default: false, is_active: true },
+  ]);
   await upsertProductImage(badamHalwaId, {
     localPath: "../public/brand/badam_halwa_image.png",
     storagePath: "badam-halwa/badam_halwa_hero.png",
     altText: "Badam Halwa in a brass kadai with almonds and a Truly Susi ghee jar",
     sortOrder: 0,
   });
-  console.log("badam halwa ready (draft — image only, no pricing yet):", badamHalwaId);
+  console.log("badam halwa ready (active):", badamHalwaId);
 
   // ---- Thenkulal — placeholder, details to follow ----
   const thenkulalId = await upsertProduct(categoryId, {
