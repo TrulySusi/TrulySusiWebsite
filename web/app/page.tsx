@@ -91,20 +91,31 @@ export default async function Home() {
       </section>
 
       {/* Our Story */}
-      <section id="our-story" className="mx-auto max-w-2xl px-6 py-20 text-center sm:px-10">
-        <span className="font-body text-xs font-semibold uppercase tracking-[0.28em] text-brass">
-          Our Story
-        </span>
-        <h2 className="mt-4 font-display text-5xl italic text-navy sm:text-6xl">
-          Truly Susi&rsquo;s begins with Susi.
-        </h2>
-        <p className="mx-auto mt-5 max-w-md font-body text-[15px] leading-relaxed text-navy/70">
-          Born from a mother&rsquo;s lifelong love for feeding people well,
-          Truly Susi&rsquo;s turns family recipes into deeply comforting,
-          homemade food meant to be shared beyond the home.
-        </p>
-        <div className="mx-auto mt-9 max-w-md border-t border-navy/10 pt-7 font-display text-2xl italic leading-snug text-navy">
-          &ldquo;Some sweets you eat. This one, you remember.&rdquo;
+      <section id="our-story" className="mx-auto max-w-5xl px-6 py-20 sm:px-10">
+        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[420px_1fr]">
+          <Image
+            src="/brand/susi_photo.jpg"
+            alt="Susi with her family"
+            width={700}
+            height={613}
+            className="mx-auto w-full max-w-sm rounded-2xl shadow-[0_1px_2px_rgba(4,28,53,.06),0_16px_36px_-16px_rgba(4,28,53,.28)] lg:max-w-none"
+          />
+          <div className="text-center lg:text-left">
+            <span className="font-body text-xs font-semibold uppercase tracking-[0.28em] text-brass">
+              Our Story
+            </span>
+            <h2 className="mt-4 font-display text-5xl italic text-navy sm:text-6xl">
+              Truly Susi&rsquo;s begins with Susi.
+            </h2>
+            <p className="mx-auto mt-5 max-w-md font-body text-[15px] leading-relaxed text-navy/70 lg:mx-0">
+              Born from a mother&rsquo;s lifelong love for feeding people well,
+              Truly Susi&rsquo;s turns family recipes into deeply comforting,
+              homemade food meant to be shared beyond the home.
+            </p>
+            <div className="mx-auto mt-9 max-w-md border-t border-navy/10 pt-7 font-display text-2xl italic leading-snug text-navy lg:mx-0">
+              &ldquo;Some sweets you eat. This one, you remember.&rdquo;
+            </div>
+          </div>
         </div>
       </section>
 
