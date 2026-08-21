@@ -164,6 +164,17 @@ create table contact_messages (
   created_at timestamptz not null default now()
 );
 
+-- see migrations/0005: open submission, moderated before showing publicly.
+-- Not tied to a verified order yet — approve manually in Supabase Studio.
+create table reviews (
+  id uuid primary key default gen_random_uuid(),
+  customer_name text not null,
+  rating smallint not null check (rating between 1 and 5),
+  review_text text not null,
+  approved boolean not null default false,
+  created_at timestamptz not null default now()
+);
+
 -- ---------- indexes ----------
 create index on product_variants (product_id);
 create index on product_images (product_id);
@@ -187,6 +198,7 @@ alter table payments enable row level security;
 alter table admin_users enable row level security;
 alter table site_settings enable row level security;
 alter table contact_messages enable row level security;
+alter table reviews enable row level security;
 
 -- Public, read-only catalog access (anon + authenticated)
 create policy "categories are publicly readable" on categories
@@ -215,6 +227,15 @@ create policy "customers manage their own row" on customers
 
 create policy "customers manage their own addresses" on addresses
   for all using (auth.uid() = customer_id) with check (auth.uid() = customer_id);
+
+-- Reviews: anyone can submit one, but only as unapproved (can't self-publish);
+-- only approved reviews are readable publicly. Approving/rejecting is done
+-- directly in Supabase Studio (service role bypasses RLS), not from the app.
+create policy "anyone can submit a review" on reviews
+  for insert with check (approved = false);
+
+create policy "approved reviews are publicly readable" on reviews
+  for select using (approved = true);
 
 -- orders/order_items/payments/admin_users/site_settings/contact_messages:
 -- no public policies at all — every read/write goes through server-side

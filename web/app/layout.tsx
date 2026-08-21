@@ -3,6 +3,7 @@ import { Cormorant_Garamond, Inter } from "next/font/google";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { DocumentScrollbar } from "@/components/DocumentScrollbar";
+import { ReviewsWidget } from "@/components/ReviewsWidget";
 import "overlayscrollbars/overlayscrollbars.css";
 import "./globals.css";
 
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <SiteHeader />
         <div className="flex-1">{children}</div>
         <SiteFooter />
+        <ReviewsWidget />
       </body>
     </html>
   );
