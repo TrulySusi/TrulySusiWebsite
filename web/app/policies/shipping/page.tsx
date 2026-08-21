@@ -25,7 +25,7 @@ export default function ShippingPage() {
           </ul>
           <p className="mt-3 text-navy/50 text-sm">
             These figures are indicative and may be revised as we finalise our courier
-            arrangements &mdash; the checkout page is the source of truth for what you&rsquo;ll
+            arrangements, the checkout page is the source of truth for what you&rsquo;ll
             actually be charged.
           </p>
         </section>
@@ -33,7 +33,7 @@ export default function ShippingPage() {
         <section>
           <h2 className="font-display text-2xl text-navy">Order processing</h2>
           <p className="mt-3">
-            Nothing sits on a shelf waiting for an order &mdash; each box is packed fresh once you
+            Nothing sits on a shelf waiting for an order - each box is packed fresh once you
             place it. Orders are typically dispatched within 1&ndash;2 business days of
             confirmation.
           </p>
@@ -45,7 +45,7 @@ export default function ShippingPage() {
             Once dispatched, delivery typically takes 3&ndash;7 business days depending on your
             location, via our courier partner. Deliveries within Tamil Nadu are generally faster
             than the rest of India. Delays can occasionally happen due to courier disruptions,
-            festive-season volume, or weather &mdash; we&rsquo;ll keep you updated if that
+            festive-season volume, or weather, we&rsquo;ll keep you updated if that
             happens.
           </p>
         </section>
@@ -66,7 +66,7 @@ export default function ShippingPage() {
             <a href="mailto:feedback@trulysusi.in" className="text-brass hover:text-navy">
               feedback@trulysusi.in
             </a>{" "}
-            as soon as possible &mdash; we can usually correct it before your order is
+            as soon as possible , we can usually correct it before your order is
             dispatched, but not after.
           </p>
         </section>

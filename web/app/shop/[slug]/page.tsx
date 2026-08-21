@@ -118,7 +118,7 @@ export default async function ProductPage({ params }: Props) {
               {NUTRITION_ROWS.map(([key, label, unit]) => (
                 <tr key={key} className="border-b border-navy/10">
                   <td className="py-2 text-navy/70">{label}</td>
-                  <td className="py-2 text-right tabular-nums text-navy">
+                  <td className="py-2 text-right font-bold tabular-nums text-navy">
                     {product.nutrition_per_100g![key as keyof typeof product.nutrition_per_100g]}
                     {unit}
                   </td>

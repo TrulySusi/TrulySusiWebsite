@@ -65,7 +65,7 @@ export default function PaymentPage() {
             <dt className="text-navy/60">Items</dt>
             <dd className="text-navy">{items.length}</dd>
           </div>
-          <div className="flex justify-between font-semibold">
+          <div className="flex justify-between font-bold">
             <dt className="text-navy">Subtotal</dt>
             <dd className="text-navy">&#8377;{subtotal.toFixed(0)}</dd>
           </div>

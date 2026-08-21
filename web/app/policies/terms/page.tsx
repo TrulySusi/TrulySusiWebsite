@@ -36,7 +36,7 @@ export default function TermsPage() {
             All prices on the Site are listed in Indian Rupees (₹). Prices, product availability,
             and product descriptions are subject to change without notice. Since our sweets are
             handmade in small batches, the exact appearance of a product may vary slightly from
-            its photograph on the Site &mdash; this is a natural part of anything made by hand,
+            its photograph on the Site this is a natural part of anything made by hand,
             not a defect.
           </p>
         </section>
@@ -45,8 +45,8 @@ export default function TermsPage() {
           <h2 className="font-display text-2xl text-navy">3. Orders &amp; Payment</h2>
           <p className="mt-3">
             An order is confirmed once payment has been accepted. We reserve the right to refuse,
-            limit, or cancel any order &mdash; for example, if a product is out of stock, if we
-            suspect fraud, or if there has been a pricing error &mdash; and will notify you and
+            limit, or cancel any order , for example, if a product is out of stock, if we
+            suspect fraud, or if there has been a pricing error - and will notify you and
             issue a full refund if this happens.
           </p>
         </section>

@@ -89,7 +89,7 @@ export default function CartPage() {
                 </button>
               </div>
 
-              <span className="w-20 text-right font-display text-lg italic text-brass">
+              <span className="w-20 text-right font-body text-lg font-bold text-navy">
                 &#8377;{(item.priceInr * item.quantity).toFixed(0)}
               </span>
 
@@ -114,7 +114,7 @@ export default function CartPage() {
           <h2 className="font-display text-xl text-navy">Order summary</h2>
           <div className="mt-5 flex items-center justify-between font-body text-sm">
             <span className="text-navy/70">Subtotal</span>
-            <span className="tabular-nums text-navy">&#8377;{subtotal.toFixed(0)}</span>
+            <span className="font-bold tabular-nums text-navy">&#8377;{subtotal.toFixed(0)}</span>
           </div>
           <div className="mt-2.5 flex items-center justify-between font-body text-sm">
             <span className="text-navy/70">Delivery</span>
