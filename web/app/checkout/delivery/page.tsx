@@ -17,6 +17,38 @@ const ADDRESS_LABELS: AddressLabel[] = ["Home", "Work", "Other"];
 const fieldClass =
   "rounded-lg border border-navy/15 bg-cream px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 focus:ring-navy/20";
 
+type SavedAddress = DeliveryDetails & { id: string };
+
+function rowToDeliveryDetails(row: {
+  first_name: string | null;
+  last_name: string | null;
+  phone: string | null;
+  alternate_phone: string | null;
+  label: string | null;
+  line1: string | null;
+  line2: string | null;
+  landmark: string | null;
+  pincode: string | null;
+  city: string | null;
+  state: string | null;
+  notes: string | null;
+}): DeliveryDetails {
+  return {
+    firstName: row.first_name ?? "",
+    lastName: row.last_name ?? "",
+    phone: row.phone ?? "",
+    alternatePhone: row.alternate_phone ?? "",
+    label: (row.label as AddressLabel) ?? "Home",
+    line1: row.line1 ?? "",
+    line2: row.line2 ?? "",
+    landmark: row.landmark ?? "",
+    pincode: row.pincode ?? "",
+    city: row.city ?? "",
+    state: row.state ?? "",
+    notes: row.notes ?? "",
+  };
+}
+
 export default function DeliveryDetailsPage() {
   const router = useRouter();
   const items = useCartStore((s) => s.items);
@@ -30,6 +62,8 @@ export default function DeliveryDetailsPage() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [loadedSaved, setLoadedSaved] = useState(false);
+  const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!mounted) return;
@@ -41,51 +75,56 @@ export default function DeliveryDetailsPage() {
   }, [mounted, items.length, router, delivery]);
 
   // If they're logged in and haven't already started filling this in this
-  // session, load their saved default address instead of an empty form.
+  // session, load every saved address (for the picker) and prefill the
+  // form with whichever one is currently the default.
   useEffect(() => {
     if (!mounted || delivery.firstName) return;
 
-    async function loadSavedAddress() {
+    async function loadSavedAddresses() {
       const supabase = createClient();
       const {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: saved } = await supabase
+      const { data: rows } = await supabase
         .from("addresses")
         .select("*")
         .eq("customer_id", user.id)
-        .eq("is_default", true)
-        .maybeSingle();
-      if (!saved) return;
+        .order("is_default", { ascending: false })
+        .order("created_at", { ascending: false });
+      if (!rows || rows.length === 0) return;
 
-      const loaded: DeliveryDetails = {
-        firstName: saved.first_name ?? "",
-        lastName: saved.last_name ?? "",
-        phone: saved.phone ?? "",
-        alternatePhone: saved.alternate_phone ?? "",
-        label: (saved.label as AddressLabel) ?? "Home",
-        line1: saved.line1 ?? "",
-        line2: saved.line2 ?? "",
-        landmark: saved.landmark ?? "",
-        pincode: saved.pincode ?? "",
-        city: saved.city ?? "",
-        state: saved.state ?? "",
-        notes: saved.notes ?? "",
-      };
-      setForm(loaded);
-      setDelivery(loaded);
+      const all: SavedAddress[] = rows.map((row) => ({
+        id: row.id,
+        ...rowToDeliveryDetails(row),
+      }));
+      setSavedAddresses(all);
+
+      const defaultAddress = all[0];
+      setForm(defaultAddress);
+      setDelivery(defaultAddress);
+      setSelectedAddressId(defaultAddress.id);
       setLoadedSaved(true);
     }
 
-    loadSavedAddress();
+    loadSavedAddresses();
     // Only ever run once on mount — deliberately not re-running this when
     // `delivery` changes, since that would fight the user's own edits.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mounted]);
 
   if (!mounted || items.length === 0) return null;
+
+  function selectSavedAddress(addr: SavedAddress) {
+    setForm(addr);
+    setSelectedAddressId(addr.id);
+  }
+
+  function selectNewAddress() {
+    setForm(emptyDelivery);
+    setSelectedAddressId(null);
+  }
 
   function update<K extends keyof DeliveryDetails>(field: K, value: DeliveryDetails[K]) {
     setForm((f) => ({ ...f, [field]: value }));
@@ -134,12 +173,13 @@ export default function DeliveryDetailsPage() {
     } = await supabase.auth.getUser();
 
     if (user) {
-      const { data: existing } = await supabase
+      // Only one address may be `is_default` at a time, and the schema has
+      // no constraint enforcing that — so clear every existing default
+      // before writing this one back as the new default.
+      await supabase
         .from("addresses")
-        .select("id")
-        .eq("customer_id", user.id)
-        .eq("is_default", true)
-        .maybeSingle();
+        .update({ is_default: false })
+        .eq("customer_id", user.id);
 
       const row = {
         customer_id: user.id,
@@ -159,8 +199,8 @@ export default function DeliveryDetailsPage() {
         is_default: true,
       };
 
-      if (existing) {
-        await supabase.from("addresses").update(row).eq("id", existing.id);
+      if (selectedAddressId) {
+        await supabase.from("addresses").update(row).eq("id", selectedAddressId);
       } else {
         await supabase.from("addresses").insert(row);
       }
@@ -203,6 +243,43 @@ export default function DeliveryDetailsPage() {
             <p className="mt-2 font-body text-xs text-sage">
               Loaded your saved address — edit anything that&rsquo;s changed.
             </p>
+          )}
+
+          {savedAddresses.length > 0 && (
+            <div className="mt-5 flex flex-wrap gap-2">
+              {savedAddresses.map((addr) => (
+                <button
+                  key={addr.id}
+                  type="button"
+                  onClick={() => selectSavedAddress(addr)}
+                  aria-pressed={selectedAddressId === addr.id}
+                  className={`rounded-xl border px-3.5 py-2 text-left font-body text-xs transition-colors ${
+                    selectedAddressId === addr.id
+                      ? "border-navy bg-navy text-cream"
+                      : "border-navy/15 bg-cream text-navy hover:border-navy/30"
+                  }`}
+                >
+                  <span className="block font-semibold">{addr.label}</span>
+                  <span
+                    className={`block ${selectedAddressId === addr.id ? "text-cream/70" : "text-navy/60"}`}
+                  >
+                    {addr.line1}, {addr.city}
+                  </span>
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={selectNewAddress}
+                aria-pressed={selectedAddressId === null}
+                className={`rounded-xl border px-3.5 py-2 font-body text-xs font-semibold transition-colors ${
+                  selectedAddressId === null
+                    ? "border-navy bg-navy text-cream"
+                    : "border-dashed border-navy/25 text-navy hover:border-navy/40"
+                }`}
+              >
+                + Add new address
+              </button>
+            </div>
           )}
 
           <div className="mt-6 flex flex-wrap gap-2">
