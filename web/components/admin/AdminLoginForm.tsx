@@ -79,7 +79,7 @@ export function AdminLoginForm() {
   }
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center bg-navy px-6 py-16">
+    <main className="relative flex min-h-screen items-center justify-center bg-navy px-6 py-16 lg:justify-end lg:pr-24 xl:pr-32">
       <Image
         src="/brand/admin_bg.png"
         alt=""
