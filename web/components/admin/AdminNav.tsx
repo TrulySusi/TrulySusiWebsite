@@ -21,7 +21,6 @@ const NAV_LINKS = [
   {
     href: "/admin/orders",
     label: "Orders",
-    soon: true,
     icon: (
       <path
         d="M5 3h10v14l-2.5-1.5L10 17l-2.5-1.5L5 17V3Z M7.5 7h5 M7.5 10h5"
@@ -131,29 +130,8 @@ export function AdminNav({ name, role }: { name: string; role: string }) {
                 {link.icon}
               </svg>
               {!collapsed && <span className="flex-1">{link.label}</span>}
-              {!collapsed && link.soon && (
-                <span className="rounded-full bg-navy/6 px-2 py-0.5 font-body text-[10px] uppercase tracking-wide">
-                  Soon
-                </span>
-              )}
             </>
           );
-
-          if (link.soon) {
-            return (
-              <span
-                key={link.href}
-                title={
-                  collapsed
-                    ? `${link.label} — coming soon`
-                    : "Waiting on online payment (Razorpay) to go live"
-                }
-                className={`flex cursor-not-allowed items-center gap-2.5 rounded-lg px-3 py-2 font-body text-sm font-medium text-navy/30 ${collapsed ? "justify-center" : ""}`}
-              >
-                {content}
-              </span>
-            );
-          }
 
           return (
             <Link
