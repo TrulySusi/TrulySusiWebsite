@@ -226,3 +226,22 @@ export async function deleteProductImage(productId: string, imageId: string, sto
 
   revalidatePath(`/admin/products/${productId}`);
 }
+
+// Takes the full desired image order and rewrites sort_order 0..n for all
+// of them in one go — simpler and more robust than incremental swaps.
+export async function reorderProductImages(productId: string, orderedImageIds: string[]) {
+  await requireAdmin();
+  const supabase = createAdminClient();
+
+  const { error } = await Promise.all(
+    orderedImageIds.map((id, index) =>
+      supabase.from("product_images").update({ sort_order: index }).eq("id", id),
+    ),
+  ).then((results) => {
+    const failed = results.find((r) => r.error);
+    return { error: failed?.error ?? null };
+  });
+  if (error) throw error;
+
+  revalidatePath(`/admin/products/${productId}`);
+}
