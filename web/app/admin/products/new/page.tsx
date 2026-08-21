@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AdminNewProductForm } from "@/components/admin/AdminNewProductForm";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
@@ -11,12 +12,18 @@ export default async function NewProductPage() {
       <AdminPageHeader
         title="New product"
         subtitle="Starts as a draft. You'll add variants and images on the next screen."
-        backHref="/admin/products"
-        backLabel="Back to products"
       />
-      <div className="p-8">
-        <div className="mx-auto max-w-lg">
-          <AdminNewProductForm categories={categories ?? []} />
+      <div className="p-5 sm:p-8">
+        <div className="mx-auto max-w-6xl">
+          <Link
+            href="/admin/products"
+            className="mb-6 inline-block font-body text-sm font-semibold text-navy/60 hover:text-navy"
+          >
+            ← Back to products
+          </Link>
+          <div className="max-w-lg">
+            <AdminNewProductForm categories={categories ?? []} />
+          </div>
         </div>
       </div>
     </div>
