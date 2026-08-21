@@ -1,11 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { updateProduct, NUTRITION_FIELDS } from "@/app/admin/products/actions";
 import type { NutritionPer100g } from "@/lib/catalog-shared";
 
 const fieldClass =
   "w-full rounded-lg border border-navy/15 bg-white px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 focus:ring-navy/20";
+
+function Field({
+  label,
+  hint,
+  className,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <label className={`flex flex-col gap-1 ${className ?? ""}`}>
+      <span className="font-body text-xs font-medium text-navy/60">{label}</span>
+      {children}
+      {hint && <span className="font-body text-[11px] text-navy/40">{hint}</span>}
+    </label>
+  );
+}
 
 const NUTRITION_LABELS: Record<(typeof NUTRITION_FIELDS)[number], string> = {
   energy_kcal: "Energy (kcal)",
@@ -69,70 +89,84 @@ export function AdminProductForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col gap-3 rounded-2xl border border-navy/10 bg-white p-6"
+      className="flex flex-col gap-4 rounded-2xl border border-navy/10 bg-white p-6"
     >
       <h2 className="font-display text-xl text-navy">Basic info</h2>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <input name="name" defaultValue={product.name} placeholder="Product name" required className={fieldClass} />
-        <input name="slug" defaultValue={product.slug} placeholder="URL slug" className={fieldClass} />
-        <select name="category_id" defaultValue={product.category_id ?? ""} className={fieldClass}>
-          <option value="">No category</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
-        <select name="status" defaultValue={product.status} className={fieldClass}>
-          <option value="draft">Draft</option>
-          <option value="active">Active</option>
-          <option value="archived">Archived</option>
-        </select>
-        <input
-          name="shelf_life_days"
-          type="number"
-          defaultValue={product.shelf_life_days ?? ""}
-          placeholder="Shelf life (days)"
-          className={fieldClass}
-        />
-        <input
-          name="serving_size_g"
-          type="number"
-          defaultValue={product.serving_size_g ?? ""}
-          placeholder="Weight of one piece (g)"
-          className={fieldClass}
-        />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Field label="Product name">
+          <input name="name" defaultValue={product.name} required className={fieldClass} />
+        </Field>
+        <Field label="URL slug" hint="Used in the product's web address: /shop/your-slug">
+          <input name="slug" defaultValue={product.slug} className={fieldClass} />
+        </Field>
+        <Field label="Category">
+          <select name="category_id" defaultValue={product.category_id ?? ""} className={fieldClass}>
+            <option value="">No category</option>
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Status" hint="Only Active products show on the live site">
+          <select name="status" defaultValue={product.status} className={fieldClass}>
+            <option value="draft">Draft</option>
+            <option value="active">Active</option>
+            <option value="archived">Archived</option>
+          </select>
+        </Field>
+        <Field label="Shelf life (days)">
+          <input
+            name="shelf_life_days"
+            type="number"
+            defaultValue={product.shelf_life_days ?? ""}
+            className={fieldClass}
+          />
+        </Field>
+        <Field label="Weight of one piece (g)" hint="Used to show '≈ N pieces' per pack size">
+          <input
+            name="serving_size_g"
+            type="number"
+            defaultValue={product.serving_size_g ?? ""}
+            className={fieldClass}
+          />
+        </Field>
       </div>
 
-      <textarea
-        name="short_description"
-        defaultValue={product.short_description ?? ""}
-        placeholder="Short description (shown on product cards)"
-        rows={2}
-        className={`resize-none ${fieldClass}`}
-      />
-      <textarea
-        name="description"
-        defaultValue={product.description ?? ""}
-        placeholder="Full description"
-        rows={4}
-        className={`resize-none ${fieldClass}`}
-      />
-      <textarea
-        name="ingredients"
-        defaultValue={product.ingredients ?? ""}
-        placeholder="Ingredients"
-        rows={2}
-        className={`resize-none ${fieldClass}`}
-      />
-      <textarea
-        name="allergen_info"
-        defaultValue={product.allergen_info ?? ""}
-        placeholder="Allergen info"
-        rows={2}
-        className={`resize-none ${fieldClass}`}
-      />
+      <Field label="Short description" hint="Shown on product cards across the site">
+        <textarea
+          name="short_description"
+          defaultValue={product.short_description ?? ""}
+          rows={2}
+          className={`resize-none ${fieldClass}`}
+        />
+      </Field>
+      <Field label="Full description" hint="Shown on the product's own page">
+        <textarea
+          name="description"
+          defaultValue={product.description ?? ""}
+          rows={4}
+          className={`resize-none ${fieldClass}`}
+        />
+      </Field>
+      <Field label="Ingredients">
+        <textarea
+          name="ingredients"
+          defaultValue={product.ingredients ?? ""}
+          rows={2}
+          className={`resize-none ${fieldClass}`}
+        />
+      </Field>
+      <Field label="Allergen info">
+        <textarea
+          name="allergen_info"
+          defaultValue={product.allergen_info ?? ""}
+          rows={2}
+          className={`resize-none ${fieldClass}`}
+        />
+      </Field>
 
       <label className="flex items-center gap-2.5 font-body text-sm text-navy/70">
         <input
@@ -155,8 +189,7 @@ export function AdminProductForm({
       {showNutrition && (
         <div className="grid grid-cols-1 gap-3 rounded-lg bg-cream p-4 sm:grid-cols-3">
           {NUTRITION_FIELDS.map((key) => (
-            <label key={key} className="flex flex-col gap-1">
-              <span className="font-body text-xs text-navy/60">{NUTRITION_LABELS[key]}</span>
+            <Field key={key} label={NUTRITION_LABELS[key]}>
               <input
                 type="number"
                 step="0.1"
@@ -164,7 +197,7 @@ export function AdminProductForm({
                 defaultValue={product.nutrition_per_100g?.[key] ?? ""}
                 className={fieldClass}
               />
-            </label>
+            </Field>
           ))}
         </div>
       )}

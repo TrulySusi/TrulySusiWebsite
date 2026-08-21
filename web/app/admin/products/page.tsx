@@ -52,9 +52,9 @@ export default async function AdminProductsPage({
             <AdminProductsFilters />
           </Suspense>
 
-          <div className="flex flex-col gap-2">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {products.length === 0 && (
-              <p className="font-body text-sm text-navy/50">No products match.</p>
+              <p className="col-span-full font-body text-sm text-navy/50">No products match.</p>
             )}
             {products.map((p) => {
               const variants = (p.product_variants ?? []) as {
@@ -75,41 +75,42 @@ export default async function AdminProductsPage({
                 <Link
                   key={p.id}
                   href={`/admin/products/${p.id}`}
-                  className="flex items-center justify-between gap-4 rounded-xl border border-navy/10 bg-white px-5 py-4 transition-colors hover:border-navy/25"
+                  className="group flex flex-col overflow-hidden rounded-xl border border-navy/10 bg-white transition-colors hover:border-navy/25"
                 >
-                  <div className="flex min-w-0 items-center gap-4">
-                    <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-navy/4">
-                      {cover ? (
-                        <Image
-                          src={productImageUrl(cover.storage_path)}
-                          alt=""
-                          fill
-                          sizes="48px"
-                          className="object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center font-body text-[9px] uppercase text-navy/30">
-                          No photo
-                        </div>
-                      )}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="font-body text-sm font-semibold text-navy">{p.name}</p>
-                      <p className="font-body text-xs text-navy/50">
-                        {categoryName ?? "Uncategorized"} &middot; {variants.length} variant
-                        {variants.length === 1 ? "" : "s"} &middot; stock {totalStock}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-3">
-                    {price !== null && (
-                      <span className="font-body text-sm font-bold text-navy">from ₹{price}</span>
+                  <div className="relative aspect-square bg-navy/4">
+                    {cover ? (
+                      <Image
+                        src={productImageUrl(cover.storage_path)}
+                        alt=""
+                        fill
+                        sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
+                        className="object-cover transition-transform group-hover:scale-[1.03]"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center font-body text-xs uppercase text-navy/30">
+                        No photo
+                      </div>
                     )}
                     <span
-                      className={`rounded-full px-2.5 py-1 font-body text-[11px] font-semibold uppercase tracking-wide ${STATUS_STYLES[p.status] ?? "bg-navy/10 text-navy/60"}`}
+                      className={`absolute right-2 top-2 rounded-full px-2 py-0.5 font-body text-[10px] font-semibold uppercase tracking-wide ${STATUS_STYLES[p.status] ?? "bg-navy/10 text-navy/60"}`}
                     >
                       {p.status}
                     </span>
+                  </div>
+                  <div className="flex flex-1 flex-col p-4">
+                    <p className="font-body text-sm font-semibold text-navy">{p.name}</p>
+                    <p className="mt-0.5 font-body text-xs text-navy/50">
+                      {categoryName ?? "Uncategorized"} &middot; {variants.length} variant
+                      {variants.length === 1 ? "" : "s"}
+                    </p>
+                    <div className="mt-auto flex items-center justify-between pt-3">
+                      {price !== null ? (
+                        <span className="font-body text-sm font-bold text-navy">from ₹{price}</span>
+                      ) : (
+                        <span className="font-body text-xs text-navy/40">No price set</span>
+                      )}
+                      <span className="font-body text-xs text-navy/50">stock {totalStock}</span>
+                    </div>
                   </div>
                 </Link>
               );

@@ -177,26 +177,34 @@ export function AdminImagesEditor({
           Maximum of {MAX_IMAGES} images reached — delete one to add another.
         </p>
       ) : (
-        <div className="mt-4 flex flex-wrap items-end gap-2 rounded-lg bg-cream p-3">
-          <input ref={fileRef} type="file" accept="image/*" className="font-body text-xs" />
-          <select
-            value={variantId}
-            onChange={(e) => setVariantId(e.target.value)}
-            className="rounded-lg border border-navy/15 bg-white px-2.5 py-2 font-body text-xs text-navy"
-          >
-            <option value="">General (all variants)</option>
-            {variants.map((v) => (
-              <option key={v.id} value={v.id}>
-                {v.label}
-              </option>
-            ))}
-          </select>
-          <input
-            value={altText}
-            onChange={(e) => setAltText(e.target.value)}
-            placeholder="Alt text (optional)"
-            className="rounded-lg border border-navy/15 bg-white px-2.5 py-2 font-body text-xs text-navy placeholder:text-navy/40"
-          />
+        <div className="mt-4 flex flex-wrap items-end gap-3 rounded-lg bg-cream p-3">
+          <label className="flex flex-col gap-1">
+            <span className="font-body text-[11px] font-medium text-navy/55">Photo file</span>
+            <input ref={fileRef} type="file" accept="image/*" className="font-body text-xs" />
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="font-body text-[11px] font-medium text-navy/55">Which pack size</span>
+            <select
+              value={variantId}
+              onChange={(e) => setVariantId(e.target.value)}
+              className="rounded-lg border border-navy/15 bg-white px-2.5 py-2 font-body text-xs text-navy"
+            >
+              <option value="">General (all variants)</option>
+              {variants.map((v) => (
+                <option key={v.id} value={v.id}>
+                  {v.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="font-body text-[11px] font-medium text-navy/55">Alt text (optional)</span>
+            <input
+              value={altText}
+              onChange={(e) => setAltText(e.target.value)}
+              className="rounded-lg border border-navy/15 bg-white px-2.5 py-2 font-body text-xs text-navy placeholder:text-navy/40"
+            />
+          </label>
           <button
             type="button"
             onClick={handleUpload}
