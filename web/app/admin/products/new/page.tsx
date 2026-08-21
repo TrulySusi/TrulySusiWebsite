@@ -11,6 +11,8 @@ export default async function NewProductPage() {
       <AdminPageHeader
         title="New product"
         subtitle="Starts as a draft. You'll add variants and images on the next screen."
+        backHref="/admin/products"
+        backLabel="Back to products"
       />
       <div className="p-8">
         <div className="mx-auto max-w-lg">

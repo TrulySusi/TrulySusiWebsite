@@ -1,10 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { createVariant, updateVariant, deleteVariant } from "@/app/admin/products/actions";
 
 const fieldClass =
   "w-full rounded-lg border border-navy/15 bg-white px-2.5 py-2 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 focus:ring-navy/20";
+
+function Field({ label, hint, className, children }: { label: string; hint?: string; className?: string; children: ReactNode }) {
+  return (
+    <label className={`flex flex-col gap-1 ${className ?? ""}`}>
+      <span className="font-body text-[11px] font-medium text-navy/55">{label}</span>
+      {children}
+      {hint && <span className="font-body text-[10px] text-navy/40">{hint}</span>}
+    </label>
+  );
+}
 
 type Variant = {
   id: string;
@@ -29,38 +39,45 @@ function VariantFields({
     servingSizeG && variant?.weight_grams ? Math.round(variant.weight_grams / servingSizeG) : null;
 
   return (
-    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-      <input name="label" defaultValue={variant?.label} placeholder="Label, e.g. 250g box" required className={`sm:col-span-2 ${fieldClass}`} />
-      <div>
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <Field label="Label" hint="e.g. 250g box" className="sm:col-span-2">
+        <input name="label" defaultValue={variant?.label} required className={fieldClass} />
+      </Field>
+      <Field label="Weight (g)" hint={pieces !== null ? `≈ ${pieces} pieces` : undefined}>
         <input
           name="weight_grams"
           type="number"
           defaultValue={variant?.weight_grams}
-          placeholder="Weight (g)"
           required
           className={fieldClass}
         />
-        {pieces !== null && <p className="mt-0.5 font-body text-[11px] text-navy/40">≈ {pieces} pieces</p>}
-      </div>
-      <input name="sku" defaultValue={variant?.sku} placeholder="SKU" required className={fieldClass} />
-      <input name="price_inr" type="number" step="0.01" defaultValue={variant?.price_inr} placeholder="Price (₹)" required className={fieldClass} />
-      <input
-        name="compare_at_price_inr"
-        type="number"
-        step="0.01"
-        defaultValue={variant?.compare_at_price_inr ?? ""}
-        placeholder="Compare-at price (optional)"
-        className={fieldClass}
-      />
-      <input name="stock_qty" type="number" defaultValue={variant?.stock_qty ?? 0} placeholder="Stock qty" className={fieldClass} />
+      </Field>
+      <Field label="SKU">
+        <input name="sku" defaultValue={variant?.sku} required className={fieldClass} />
+      </Field>
+      <Field label="Price (₹)">
+        <input name="price_inr" type="number" step="0.01" defaultValue={variant?.price_inr} required className={fieldClass} />
+      </Field>
+      <Field label="Compare-at price (₹)" hint="Optional — shown struck through">
+        <input
+          name="compare_at_price_inr"
+          type="number"
+          step="0.01"
+          defaultValue={variant?.compare_at_price_inr ?? ""}
+          className={fieldClass}
+        />
+      </Field>
+      <Field label="Stock quantity">
+        <input name="stock_qty" type="number" defaultValue={variant?.stock_qty ?? 0} className={fieldClass} />
+      </Field>
       <div className="flex items-center gap-4 sm:col-span-2">
         <label className="flex items-center gap-1.5 font-body text-xs text-navy/70">
           <input type="checkbox" name="is_default" defaultChecked={variant?.is_default} className="h-3.5 w-3.5" />
-          Default
+          Default variant
         </label>
         <label className="flex items-center gap-1.5 font-body text-xs text-navy/70">
           <input type="checkbox" name="is_active" defaultChecked={variant?.is_active ?? true} className="h-3.5 w-3.5" />
-          Active
+          Active (buyable)
         </label>
       </div>
     </div>

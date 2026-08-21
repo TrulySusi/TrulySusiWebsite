@@ -31,6 +31,8 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
       <AdminPageHeader
         title={product.name}
         subtitle={`/shop/${product.slug}`}
+        backHref="/admin/products"
+        backLabel="Back to products"
         action={
           <div className="flex items-center gap-4">
             {product.status === "active" && (
