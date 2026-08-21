@@ -65,13 +65,15 @@ export default function CheckoutEntryPage() {
           onSubmit={handleLogin}
           className="flex flex-col rounded-2xl border border-navy/10 bg-white p-7"
         >
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blush text-navy">
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5">
-              <circle cx="10" cy="7" r="3" />
-              <path d="M4 17c0-3 2.7-5 6-5s6 2 6 5" strokeLinecap="round" />
-            </svg>
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brass/15 text-brass">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
+                <circle cx="10" cy="7" r="3" />
+                <path d="M4 17c0-3 2.7-5 6-5s6 2 6 5" strokeLinecap="round" />
+              </svg>
+            </div>
+            <h2 className="font-display text-2xl text-navy">Log in</h2>
           </div>
-          <h2 className="mt-4 font-display text-2xl text-navy">Log in</h2>
           <p className="mt-1 font-body text-sm text-navy/60">
             Track your orders and reorder favourites in one tap.
           </p>
@@ -82,7 +84,7 @@ export default function CheckoutEntryPage() {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-5 rounded-lg bg-blush px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 focus:ring-navy/20"
+            className="mt-5 rounded-lg border border-navy/15 bg-cream px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 focus:ring-navy/20"
           />
           <input
             type="password"
@@ -90,7 +92,7 @@ export default function CheckoutEntryPage() {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mt-3 rounded-lg bg-blush px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 focus:ring-navy/20"
+            className="mt-3 rounded-lg border border-navy/15 bg-cream px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 focus:ring-navy/20"
           />
 
           {error && <p className="mt-3 font-body text-xs text-brass">{error}</p>}
@@ -108,12 +110,14 @@ export default function CheckoutEntryPage() {
           <span className="inline-block w-fit rounded-full bg-blush px-2.5 py-1 font-body text-[10px] font-semibold uppercase tracking-wider text-brass">
             Fastest
           </span>
-          <div className="mt-4 flex h-11 w-11 items-center justify-center rounded-xl bg-blush text-navy">
-            <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
-              <path d="M11 2 4 12h5l-1 6 7-10h-5l1-6Z" />
-            </svg>
+          <div className="mt-4 flex items-center gap-2.5">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sage/20 text-sage">
+              <svg viewBox="0 0 20 20" fill="currentColor" className="h-4.5 w-4.5">
+                <path d="M11 2 4 12h5l-1 6 7-10h-5l1-6Z" />
+              </svg>
+            </div>
+            <h2 className="font-display text-2xl text-navy">Continue as guest</h2>
           </div>
-          <h2 className="mt-4 font-display text-2xl text-navy">Continue as guest</h2>
           <p className="mt-1 font-body text-sm text-navy/60">
             No account needed. Enter your delivery details next and place your order in under a
             minute.
@@ -122,7 +126,7 @@ export default function CheckoutEntryPage() {
           <button
             type="button"
             onClick={() => router.push("/checkout/delivery")}
-            className="mt-8 rounded-full bg-blush px-6 py-3.5 font-body text-sm font-semibold text-navy transition-colors hover:bg-navy/8"
+            className="mt-8 rounded-full border-2 border-navy px-6 py-3 font-body text-sm font-semibold text-navy transition-colors hover:bg-navy hover:text-cream"
           >
             Continue as guest
           </button>

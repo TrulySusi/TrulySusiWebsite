@@ -20,9 +20,9 @@ body {
   color: var(--color-navy);
 }
 
-/* All body copy is centered, site-wide, per explicit request. */
+/* All body copy is justified, site-wide, per explicit request. */
 p {
-  text-align: center;
+  text-align: justify;
 }
 
 /* Auto-hide overlay scrollbar (OverlayScrollbars) recolored to the brand
