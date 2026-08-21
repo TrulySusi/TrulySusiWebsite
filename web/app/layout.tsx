@@ -1,11 +1,5 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
-import { SiteHeader } from "@/components/SiteHeader";
-import { SiteFooter } from "@/components/SiteFooter";
-import { DocumentScrollbar } from "@/components/DocumentScrollbar";
-import { ReviewsWidget } from "@/components/ReviewsWidget";
-import { CartWidget } from "@/components/CartWidget";
-import "overlayscrollbars/overlayscrollbars.css";
 import "./globals.css";
 
 // Free substitutes for the licensed Operetta 18 / Acumin Variable pairing —
@@ -28,20 +22,17 @@ export const metadata: Metadata = {
   description: "Homemade Tamil sweets from Salem. Sweeter together.",
 };
 
+// Deliberately minimal — the public site's chrome (header/footer/floating
+// widgets) lives in `(site)/layout.tsx` and `/admin` gets its own, so
+// neither shows the other's UI. Only things that must apply everywhere
+// (fonts, global CSS, <html>/<body>) belong here.
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
       className={`${displayFont.variable} ${bodyFont.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-cream text-navy font-body">
-        <DocumentScrollbar />
-        <SiteHeader />
-        <div className="flex-1">{children}</div>
-        <SiteFooter />
-        <ReviewsWidget />
-        <CartWidget />
-      </body>
+      <body className="min-h-full flex flex-col bg-cream text-navy font-body">{children}</body>
     </html>
   );
 }

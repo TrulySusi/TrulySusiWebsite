@@ -59,6 +59,7 @@ create table product_variants (
 create table product_images (
   id uuid primary key default gen_random_uuid(),
   product_id uuid not null references products(id) on delete cascade,
+  variant_id uuid references product_variants(id) on delete cascade,  -- see migrations/0006; null = shown for every variant
   storage_path text not null,
   alt_text text,
   sort_order int not null default 0,
@@ -178,6 +179,7 @@ create table reviews (
 -- ---------- indexes ----------
 create index on product_variants (product_id);
 create index on product_images (product_id);
+create index on product_images (variant_id);
 create index on addresses (customer_id);
 create index on orders (customer_id);
 create index on orders (order_channel);
