@@ -823,15 +823,17 @@ export default function CheckoutPage() {
           <div className="mt-5 flex flex-col gap-4">
             {items.map((item) => (
               <div key={item.variantId} className="flex items-center gap-3">
-                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-cream/10">
-                  <Image
-                    src={item.imageUrl}
-                    alt={item.productName}
-                    fill
-                    sizes="56px"
-                    className="object-cover"
-                  />
-                  <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-brass font-body text-[10px] font-bold text-navy">
+                <div className="relative h-14 w-14 shrink-0">
+                  <div className="h-full w-full overflow-hidden rounded-lg bg-cream/10">
+                    <Image
+                      src={item.imageUrl}
+                      alt={item.productName}
+                      fill
+                      sizes="56px"
+                      className="object-cover"
+                    />
+                  </div>
+                  <span className="absolute -right-1.5 -top-1.5 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-brass font-body text-[10px] font-bold text-navy shadow">
                     {item.quantity}
                   </span>
                 </div>
@@ -839,7 +841,9 @@ export default function CheckoutPage() {
                   <p className="truncate font-body text-sm font-medium text-cream">
                     {item.productName}
                   </p>
-                  <p className="font-body text-xs text-cream/55">{item.variantLabel}</p>
+                  <p className="font-body text-xs text-cream/55">
+                    {item.variantLabel} &middot; Qty {item.quantity}
+                  </p>
                 </div>
                 <span className="shrink-0 font-body text-sm font-bold text-cream">
                   ₹{(item.priceInr * item.quantity).toFixed(0)}

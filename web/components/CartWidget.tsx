@@ -33,10 +33,19 @@ export function CartWidget() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        style={{ writingMode: "vertical-rl" }}
-        className="fixed right-0 top-[38%] z-40 -translate-y-1/2 rounded-l-lg bg-navy px-2.5 py-4 font-body text-xs font-semibold uppercase tracking-wider text-cream shadow-lg transition-colors hover:bg-navy/90"
+        aria-label={`Cart, ${count} item${count === 1 ? "" : "s"}`}
+        className="fixed right-0 top-[calc(62%+130px)] z-40 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-l-lg bg-sage text-navy shadow-lg transition-colors hover:bg-sage/90"
       >
-        Cart{count > 0 ? ` (${count})` : ""}
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
+          <path d="M3 5h1.6L6 13.5a1.5 1.5 0 0 0 1.5 1.25h6a1.5 1.5 0 0 0 1.48-1.24L16 6.5H5.1" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="8" cy="17" r="1" fill="currentColor" stroke="none" />
+          <circle cx="13.5" cy="17" r="1" fill="currentColor" stroke="none" />
+        </svg>
+        {count > 0 && (
+          <span className="absolute -left-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-brass px-1 font-body text-[10px] font-semibold text-navy">
+            {count}
+          </span>
+        )}
       </button>
 
       {open && (
@@ -71,15 +80,17 @@ export function CartWidget() {
                 <div className="flex flex-col gap-4">
                   {items.map((item) => (
                     <div key={item.variantId} className="flex items-center gap-3">
-                      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-navy/4">
-                        <Image
-                          src={item.imageUrl}
-                          alt={item.productName}
-                          fill
-                          sizes="56px"
-                          className="object-cover"
-                        />
-                        <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-navy font-body text-[10px] font-bold text-cream">
+                      <div className="relative h-14 w-14 shrink-0">
+                        <div className="h-full w-full overflow-hidden rounded-lg bg-navy/4">
+                          <Image
+                            src={item.imageUrl}
+                            alt={item.productName}
+                            fill
+                            sizes="56px"
+                            className="object-cover"
+                          />
+                        </div>
+                        <span className="absolute -right-1.5 -top-1.5 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-brass font-body text-[10px] font-bold text-navy shadow">
                           {item.quantity}
                         </span>
                       </div>
@@ -87,7 +98,9 @@ export function CartWidget() {
                         <p className="truncate font-body text-sm font-medium text-navy">
                           {item.productName}
                         </p>
-                        <p className="font-body text-xs text-navy/50">{item.variantLabel}</p>
+                        <p className="font-body text-xs text-navy/50">
+                          {item.variantLabel} &middot; Qty {item.quantity}
+                        </p>
                       </div>
                       <span className="shrink-0 font-body text-sm font-bold text-navy">
                         ₹{(item.priceInr * item.quantity).toFixed(0)}
