@@ -17,6 +17,26 @@ export default function CheckoutEntryPage() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
+  const [sessionChecked, setSessionChecked] = useState(false);
+  const [loggedInEmail, setLoggedInEmail] = useState<string | null>(null);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      setLoggedInEmail(data.user?.email ?? null);
+      setSessionChecked(true);
+    });
+  }, []);
+
+  async function handleLogout() {
+    setLoggingOut(true);
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    setLoggedInEmail(null);
+    setLoggingOut(false);
+  }
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -31,7 +51,7 @@ export default function CheckoutEntryPage() {
     if (mounted && items.length === 0) router.replace("/cart");
   }, [mounted, items.length, router]);
 
-  if (!mounted || items.length === 0) return null;
+  if (!mounted || items.length === 0 || !sessionChecked) return null;
 
   function validate() {
     const errors: typeof fieldErrors = {};
@@ -103,90 +123,126 @@ export default function CheckoutEntryPage() {
       </div>
 
       <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2">
-        <form
-          onSubmit={handleLogin}
-          noValidate
-          className="flex flex-col rounded-2xl border border-navy/10 bg-white p-7"
-        >
-          <span className="invisible inline-block w-fit rounded-full px-2 py-0.5 font-body text-[9px] font-semibold uppercase tracking-wider">
-            Fastest
-          </span>
-          <div className="mt-2 flex items-center gap-2.5">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brass/15 text-brass">
-              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
-                <circle cx="10" cy="7" r="3" />
-                <path d="M4 17c0-3 2.7-5 6-5s6 2 6 5" strokeLinecap="round" />
-              </svg>
+        {loggedInEmail ? (
+          <div className="flex flex-col rounded-2xl border border-navy/10 bg-white p-7">
+            <span className="invisible inline-block w-fit rounded-full px-2 py-0.5 font-body text-[9px] font-semibold uppercase tracking-wider">
+              Fastest
+            </span>
+            <div className="mt-2 flex items-center gap-2.5">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brass/15 text-brass">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
+                  <circle cx="10" cy="7" r="3" />
+                  <path d="M4 17c0-3 2.7-5 6-5s6 2 6 5" strokeLinecap="round" />
+                </svg>
+              </div>
+              <h2 className="font-display text-2xl text-navy">You&rsquo;re logged in</h2>
             </div>
-            <h2 className="font-display text-2xl text-navy">Log in</h2>
-          </div>
-          <p className="mt-1 font-body text-sm text-navy/60">
-            Track your orders and reorder favourites in one tap.
-          </p>
-
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              setFieldErrors((f) => ({ ...f, email: undefined }));
-            }}
-            className={`mt-5 rounded-lg border bg-cream px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 ${
-              fieldErrors.email ? "border-brass focus:ring-brass/40" : "border-navy/15 focus:ring-navy/20"
-            }`}
-          />
-          {fieldErrors.email && (
-            <p className="mt-1 font-body text-xs text-brass">{fieldErrors.email}</p>
-          )}
-
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              setFieldErrors((f) => ({ ...f, password: undefined }));
-            }}
-            className={`mt-3 rounded-lg border bg-cream px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 ${
-              fieldErrors.password ? "border-brass focus:ring-brass/40" : "border-navy/15 focus:ring-navy/20"
-            }`}
-          />
-          {fieldErrors.password && (
-            <p className="mt-1 font-body text-xs text-brass">{fieldErrors.password}</p>
-          )}
-
-          <button
-            type="button"
-            onClick={handleForgotPassword}
-            disabled={resetting}
-            className="mt-2 self-end font-body text-xs text-navy/50 hover:text-brass disabled:opacity-60"
-          >
-            {resetting ? "Sending…" : "Forgot password?"}
-          </button>
-          {resetSent && (
-            <p className="mt-1 font-body text-xs text-sage">
-              Check your email for a reset link.
+            <p className="mt-1 font-body text-sm text-navy/60">
+              As {loggedInEmail}. We&rsquo;ll load your saved address on the next step.
             </p>
-          )}
-          {resetError && <p className="mt-1 font-body text-xs text-brass">{resetError}</p>}
 
-          {error && <p className="mt-3 font-body text-xs text-brass">{error}</p>}
+            <button
+              type="button"
+              onClick={() => router.push("/checkout/delivery")}
+              className="mt-5 rounded-full bg-navy px-6 py-3.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-navy/90"
+            >
+              Continue to delivery
+            </button>
+            <button
+              type="button"
+              onClick={handleLogout}
+              disabled={loggingOut}
+              className="mt-4 text-center font-body text-xs text-navy/50 hover:text-brass disabled:opacity-60"
+            >
+              {loggingOut ? "Logging out…" : "Not you? Log out"}
+            </button>
+          </div>
+        ) : (
+          <form
+            onSubmit={handleLogin}
+            noValidate
+            className="flex flex-col rounded-2xl border border-navy/10 bg-white p-7"
+          >
+            <span className="invisible inline-block w-fit rounded-full px-2 py-0.5 font-body text-[9px] font-semibold uppercase tracking-wider">
+              Fastest
+            </span>
+            <div className="mt-2 flex items-center gap-2.5">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brass/15 text-brass">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
+                  <circle cx="10" cy="7" r="3" />
+                  <path d="M4 17c0-3 2.7-5 6-5s6 2 6 5" strokeLinecap="round" />
+                </svg>
+              </div>
+              <h2 className="font-display text-2xl text-navy">Log in</h2>
+            </div>
+            <p className="mt-1 font-body text-sm text-navy/60">
+              Track your orders and reorder favourites in one tap.
+            </p>
 
-          <button
-            type="submit"
-            disabled={submitting}
-            className="mt-5 rounded-full bg-navy px-6 py-3.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-navy/90 disabled:opacity-60"
-          >
-            {submitting ? "Logging in…" : "Log in"}
-          </button>
-          <Link
-            href="/account/signup"
-            className="mt-4 text-center font-body text-xs text-navy/50 hover:text-brass"
-          >
-            New here? Create an account
-          </Link>
-        </form>
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setFieldErrors((f) => ({ ...f, email: undefined }));
+              }}
+              className={`mt-5 rounded-lg border bg-cream px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 ${
+                fieldErrors.email ? "border-brass focus:ring-brass/40" : "border-navy/15 focus:ring-navy/20"
+              }`}
+            />
+            {fieldErrors.email && (
+              <p className="mt-1 font-body text-xs text-brass">{fieldErrors.email}</p>
+            )}
+
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setFieldErrors((f) => ({ ...f, password: undefined }));
+              }}
+              className={`mt-3 rounded-lg border bg-cream px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 ${
+                fieldErrors.password ? "border-brass focus:ring-brass/40" : "border-navy/15 focus:ring-navy/20"
+              }`}
+            />
+            {fieldErrors.password && (
+              <p className="mt-1 font-body text-xs text-brass">{fieldErrors.password}</p>
+            )}
+
+            <button
+              type="button"
+              onClick={handleForgotPassword}
+              disabled={resetting}
+              className="mt-2 self-end font-body text-xs text-navy/50 hover:text-brass disabled:opacity-60"
+            >
+              {resetting ? "Sending…" : "Forgot password?"}
+            </button>
+            {resetSent && (
+              <p className="mt-1 font-body text-xs text-sage">
+                Check your email for a reset link.
+              </p>
+            )}
+            {resetError && <p className="mt-1 font-body text-xs text-brass">{resetError}</p>}
+
+            {error && <p className="mt-3 font-body text-xs text-brass">{error}</p>}
+
+            <button
+              type="submit"
+              disabled={submitting}
+              className="mt-5 rounded-full bg-navy px-6 py-3.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-navy/90 disabled:opacity-60"
+            >
+              {submitting ? "Logging in…" : "Log in"}
+            </button>
+            <Link
+              href="/account/signup"
+              className="mt-4 text-center font-body text-xs text-navy/50 hover:text-brass"
+            >
+              New here? Create an account
+            </Link>
+          </form>
+        )}
 
         <div className="flex flex-col rounded-2xl border border-navy/10 bg-white p-7">
           <span className="inline-block w-fit rounded-full bg-blush px-2 py-0.5 font-body text-[9px] font-semibold uppercase tracking-wider text-brass">

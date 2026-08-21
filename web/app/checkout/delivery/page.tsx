@@ -15,7 +15,7 @@ import { INDIA_STATES, lookupPincode } from "@/lib/india";
 const ADDRESS_LABELS: AddressLabel[] = ["Home", "Work", "Other"];
 
 const fieldClass =
-  "rounded-lg bg-blush px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 focus:ring-navy/20";
+  "rounded-lg border border-navy/15 bg-cream px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 focus:ring-navy/20";
 
 export default function DeliveryDetailsPage() {
   const router = useRouter();
@@ -29,6 +29,7 @@ export default function DeliveryDetailsPage() {
   const [form, setForm] = useState<DeliveryDetails>(emptyDelivery);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [loadedSaved, setLoadedSaved] = useState(false);
 
   useEffect(() => {
     if (!mounted) return;
@@ -38,6 +39,51 @@ export default function DeliveryDetailsPage() {
     }
     setForm(delivery);
   }, [mounted, items.length, router, delivery]);
+
+  // If they're logged in and haven't already started filling this in this
+  // session, load their saved default address instead of an empty form.
+  useEffect(() => {
+    if (!mounted || delivery.firstName) return;
+
+    async function loadSavedAddress() {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: saved } = await supabase
+        .from("addresses")
+        .select("*")
+        .eq("customer_id", user.id)
+        .eq("is_default", true)
+        .maybeSingle();
+      if (!saved) return;
+
+      const loaded: DeliveryDetails = {
+        firstName: saved.first_name ?? "",
+        lastName: saved.last_name ?? "",
+        phone: saved.phone ?? "",
+        alternatePhone: saved.alternate_phone ?? "",
+        label: (saved.label as AddressLabel) ?? "Home",
+        line1: saved.line1 ?? "",
+        line2: saved.line2 ?? "",
+        landmark: saved.landmark ?? "",
+        pincode: saved.pincode ?? "",
+        city: saved.city ?? "",
+        state: saved.state ?? "",
+        notes: saved.notes ?? "",
+      };
+      setForm(loaded);
+      setDelivery(loaded);
+      setLoadedSaved(true);
+    }
+
+    loadSavedAddress();
+    // Only ever run once on mount — deliberately not re-running this when
+    // `delivery` changes, since that would fight the user's own edits.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mounted]);
 
   if (!mounted || items.length === 0) return null;
 
@@ -145,7 +191,7 @@ export default function DeliveryDetailsPage() {
       <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_320px]">
         <form onSubmit={handleSubmit} className="rounded-2xl border border-navy/10 bg-white p-7">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blush text-navy">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brass/15 text-brass">
               <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5">
                 <path d="M10 17.5s6-4.35 6-9.15A6 6 0 0 0 4 8.35C4 13.15 10 17.5 10 17.5Z" strokeLinejoin="round" />
                 <circle cx="10" cy="8" r="2" />
@@ -153,6 +199,11 @@ export default function DeliveryDetailsPage() {
             </div>
             <h1 className="font-display text-2xl text-navy">Delivery details</h1>
           </div>
+          {loadedSaved && (
+            <p className="mt-2 font-body text-xs text-sage">
+              Loaded your saved address — edit anything that&rsquo;s changed.
+            </p>
+          )}
 
           <div className="mt-6 flex flex-wrap gap-2">
             {ADDRESS_LABELS.map((label) => (
