@@ -98,7 +98,7 @@ export function VariantSelector({
           </button>
         </div>
 
-        <span className="font-display text-2xl text-navy">
+        <span className="font-body text-2xl font-bold text-navy">
           {lineTotal !== null ? `₹${lineTotal.toFixed(0)}` : ""}
         </span>
 
