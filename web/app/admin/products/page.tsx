@@ -46,13 +46,13 @@ export default async function AdminProductsPage({
           </Link>
         }
       />
-      <div className="p-8">
-        <div className="mx-auto max-w-4xl">
+      <div className="p-5 sm:p-8">
+        <div className="mx-auto max-w-7xl">
           <Suspense fallback={null}>
             <AdminProductsFilters />
           </Suspense>
 
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {products.length === 0 && (
               <p className="col-span-full font-body text-sm text-navy/50">No products match.</p>
             )}

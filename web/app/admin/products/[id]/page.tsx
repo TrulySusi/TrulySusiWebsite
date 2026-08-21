@@ -28,29 +28,31 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
 
   return (
     <div>
-      <AdminPageHeader
-        title={product.name}
-        subtitle={`/shop/${product.slug}`}
-        backHref="/admin/products"
-        backLabel="Back to products"
-        action={
-          <div className="flex items-center gap-4">
-            {product.status === "active" && (
-              <Link
-                href={`/shop/${product.slug}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-body text-xs font-semibold text-cream/70 hover:text-cream"
-              >
-                View on site ↗
-              </Link>
-            )}
-            <DeleteProductButton productId={id} name={product.name} />
+      <AdminPageHeader title={product.name} />
+      <div className="p-5 sm:p-8">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+            <Link
+              href="/admin/products"
+              className="font-body text-sm font-semibold text-navy/60 hover:text-navy"
+            >
+              ← Back to products
+            </Link>
+            <div className="flex items-center gap-4">
+              {product.status === "active" && (
+                <Link
+                  href={`/shop/${product.slug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-body text-sm font-semibold text-navy/60 hover:text-navy"
+                >
+                  View on site ↗
+                </Link>
+              )}
+              <DeleteProductButton productId={id} name={product.name} />
+            </div>
           </div>
-        }
-      />
-      <div className="p-8">
-        <div className="mx-auto max-w-4xl">
+
           <AdminProductTabs
             tabs={[
               {
