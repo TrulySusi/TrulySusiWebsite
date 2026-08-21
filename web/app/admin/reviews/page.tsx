@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AdminReviewsList } from "@/components/admin/AdminReviewsList";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 
 export default async function AdminReviewsPage() {
   const supabase = createAdminClient();
@@ -9,13 +10,15 @@ export default async function AdminReviewsPage() {
     .order("created_at", { ascending: false });
 
   return (
-    <div className="mx-auto max-w-3xl">
-      <h1 className="font-display text-3xl text-navy">Reviews</h1>
-      <p className="mt-1 font-body text-sm text-navy/60">
-        Approve reviews to show them in the site-wide reviews widget.
-      </p>
-      <div className="mt-8">
-        <AdminReviewsList reviews={data ?? []} />
+    <div>
+      <AdminPageHeader
+        title="Reviews"
+        subtitle="Approve reviews to show them in the site-wide reviews widget."
+      />
+      <div className="p-8">
+        <div className="mx-auto max-w-3xl">
+          <AdminReviewsList reviews={data ?? []} />
+        </div>
       </div>
     </div>
   );

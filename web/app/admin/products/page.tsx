@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 
 const STATUS_STYLES: Record<string, string> = {
   active: "bg-sage/20 text-sage",
@@ -19,22 +20,24 @@ export default async function AdminProductsPage() {
   const products = data ?? [];
 
   return (
-    <div className="mx-auto max-w-4xl">
-      <div className="flex items-center justify-between">
-        <h1 className="font-display text-3xl text-navy">Products</h1>
-        <Link
-          href="/admin/products/new"
-          className="rounded-full bg-navy px-5 py-2.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-navy/90"
-        >
-          + New product
-        </Link>
-      </div>
-
-      <div className="mt-8 flex flex-col gap-2">
-        {products.length === 0 && (
-          <p className="font-body text-sm text-navy/50">No products yet.</p>
-        )}
-        {products.map((p) => {
+    <div>
+      <AdminPageHeader
+        title="Products"
+        action={
+          <Link
+            href="/admin/products/new"
+            className="rounded-full bg-brass px-5 py-2.5 font-body text-sm font-semibold text-navy transition-colors hover:bg-brass/90"
+          >
+            + New product
+          </Link>
+        }
+      />
+      <div className="p-8">
+        <div className="mx-auto flex max-w-4xl flex-col gap-2">
+          {products.length === 0 && (
+            <p className="font-body text-sm text-navy/50">No products yet.</p>
+          )}
+          {products.map((p) => {
           const variants = (p.product_variants ?? []) as {
             price_inr: number;
             is_active: boolean;
@@ -71,7 +74,8 @@ export default async function AdminProductsPage() {
               </div>
             </Link>
           );
-        })}
+          })}
+        </div>
       </div>
     </div>
   );
