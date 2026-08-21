@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/lib/cart-store";
+import { useCheckoutStore } from "@/lib/checkout-store";
 import { createClient } from "@/lib/supabase/client";
 
 function isValidEmail(v: string) {
@@ -13,6 +14,7 @@ function isValidEmail(v: string) {
 export default function CheckoutEntryPage() {
   const router = useRouter();
   const items = useCartStore((s) => s.items);
+  const clearCheckoutDraft = useCheckoutStore((s) => s.clear);
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -33,6 +35,9 @@ export default function CheckoutEntryPage() {
     setLoggingOut(true);
     const supabase = createClient();
     await supabase.auth.signOut();
+    // So the next person on this device (guest or a different account)
+    // doesn't see this account's leftover delivery draft.
+    clearCheckoutDraft();
     setLoggedInEmail(null);
     setLoggingOut(false);
   }
@@ -87,6 +92,10 @@ export default function CheckoutEntryPage() {
       .from("customers")
       .upsert({ id: data.user.id, email: data.user.email }, { onConflict: "id" });
 
+    // Drop any locally-drafted delivery details (e.g. from a guest attempt
+    // on this browser) so the delivery page loads this account's own saved
+    // address instead of stale leftover data from before login.
+    clearCheckoutDraft();
     router.push("/checkout/delivery");
   }
 

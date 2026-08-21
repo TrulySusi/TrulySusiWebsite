@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/lib/cart-store";
+import { useCheckoutStore } from "@/lib/checkout-store";
 import { createClient } from "@/lib/supabase/client";
 
 function isValidEmail(v: string) {
@@ -13,6 +14,7 @@ function isValidEmail(v: string) {
 export default function SignupPage() {
   const router = useRouter();
   const items = useCartStore((s) => s.items);
+  const clearCheckoutDraft = useCheckoutStore((s) => s.clear);
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -74,6 +76,7 @@ export default function SignupPage() {
         .upsert({ id: data.user.id, email: data.user.email }, { onConflict: "id" });
     }
 
+    clearCheckoutDraft();
     router.push("/checkout/delivery");
   }
 
