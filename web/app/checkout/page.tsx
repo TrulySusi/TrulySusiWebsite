@@ -111,7 +111,7 @@ export default function CheckoutEntryPage() {
             Fastest
           </span>
           <div className="mt-4 flex items-center gap-2.5">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sage/20 text-sage">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brass/15 text-brass">
               <svg viewBox="0 0 20 20" fill="currentColor" className="h-4.5 w-4.5">
                 <path d="M11 2 4 12h5l-1 6 7-10h-5l1-6Z" />
               </svg>
