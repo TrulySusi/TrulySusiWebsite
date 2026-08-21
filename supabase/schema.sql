@@ -13,7 +13,7 @@ create type product_status as enum ('draft', 'active', 'archived');
 create type order_channel as enum ('website', 'whatsapp', 'instagram');
 create type order_status as enum ('pending_payment', 'paid', 'packed', 'shipped', 'delivered', 'cancelled', 'refunded');
 create type payment_status as enum ('pending', 'paid', 'failed', 'refunded');
-create type payment_method as enum ('razorpay', 'cod');
+create type payment_method as enum ('razorpay', 'cod', 'manual');  -- 'manual' added in migrations/0007, for direct bank/UPI transfers on manually-entered orders
 create type admin_role as enum ('owner', 'staff');
 
 -- ---------- catalog ----------
@@ -114,6 +114,11 @@ create table orders (
   razorpay_order_id text,
   gst_invoice_number text,
   zoho_deal_id text,
+  courier_name text,             -- see migrations/0007
+  tracking_number text,
+  tracking_url text,
+  shipped_at timestamptz,
+  delivered_at timestamptz,
   notes text,
   created_at timestamptz not null default now()
 );
