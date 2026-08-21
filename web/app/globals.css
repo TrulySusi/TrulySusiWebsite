@@ -20,6 +20,11 @@ body {
   color: var(--color-navy);
 }
 
+/* All body copy is centered, site-wide, per explicit request. */
+p {
+  text-align: center;
+}
+
 /* Auto-hide overlay scrollbar (OverlayScrollbars) recolored to the brand
    palette — navy thumb at rest, brass on hover/drag. Extends the library's
    built-in light theme rather than rebuilding the box model from scratch. */

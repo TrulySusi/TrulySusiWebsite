@@ -61,41 +61,67 @@ export function SiteFooter() {
 
           <div>
             <h3 className="font-body text-sm font-bold text-cream">Follow us</h3>
-            <div className="mt-3 flex gap-2">
+            <div className="mt-3 flex gap-2.5">
               <a
                 href="https://instagram.com/trulysusi"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Truly Susi's on Instagram"
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-cream/10 text-cream transition-colors hover:bg-cream/20"
+                className="block h-8 w-8 overflow-hidden rounded-lg transition-opacity hover:opacity-85"
               >
-                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-3.5 w-3.5">
-                  <rect x="3" y="3" width="14" height="14" rx="4" />
-                  <circle cx="10" cy="10" r="3.2" />
-                  <circle cx="14" cy="6" r="0.8" fill="currentColor" stroke="none" />
+                <svg viewBox="0 0 20 20" className="h-full w-full">
+                  <defs>
+                    <radialGradient id="ig-gradient" cx="30%" cy="107%" r="150%">
+                      <stop offset="0%" stopColor="#fdf497" />
+                      <stop offset="5%" stopColor="#fdf497" />
+                      <stop offset="45%" stopColor="#fd5949" />
+                      <stop offset="60%" stopColor="#d6249f" />
+                      <stop offset="90%" stopColor="#285aeb" />
+                    </radialGradient>
+                  </defs>
+                  <rect width="20" height="20" fill="url(#ig-gradient)" />
+                  <rect
+                    x="5.5"
+                    y="5.5"
+                    width="9"
+                    height="9"
+                    rx="3"
+                    fill="none"
+                    stroke="white"
+                    strokeWidth="1.3"
+                  />
+                  <circle cx="10" cy="10" r="2.6" fill="none" stroke="white" strokeWidth="1.3" />
+                  <circle cx="14.2" cy="5.8" r="0.7" fill="white" />
                 </svg>
               </a>
-              {/* Facebook and LinkedIn pages aren't live yet — shown as
-                  static (non-linked) icons until those exist. */}
+              {/* Facebook and LinkedIn pages aren't live yet — shown at
+                  reduced opacity, and not linked, until those exist. */}
               <span
                 aria-hidden="true"
                 title="Facebook (coming soon)"
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-cream/10 text-cream/50"
+                className="block h-8 w-8 overflow-hidden rounded-lg opacity-60"
               >
-                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-3.5 w-3.5">
-                  <path d="M12.5 6.5H11a1.5 1.5 0 0 0-1.5 1.5v2H12.5l-.35 2.5H9.5V17.5h-2.5V12.5H5V10H7V7.6C7 5.6 8.3 4 10.5 4H12.5V6.5Z" strokeLinejoin="round" />
+                <svg viewBox="0 0 20 20" className="h-full w-full">
+                  <rect width="20" height="20" fill="#1877f2" />
+                  <path
+                    d="M12.2 6.3H11a1.3 1.3 0 0 0-1.3 1.3V9.2h2.3l-.32 2.2H9.7v5.6H7.4v-5.6H5.6V9.2h1.8V7.4c0-1.8 1.1-3.2 3.1-3.2h1.7v2.1Z"
+                    fill="white"
+                  />
                 </svg>
               </span>
               <span
                 aria-hidden="true"
                 title="LinkedIn (coming soon)"
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-cream/10 text-cream/50"
+                className="block h-8 w-8 overflow-hidden rounded-lg opacity-60"
               >
-                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-3.5 w-3.5">
-                  <rect x="3" y="3" width="14" height="14" rx="3" />
-                  <line x1="6.7" y1="8.5" x2="6.7" y2="13.5" strokeLinecap="round" />
-                  <circle cx="6.7" cy="6.3" r="0.9" fill="currentColor" stroke="none" />
-                  <path d="M9.5 13.5V10.3c0-.9.7-1.8 1.8-1.8s1.7.9 1.7 1.8v3.2" strokeLinecap="round" strokeLinejoin="round" />
+                <svg viewBox="0 0 20 20" className="h-full w-full">
+                  <rect width="20" height="20" fill="#0a66c2" />
+                  <rect x="4.3" y="8" width="1.9" height="7" fill="white" />
+                  <circle cx="5.25" cy="5.4" r="1.2" fill="white" />
+                  <path
+                    d="M8.6 8h1.9v1.1c.5-.7 1.3-1.3 2.4-1.3 1.9 0 2.9 1.2 2.9 3.4V15h-1.9v-3.5c0-.9-.4-1.7-1.4-1.7s-1.5.7-1.5 1.7V15H8.6V8Z"
+                    fill="white"
+                  />
                 </svg>
               </span>
             </div>
