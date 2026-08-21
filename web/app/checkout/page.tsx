@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/lib/cart-store";
 import { createClient } from "@/lib/supabase/client";
@@ -107,7 +108,10 @@ export default function CheckoutEntryPage() {
           noValidate
           className="flex flex-col rounded-2xl border border-navy/10 bg-white p-7"
         >
-          <div className="flex items-center gap-2.5">
+          <span className="invisible inline-block w-fit rounded-full px-2 py-0.5 font-body text-[9px] font-semibold uppercase tracking-wider">
+            Fastest
+          </span>
+          <div className="mt-2 flex items-center gap-2.5">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brass/15 text-brass">
               <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
                 <circle cx="10" cy="7" r="3" />
@@ -176,19 +180,25 @@ export default function CheckoutEntryPage() {
           >
             {submitting ? "Logging in…" : "Log in"}
           </button>
+          <Link
+            href="/account/signup"
+            className="mt-4 text-center font-body text-xs text-navy/50 hover:text-brass"
+          >
+            New here? Create an account
+          </Link>
         </form>
 
         <div className="flex flex-col rounded-2xl border border-navy/10 bg-white p-7">
-          <div className="flex flex-wrap items-center gap-2.5">
+          <span className="inline-block w-fit rounded-full bg-blush px-2 py-0.5 font-body text-[9px] font-semibold uppercase tracking-wider text-brass">
+            Fastest
+          </span>
+          <div className="mt-2 flex items-center gap-2.5">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brass/15 text-brass">
               <svg viewBox="0 0 20 20" fill="currentColor" className="h-4.5 w-4.5">
                 <path d="M11 2 4 12h5l-1 6 7-10h-5l1-6Z" />
               </svg>
             </div>
-            <h2 className="font-display text-2xl text-navy">Continue as guest</h2>
-            <span className="inline-block rounded-full bg-blush px-2 py-0.5 font-body text-[9px] font-semibold uppercase tracking-wider text-brass">
-              Fastest
-            </span>
+            <h2 className="font-display text-xl text-navy">Continue as guest</h2>
           </div>
           <p className="mt-1 font-body text-sm text-navy/60">
             No account needed. Enter your delivery details next and place your order in under a
