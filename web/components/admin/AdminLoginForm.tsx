@@ -86,8 +86,7 @@ export function AdminLoginForm() {
         fill
         priority
         sizes="100vw"
-        className="object-cover"
-        style={{ objectPosition: "35% center" }}
+        className="object-cover object-center"
       />
       <div className="absolute inset-0 bg-navy/45" />
 
