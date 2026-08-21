@@ -80,7 +80,7 @@ export default function SignupPage() {
     }
 
     clearCheckoutDraft();
-    router.push("/checkout/delivery");
+    router.push("/checkout");
   }
 
   async function handleResend() {
