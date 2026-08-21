@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { cartSubtotal, useCartStore } from "@/lib/cart-store";
+import { cartCount, cartSubtotal, useCartStore } from "@/lib/cart-store";
 import {
   emptyDelivery,
   useCheckoutStore,
@@ -22,13 +22,33 @@ const FREE_SHIPPING_THRESHOLD = 999;
 const FLAT_SHIPPING_FEE = 79;
 
 const fieldClass =
-  "rounded-lg border border-navy/15 bg-cream px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 focus:ring-navy/20";
+  "rounded-lg border border-navy/15 bg-white px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 focus:ring-navy/20";
 
 function errorFieldClass(hasError: boolean) {
-  return `rounded-lg border bg-cream px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 ${
+  return `rounded-lg border bg-white px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 ${
     hasError ? "border-brass focus:ring-brass/40" : "border-navy/15 focus:ring-navy/20"
   }`;
 }
+
+type BillingAddress = {
+  firstName: string;
+  lastName: string;
+  line1: string;
+  line2: string;
+  city: string;
+  state: string;
+  pincode: string;
+};
+
+const emptyBilling: BillingAddress = {
+  firstName: "",
+  lastName: "",
+  line1: "",
+  line2: "",
+  city: "",
+  state: "",
+  pincode: "",
+};
 
 function isValidEmail(v: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
@@ -118,6 +138,16 @@ export default function CheckoutPage() {
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
   const [loadedSaved, setLoadedSaved] = useState(false);
 
+  const [saveAddress, setSaveAddress] = useState(true);
+
+  // ---- billing address ----
+  const [billingSame, setBillingSame] = useState(true);
+  const [billingForm, setBillingForm] = useState<BillingAddress>(emptyBilling);
+
+  // ---- discount code ----
+  const [discountCode, setDiscountCode] = useState("");
+  const [discountMessage, setDiscountMessage] = useState<string | null>(null);
+
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -195,6 +225,16 @@ export default function CheckoutPage() {
         if (result) setForm((f) => ({ ...f, city: result.city, state: result.state }));
       });
     }
+  }
+
+  function updateBilling<K extends keyof BillingAddress>(field: K, value: BillingAddress[K]) {
+    setBillingForm((f) => ({ ...f, [field]: value }));
+  }
+
+  function handleApplyDiscount() {
+    setDiscountMessage(
+      discountCode.trim() ? "Discount codes aren't available yet." : "Enter a code first.",
+    );
   }
 
   async function handleSignIn() {
@@ -292,7 +332,7 @@ export default function CheckoutPage() {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (user) {
+    if (user && saveAddress) {
       await supabase
         .from("addresses")
         .update({ is_default: false })
@@ -344,8 +384,16 @@ export default function CheckoutPage() {
         <div className="flex flex-col gap-6">
           {/* Contact */}
           <section className="rounded-2xl border border-navy/10 bg-white p-7">
-            <div className="flex items-baseline justify-between">
-              <h2 className="font-display text-2xl text-navy">Contact</h2>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brass/15 text-brass">
+                  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
+                    <circle cx="10" cy="7" r="3" />
+                    <path d="M4 17c0-3 2.7-5 6-5s6 2 6 5" strokeLinecap="round" />
+                  </svg>
+                </div>
+                <h2 className="font-display text-2xl text-navy">Contact</h2>
+              </div>
               {loggedInEmail ? (
                 <button
                   type="button"
@@ -459,7 +507,15 @@ export default function CheckoutPage() {
 
           {/* Delivery */}
           <section className="rounded-2xl border border-navy/10 bg-white p-7">
-            <h2 className="font-display text-2xl text-navy">Delivery</h2>
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brass/15 text-brass">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
+                  <path d="M10 17.5s6-4.35 6-9.15A6 6 0 0 0 4 8.35C4 13.15 10 17.5 10 17.5Z" strokeLinejoin="round" />
+                  <circle cx="10" cy="8" r="2" />
+                </svg>
+              </div>
+              <h2 className="font-display text-2xl text-navy">Delivery</h2>
+            </div>
             {loadedSaved && (
               <p className="mt-2 font-body text-xs text-sage">
                 Loaded your saved address — edit anything that&rsquo;s changed.
@@ -599,6 +655,18 @@ export default function CheckoutPage() {
                 className={`sm:col-span-2 resize-none ${fieldClass}`}
               />
             </div>
+
+            {loggedInEmail && (
+              <label className="mt-4 flex items-center gap-2.5 font-body text-sm text-navy/70">
+                <input
+                  type="checkbox"
+                  checked={saveAddress}
+                  onChange={(e) => setSaveAddress(e.target.checked)}
+                  className="h-4 w-4 rounded border-navy/30 text-navy focus:ring-1 focus:ring-navy/20"
+                />
+                Save this address for next time
+              </label>
+            )}
           </section>
 
           {/* Shipping method */}
@@ -642,6 +710,98 @@ export default function CheckoutPage() {
             )}
           </section>
 
+          {/* Billing address */}
+          <section className="rounded-2xl border border-navy/10 bg-white p-7">
+            <h2 className="font-display text-2xl text-navy">Billing address</h2>
+
+            <div className="mt-4 flex flex-col gap-2">
+              <label
+                className={`flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 font-body text-sm text-navy transition-colors ${
+                  billingSame ? "border-navy bg-navy/5" : "border-navy/15"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="billing-address"
+                  checked={billingSame}
+                  onChange={() => setBillingSame(true)}
+                  className="h-4 w-4 text-navy focus:ring-1 focus:ring-navy/20"
+                />
+                Same as shipping address
+              </label>
+              <label
+                className={`flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 font-body text-sm text-navy transition-colors ${
+                  !billingSame ? "border-navy bg-navy/5" : "border-navy/15"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="billing-address"
+                  checked={!billingSame}
+                  onChange={() => setBillingSame(false)}
+                  className="h-4 w-4 text-navy focus:ring-1 focus:ring-navy/20"
+                />
+                Use a different billing address
+              </label>
+            </div>
+
+            {!billingSame && (
+              <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <input
+                  placeholder="First name"
+                  value={billingForm.firstName}
+                  onChange={(e) => updateBilling("firstName", e.target.value)}
+                  className={fieldClass}
+                />
+                <input
+                  placeholder="Last name"
+                  value={billingForm.lastName}
+                  onChange={(e) => updateBilling("lastName", e.target.value)}
+                  className={fieldClass}
+                />
+                <input
+                  placeholder="House / Flat / Building no."
+                  value={billingForm.line1}
+                  onChange={(e) => updateBilling("line1", e.target.value)}
+                  className={`sm:col-span-2 ${fieldClass}`}
+                />
+                <input
+                  placeholder="Street / Area / Locality"
+                  value={billingForm.line2}
+                  onChange={(e) => updateBilling("line2", e.target.value)}
+                  className={`sm:col-span-2 ${fieldClass}`}
+                />
+                <input
+                  placeholder="Pincode"
+                  inputMode="numeric"
+                  value={billingForm.pincode}
+                  onChange={(e) => updateBilling("pincode", e.target.value)}
+                  className={fieldClass}
+                />
+                <input
+                  placeholder="City"
+                  value={billingForm.city}
+                  onChange={(e) => updateBilling("city", e.target.value)}
+                  className={fieldClass}
+                />
+                <select
+                  value={billingForm.state}
+                  onChange={(e) => updateBilling("state", e.target.value)}
+                  className={`sm:col-span-2 ${fieldClass} ${billingForm.state ? "text-navy" : "text-navy/40"}`}
+                >
+                  <option value="" disabled>
+                    State
+                  </option>
+                  {INDIA_STATES.map((s) => (
+                    <option key={s} value={s} className="text-navy">
+                      {s}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </section>
+
           {error && <p className="font-body text-sm text-brass">{error}</p>}
 
           <button
@@ -649,7 +809,7 @@ export default function CheckoutPage() {
             disabled={submitting}
             className="w-full rounded-full bg-navy px-6 py-3.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-navy/90 disabled:opacity-60"
           >
-            {submitting ? "Saving…" : saved ? "Details saved ✓" : "Save my details"}
+            {submitting ? "Processing…" : saved ? "Details saved ✓" : "Pay now"}
           </button>
         </div>
 
@@ -685,9 +845,33 @@ export default function CheckoutPage() {
             ))}
           </div>
 
-          <div className="mt-6 space-y-2 border-t border-navy/10 pt-5 font-body text-sm">
+          <div className="mt-5 flex gap-2">
+            <input
+              placeholder="Discount code"
+              value={discountCode}
+              onChange={(e) => {
+                setDiscountCode(e.target.value);
+                setDiscountMessage(null);
+              }}
+              className="min-w-0 flex-1 rounded-lg border border-navy/15 bg-white px-3 py-2.5 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 focus:ring-navy/20"
+            />
+            <button
+              type="button"
+              onClick={handleApplyDiscount}
+              className="shrink-0 rounded-lg bg-navy/8 px-4 py-2.5 font-body text-sm font-semibold text-navy transition-colors hover:bg-navy/15"
+            >
+              Apply
+            </button>
+          </div>
+          {discountMessage && (
+            <p className="mt-1.5 font-body text-xs text-navy/50">{discountMessage}</p>
+          )}
+
+          <div className="mt-5 space-y-2 border-t border-navy/10 pt-5 font-body text-sm">
             <div className="flex justify-between">
-              <span className="text-navy/70">Subtotal</span>
+              <span className="text-navy/70">
+                Subtotal ({cartCount(items)} item{cartCount(items) === 1 ? "" : "s"})
+              </span>
               <span className="font-bold text-navy">₹{subtotal.toFixed(0)}</span>
             </div>
             <div className="flex justify-between">
@@ -698,8 +882,14 @@ export default function CheckoutPage() {
             </div>
             <div className="flex justify-between border-t border-navy/10 pt-2 text-base">
               <span className="font-semibold text-navy">Total</span>
-              <span className="font-bold text-navy">₹{total.toFixed(0)}</span>
+              <span className="font-bold text-navy">
+                <span className="mr-1 font-body text-[10px] font-normal uppercase text-navy/50">
+                  INR
+                </span>
+                ₹{total.toFixed(0)}
+              </span>
             </div>
+            <p className="text-right font-body text-[11px] text-navy/45">Inclusive of all taxes</p>
           </div>
         </div>
       </form>
