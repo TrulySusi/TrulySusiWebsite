@@ -86,7 +86,8 @@ export function AdminLoginForm() {
         fill
         priority
         sizes="100vw"
-        className="object-cover object-center"
+        className="object-cover"
+        style={{ objectPosition: "35% center" }}
       />
       <div className="absolute inset-0 bg-navy/45" />
 
@@ -95,7 +96,9 @@ export function AdminLoginForm() {
         className="relative z-10 w-full max-w-sm rounded-2xl border border-white/10 bg-black/50 p-8 text-center backdrop-blur-md"
       >
         <h1 className="font-display text-2xl text-white">Admin sign in</h1>
-        <p className="mt-1 font-body text-sm text-white/70">Sign in with your admin account.</p>
+        <p className="mt-1 text-center font-body text-sm text-white/70">
+          Sign in with your admin account.
+        </p>
 
         <input
           type="email"
@@ -134,11 +137,15 @@ export function AdminLoginForm() {
           {resetting ? "Sending…" : "Forgot password?"}
         </button>
         {resetSent && (
-          <p className="mt-1 font-body text-xs text-sage">Check your email for a reset link.</p>
+          <p className="mt-1 text-center font-body text-xs text-sage">
+            Check your email for a reset link.
+          </p>
         )}
-        {resetError && <p className="mt-1 font-body text-xs text-brass">{resetError}</p>}
+        {resetError && (
+          <p className="mt-1 text-center font-body text-xs text-brass">{resetError}</p>
+        )}
 
-        {error && <p className="mt-3 font-body text-sm text-brass">{error}</p>}
+        {error && <p className="mt-3 text-center font-body text-sm text-brass">{error}</p>}
 
         <button
           type="submit"
