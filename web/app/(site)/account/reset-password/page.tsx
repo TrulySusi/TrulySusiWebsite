@@ -1,11 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={null}>
+      <ResetPasswordForm />
+    </Suspense>
+  );
+}
+
+function ResetPasswordForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isAdmin = searchParams.get("next") === "admin";
   const [ready, setReady] = useState(false);
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -57,10 +67,10 @@ export default function ResetPasswordPage() {
         </p>
         <button
           type="button"
-          onClick={() => router.push("/checkout")}
+          onClick={() => router.push(isAdmin ? "/admin" : "/checkout")}
           className="mt-8 rounded-full bg-navy px-6 py-3.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-navy/90"
         >
-          Continue to checkout
+          {isAdmin ? "Continue to admin" : "Continue to checkout"}
         </button>
       </main>
     );
