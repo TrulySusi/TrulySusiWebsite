@@ -53,7 +53,7 @@ export function ReviewsWidget() {
         type="button"
         onClick={() => setOpen(true)}
         style={{ writingMode: "vertical-rl" }}
-        className="fixed right-0 top-1/2 z-40 -translate-y-1/2 rounded-l-lg bg-navy px-2.5 py-4 font-body text-xs font-semibold uppercase tracking-wider text-cream shadow-lg transition-colors hover:bg-navy/90"
+        className="fixed right-0 top-[62%] z-40 -translate-y-1/2 rounded-l-lg bg-navy px-2.5 py-4 font-body text-xs font-semibold uppercase tracking-wider text-cream shadow-lg transition-colors hover:bg-navy/90"
       >
         ★ Customer Reviews
       </button>

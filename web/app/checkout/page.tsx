@@ -147,6 +147,7 @@ export default function CheckoutPage() {
   // ---- discount code ----
   const [discountCode, setDiscountCode] = useState("");
   const [discountMessage, setDiscountMessage] = useState<string | null>(null);
+  const [discountError, setDiscountError] = useState<string | null>(null);
 
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -232,9 +233,13 @@ export default function CheckoutPage() {
   }
 
   function handleApplyDiscount() {
-    setDiscountMessage(
-      discountCode.trim() ? "Discount codes aren't available yet." : "Enter a code first.",
-    );
+    if (!discountCode.trim()) {
+      setDiscountError("Enter a code first.");
+      setDiscountMessage(null);
+      return;
+    }
+    setDiscountError(null);
+    setDiscountMessage("Discount codes aren't available yet.");
   }
 
   async function handleSignIn() {
@@ -656,17 +661,15 @@ export default function CheckoutPage() {
               />
             </div>
 
-            {loggedInEmail && (
-              <label className="mt-4 flex items-center gap-2.5 font-body text-sm text-navy/70">
-                <input
-                  type="checkbox"
-                  checked={saveAddress}
-                  onChange={(e) => setSaveAddress(e.target.checked)}
-                  className="h-4 w-4 rounded border-navy/30 text-navy focus:ring-1 focus:ring-navy/20"
-                />
-                Save this address for next time
-              </label>
-            )}
+            <label className="mt-4 flex items-center gap-2.5 font-body text-sm text-navy/70">
+              <input
+                type="checkbox"
+                checked={saveAddress}
+                onChange={(e) => setSaveAddress(e.target.checked)}
+                className="h-4 w-4 rounded border-navy/30 text-navy focus:ring-1 focus:ring-navy/20"
+              />
+              Save this information for next time
+            </label>
           </section>
 
           {/* Shipping method */}
@@ -814,13 +817,13 @@ export default function CheckoutPage() {
         </div>
 
         {/* Order summary */}
-        <div className="sticky top-24 rounded-2xl border border-navy/10 bg-white p-6">
-          <h2 className="font-display text-xl text-navy">Order summary</h2>
+        <div className="sticky top-24 rounded-2xl bg-navy p-6 text-cream">
+          <h2 className="font-display text-xl text-cream">Order summary</h2>
 
           <div className="mt-5 flex flex-col gap-4">
             {items.map((item) => (
               <div key={item.variantId} className="flex items-center gap-3">
-                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-navy/4">
+                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-cream/10">
                   <Image
                     src={item.imageUrl}
                     alt={item.productName}
@@ -828,17 +831,17 @@ export default function CheckoutPage() {
                     sizes="56px"
                     className="object-cover"
                   />
-                  <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-navy font-body text-[10px] font-bold text-cream">
+                  <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-brass font-body text-[10px] font-bold text-navy">
                     {item.quantity}
                   </span>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-body text-sm font-medium text-navy">
+                  <p className="truncate font-body text-sm font-medium text-cream">
                     {item.productName}
                   </p>
-                  <p className="font-body text-xs text-navy/50">{item.variantLabel}</p>
+                  <p className="font-body text-xs text-cream/55">{item.variantLabel}</p>
                 </div>
-                <span className="shrink-0 font-body text-sm font-bold text-navy">
+                <span className="shrink-0 font-body text-sm font-bold text-cream">
                   ₹{(item.priceInr * item.quantity).toFixed(0)}
                 </span>
               </div>
@@ -852,44 +855,48 @@ export default function CheckoutPage() {
               onChange={(e) => {
                 setDiscountCode(e.target.value);
                 setDiscountMessage(null);
+                setDiscountError(null);
               }}
-              className="min-w-0 flex-1 rounded-lg border border-navy/15 bg-white px-3 py-2.5 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 focus:ring-navy/20"
+              className="min-w-0 flex-1 rounded-lg border border-transparent bg-white px-3 py-2.5 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 focus:ring-brass/60"
             />
             <button
               type="button"
               onClick={handleApplyDiscount}
-              className="shrink-0 rounded-lg bg-navy/8 px-4 py-2.5 font-body text-sm font-semibold text-navy transition-colors hover:bg-navy/15"
+              className="shrink-0 rounded-lg bg-brass px-4 py-2.5 font-body text-sm font-semibold text-navy transition-colors hover:bg-brass/90"
             >
               Apply
             </button>
           </div>
+          {discountError && (
+            <p className="mt-1.5 font-body text-xs text-red-400">{discountError}</p>
+          )}
           {discountMessage && (
-            <p className="mt-1.5 font-body text-xs text-navy/50">{discountMessage}</p>
+            <p className="mt-1.5 font-body text-xs text-cream/55">{discountMessage}</p>
           )}
 
-          <div className="mt-5 space-y-2 border-t border-navy/10 pt-5 font-body text-sm">
+          <div className="mt-5 space-y-2 border-t border-cream/15 pt-5 font-body text-sm">
             <div className="flex justify-between">
-              <span className="text-navy/70">
+              <span className="text-cream/70">
                 Subtotal ({cartCount(items)} item{cartCount(items) === 1 ? "" : "s"})
               </span>
-              <span className="font-bold text-navy">₹{subtotal.toFixed(0)}</span>
+              <span className="font-bold text-cream">₹{subtotal.toFixed(0)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-navy/70">Shipping</span>
-              <span className={shippingFee === null ? "text-navy/50" : "font-bold text-navy"}>
+              <span className="text-cream/70">Shipping</span>
+              <span className={shippingFee === null ? "text-cream/50" : "font-bold text-cream"}>
                 {shippingFee === null ? "Enter address" : shippingFee === 0 ? "Free" : `₹${shippingFee}`}
               </span>
             </div>
-            <div className="flex justify-between border-t border-navy/10 pt-2 text-base">
-              <span className="font-semibold text-navy">Total</span>
-              <span className="font-bold text-navy">
-                <span className="mr-1 font-body text-[10px] font-normal uppercase text-navy/50">
+            <div className="flex justify-between border-t border-cream/15 pt-2 text-base">
+              <span className="font-semibold text-cream">Total</span>
+              <span className="font-bold text-cream">
+                <span className="mr-1 font-body text-[10px] font-normal uppercase text-cream/50">
                   INR
                 </span>
                 ₹{total.toFixed(0)}
               </span>
             </div>
-            <p className="text-right font-body text-[11px] text-navy/45">Inclusive of all taxes</p>
+            <p className="text-right font-body text-[11px] text-cream/45">Inclusive of all taxes</p>
           </div>
         </div>
       </form>
