@@ -30,6 +30,9 @@ export default function SignupPage() {
     confirm?: string;
   }>({});
   const [checkEmail, setCheckEmail] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resendSent, setResendSent] = useState(false);
+  const [resendError, setResendError] = useState<string | null>(null);
 
   useEffect(() => {
     if (mounted && items.length === 0) router.replace("/cart");
@@ -80,6 +83,21 @@ export default function SignupPage() {
     router.push("/checkout/delivery");
   }
 
+  async function handleResend() {
+    setResendError(null);
+    setResendSent(false);
+    setResending(true);
+    const supabase = createClient();
+    const { error: resendErr } = await supabase.auth.resend({ type: "signup", email });
+    setResending(false);
+
+    if (resendErr) {
+      setResendError(resendErr.message);
+      return;
+    }
+    setResendSent(true);
+  }
+
   if (checkEmail) {
     return (
       <main className="mx-auto max-w-sm px-6 py-24 text-center sm:px-10">
@@ -88,6 +106,20 @@ export default function SignupPage() {
           We&rsquo;ve sent a confirmation link to {email}. Once you&rsquo;ve confirmed, come back
           and log in.
         </p>
+
+        <button
+          type="button"
+          onClick={handleResend}
+          disabled={resending}
+          className="mt-4 font-body text-xs text-navy/50 hover:text-brass disabled:opacity-60"
+        >
+          {resending ? "Resending…" : "Didn't get it? Resend the email"}
+        </button>
+        {resendSent && (
+          <p className="mt-1 font-body text-xs text-sage">Confirmation email resent.</p>
+        )}
+        {resendError && <p className="mt-1 font-body text-xs text-brass">{resendError}</p>}
+
         <Link
           href="/checkout"
           className="mt-8 inline-block rounded-full bg-navy px-6 py-3.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-navy/90"
