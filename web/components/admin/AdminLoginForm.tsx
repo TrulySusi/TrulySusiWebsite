@@ -32,57 +32,49 @@ export function AdminLoginForm() {
   }
 
   return (
-    <main className="grid min-h-screen grid-cols-1 lg:grid-cols-2">
-      <div className="relative hidden lg:block">
-        <Image
-          src="/seed/susi_hands.jpg"
-          alt="Susi's hands making sweets"
-          fill
-          sizes="50vw"
-          priority
-          className="object-cover"
+    <main className="relative flex min-h-screen items-center justify-center px-6 py-16">
+      <Image
+        src="/brand/admin_bg.png"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover"
+      />
+      <div className="absolute inset-0 bg-navy/45" />
+
+      <form
+        onSubmit={handleSubmit}
+        className="relative z-10 w-full max-w-sm rounded-2xl bg-white p-8 shadow-2xl"
+      >
+        <h1 className="font-display text-2xl text-navy">Admin sign in</h1>
+        <p className="mt-1 font-body text-sm text-navy/60">Sign in with your admin account.</p>
+
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className={`mt-5 w-full ${fieldClass}`}
         />
-        <div className="absolute inset-0 bg-navy/25" />
-        <div className="absolute bottom-12 left-12 right-12">
-          <p className="font-display text-4xl italic text-white">Truly Susi&rsquo;s</p>
-          <p className="mt-1 font-body text-sm text-white/80">Sweeter together.</p>
-        </div>
-      </div>
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className={`mt-3 w-full ${fieldClass}`}
+        />
 
-      <div className="flex items-center justify-center bg-cream px-6 py-16">
-        <form
-          onSubmit={handleSubmit}
-          className="w-full max-w-sm rounded-2xl border border-navy/10 bg-white p-8"
+        {error && <p className="mt-3 font-body text-sm text-brass">{error}</p>}
+
+        <button
+          type="submit"
+          disabled={submitting}
+          className="mt-5 w-full rounded-full bg-navy px-6 py-3.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-navy/90 disabled:opacity-60"
         >
-          <h1 className="font-display text-2xl text-navy">Admin sign in</h1>
-          <p className="mt-1 font-body text-sm text-navy/60">Sign in with your admin account.</p>
-
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={`mt-5 w-full ${fieldClass}`}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={`mt-3 w-full ${fieldClass}`}
-          />
-
-          {error && <p className="mt-3 font-body text-sm text-brass">{error}</p>}
-
-          <button
-            type="submit"
-            disabled={submitting}
-            className="mt-5 w-full rounded-full bg-navy px-6 py-3.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-navy/90 disabled:opacity-60"
-          >
-            {submitting ? "Signing in…" : "Sign in"}
-          </button>
-        </form>
-      </div>
+          {submitting ? "Signing in…" : "Sign in"}
+        </button>
+      </form>
     </main>
   );
 }
