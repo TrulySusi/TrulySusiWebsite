@@ -4,6 +4,7 @@ import { AdminProductForm } from "@/components/admin/AdminProductForm";
 import { AdminVariantsEditor } from "@/components/admin/AdminVariantsEditor";
 import { AdminImagesEditor } from "@/components/admin/AdminImagesEditor";
 import { DeleteProductButton } from "@/components/admin/DeleteProductButton";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 
 export default async function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -24,22 +25,23 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
   if (!product) notFound();
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-8">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="font-display text-3xl text-navy">{product.name}</h1>
-          <p className="mt-1 font-body text-sm text-navy/60">/shop/{product.slug}</p>
-        </div>
-        <DeleteProductButton productId={id} name={product.name} />
-      </div>
-
-      <AdminProductForm product={product} categories={categories ?? []} />
-      <AdminVariantsEditor
-        productId={id}
-        variants={variants ?? []}
-        servingSizeG={product.serving_size_g}
+    <div>
+      <AdminPageHeader
+        title={product.name}
+        subtitle={`/shop/${product.slug}`}
+        action={<DeleteProductButton productId={id} name={product.name} />}
       />
-      <AdminImagesEditor productId={id} images={images ?? []} variants={variants ?? []} />
+      <div className="p-8">
+        <div className="mx-auto flex max-w-4xl flex-col gap-8">
+          <AdminProductForm product={product} categories={categories ?? []} />
+          <AdminVariantsEditor
+            productId={id}
+            variants={variants ?? []}
+            servingSizeG={product.serving_size_g}
+          />
+          <AdminImagesEditor productId={id} images={images ?? []} variants={variants ?? []} />
+        </div>
+      </div>
     </div>
   );
 }

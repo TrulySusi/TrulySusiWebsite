@@ -86,9 +86,9 @@ export function AdminLoginForm() {
         fill
         priority
         sizes="100vw"
-        className="object-contain"
+        className="object-cover object-center"
       />
-      <div className="absolute inset-0 bg-navy/55" />
+      <div className="absolute inset-0 bg-navy/45" />
 
       <form
         onSubmit={handleSubmit}

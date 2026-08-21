@@ -31,7 +31,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="flex min-h-screen bg-cream">
       <AdminNav name={admin.full_name ?? admin.email} role={admin.role} />
-      <main className="flex-1 overflow-x-auto p-8">{children}</main>
+      <main className="flex-1 overflow-x-auto">{children}</main>
     </div>
   );
 }
