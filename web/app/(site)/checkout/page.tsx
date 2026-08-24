@@ -194,34 +194,37 @@ export default function CheckoutPage() {
     setForm(delivery);
   }, [mounted, items.length, router, delivery]);
 
+  // Also called right after a mid-checkout sign-in (see handleSignIn) —
+  // that's a customer who wasn't authenticated yet when this page first
+  // mounted, so the mount-time effect below would've found no session and
+  // never loaded their saved address.
+  async function loadSavedAddresses() {
+    const session = await getCustomerSession();
+    if (!session) return;
+    const supabase = createClient();
+
+    const { data: rows } = await supabase
+      .from("addresses")
+      .select("*")
+      .eq("customer_id", session.id)
+      .order("is_default", { ascending: false })
+      .order("created_at", { ascending: false });
+    if (!rows || rows.length === 0) return;
+
+    const all: SavedAddress[] = rows.map((row) => ({
+      id: row.id,
+      ...rowToDeliveryDetails(row),
+    }));
+    setSavedAddresses(all);
+
+    const defaultAddress = all[0];
+    setForm((f) => ({ ...defaultAddress, email: f.email }));
+    setSelectedAddressId(defaultAddress.id);
+    setLoadedSaved(true);
+  }
+
   useEffect(() => {
     if (!mounted || delivery.firstName) return;
-
-    async function loadSavedAddresses() {
-      const session = await getCustomerSession();
-      if (!session) return;
-      const supabase = createClient();
-
-      const { data: rows } = await supabase
-        .from("addresses")
-        .select("*")
-        .eq("customer_id", session.id)
-        .order("is_default", { ascending: false })
-        .order("created_at", { ascending: false });
-      if (!rows || rows.length === 0) return;
-
-      const all: SavedAddress[] = rows.map((row) => ({
-        id: row.id,
-        ...rowToDeliveryDetails(row),
-      }));
-      setSavedAddresses(all);
-
-      const defaultAddress = all[0];
-      setForm((f) => ({ ...defaultAddress, email: f.email }));
-      setSelectedAddressId(defaultAddress.id);
-      setLoadedSaved(true);
-    }
-
     loadSavedAddresses();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mounted]);
@@ -302,6 +305,7 @@ export default function CheckoutPage() {
     setLoggedInEmail(data.user.email ?? form.email);
     setShowSignIn(false);
     setSignInPassword("");
+    await loadSavedAddresses();
     setSignInSubmitting(false);
   }
 
@@ -389,11 +393,13 @@ export default function CheckoutPage() {
         is_default: true,
       };
 
-      if (selectedAddressId) {
-        await supabase.from("addresses").update(row).eq("id", selectedAddressId);
-      } else {
-        await supabase.from("addresses").insert(row);
-      }
+      const { error: addressError } = selectedAddressId
+        ? await supabase.from("addresses").update(row).eq("id", selectedAddressId)
+        : await supabase.from("addresses").insert(row);
+      // Saving the address is a convenience, not something that should
+      // block placing the order — but a silent failure here means the
+      // customer never gets to see their address again, so log it.
+      if (addressError) console.error("Couldn't save address:", addressError.message);
     }
 
     try {
