@@ -50,7 +50,7 @@ export async function createRazorpayOrder(cartItems: CartItemInput[], delivery: 
   const variantIds = cartItems.map((i) => i.variantId);
   const { data: variants, error: variantsError } = await supabase
     .from("product_variants")
-    .select("id, label, price_inr, stock_qty, is_active, product_id, products ( name )")
+    .select("id, label, price_inr, is_active, product_id, products ( name )")
     .in("id", variantIds);
   if (variantsError) throw variantsError;
 
@@ -69,8 +69,8 @@ export async function createRazorpayOrder(cartItems: CartItemInput[], delivery: 
     if (!variant || !variant.is_active) {
       throw new Error("One of the items in your cart is no longer available.");
     }
-    if (item.quantity < 1 || item.quantity > variant.stock_qty) {
-      throw new Error(`Only ${variant.stock_qty} left of one of your items — please update your cart.`);
+    if (item.quantity < 1) {
+      throw new Error("Quantity must be at least 1.");
     }
     const product = variant.products as unknown as { name: string } | { name: string }[] | null;
     const productName = Array.isArray(product) ? product[0]?.name : product?.name;
@@ -305,18 +305,6 @@ export async function verifyRazorpayPayment(params: {
     verified_at: new Date().toISOString(),
   });
   if (paymentError) throw paymentError;
-
-  const { data: items } = await supabase
-    .from("order_items")
-    .select("variant_id, quantity")
-    .eq("order_id", dbOrderId);
-
-  for (const item of items ?? []) {
-    await supabase.rpc("decrement_variant_stock", {
-      variant_id: item.variant_id,
-      qty: item.quantity,
-    });
-  }
 
   return { dbOrderId };
 }

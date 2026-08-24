@@ -62,18 +62,10 @@ function StatCard({ label, value, color }: { label: string; value: number; color
 export default async function AdminDashboardPage() {
   const supabase = createAdminClient();
 
-  const [{ data: orders }, { data: lowStockVariants }] = await Promise.all([
-    supabase
-      .from("orders")
-      .select("id, order_number, customer_name, status, created_at")
-      .order("created_at", { ascending: false }),
-    supabase
-      .from("product_variants")
-      .select("id, label, stock_qty, product_id, products ( id, name )")
-      .eq("is_active", true)
-      .lte("stock_qty", 5)
-      .order("stock_qty", { ascending: true }),
-  ]);
+  const { data: orders } = await supabase
+    .from("orders")
+    .select("id, order_number, customer_name, status, created_at")
+    .order("created_at", { ascending: false });
 
   const allOrders = orders ?? [];
   const { start, end } = istDayRange();
@@ -123,8 +115,8 @@ export default async function AdminDashboardPage() {
             </div>
           </section>
 
-          <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <div className="rounded-2xl border border-navy/10 bg-white p-6">
+          <section>
+            <div className="max-w-2xl rounded-2xl border border-navy/10 bg-white p-6">
               <div className="flex items-center gap-2.5">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brass/15 text-brass">
                   <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
@@ -180,39 +172,6 @@ export default async function AdminDashboardPage() {
                     </div>
                   )}
                 </div>
-              )}
-            </div>
-
-            <div className="rounded-2xl border border-navy/10 bg-white p-6">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sage/20 text-sage">
-                  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
-                    <path d="M4 8h12l-1 9H5L4 8Z" strokeLinejoin="round" />
-                    <path d="M6.5 8V6a3.5 3.5 0 0 1 7 0v2" strokeLinecap="round" />
-                  </svg>
-                </div>
-                <h2 className="font-body text-lg font-semibold text-navy">Low stock</h2>
-              </div>
-              {!lowStockVariants || lowStockVariants.length === 0 ? (
-                <p className="mt-3 font-body text-sm text-navy/50">Nothing running low.</p>
-              ) : (
-                <ul className="mt-4 divide-y divide-navy/6">
-                  {lowStockVariants.map((v) => {
-                    const product = v.products as unknown as { id: string; name: string } | { id: string; name: string }[] | null;
-                    const p = Array.isArray(product) ? product[0] : product;
-                    return (
-                      <li key={v.id} className="flex items-center justify-between py-2">
-                        <Link
-                          href={p ? `/admin/products/${p.id}` : "/admin/products"}
-                          className="font-body text-sm font-semibold text-navy hover:text-brass"
-                        >
-                          {p?.name ?? "—"} <span className="font-normal text-navy/50">({v.label})</span>
-                        </Link>
-                        <span className="font-body text-xs font-semibold text-brass">{v.stock_qty} left</span>
-                      </li>
-                    );
-                  })}
-                </ul>
               )}
             </div>
           </section>

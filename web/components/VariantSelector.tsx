@@ -101,23 +101,12 @@ export function VariantSelector({
         <span className="font-body text-2xl font-bold text-navy">
           {lineTotal !== null ? `₹${lineTotal.toFixed(0)}` : ""}
         </span>
-
-        {selected && selected.stock_qty <= 5 && selected.stock_qty > 0 && (
-          <span className="font-body text-xs uppercase tracking-wide text-brass/80">
-            Only {selected.stock_qty} left
-          </span>
-        )}
-        {selected && selected.stock_qty === 0 && (
-          <span className="font-body text-xs uppercase tracking-wide text-navy/50">
-            Out of stock
-          </span>
-        )}
       </div>
 
       <button
         type="button"
         onClick={handleAddToCart}
-        disabled={!selected || selected.stock_qty === 0}
+        disabled={!selected}
         className="mt-6 w-full rounded-full bg-navy px-6 py-4 font-body text-sm font-semibold text-cream transition-colors hover:bg-navy/90 disabled:cursor-not-allowed disabled:bg-navy/15 disabled:text-navy/40"
       >
         {justAdded
