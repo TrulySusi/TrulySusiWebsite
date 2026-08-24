@@ -32,7 +32,7 @@ function OrderConfirmedContent() {
         <h1 className="mt-6 font-display text-4xl text-navy">Order confirmed!</h1>
         {orderNumber && (
           <p className="mt-3 font-body text-sm text-navy/60">
-            Order <span className="font-bold text-navy">{orderNumber}</span> is being prepared —
+            Order <span className="font-bold text-navy">{orderNumber}</span> is being prepared -
             you&rsquo;ll hear from us with delivery updates.
           </p>
         )}
