@@ -123,7 +123,13 @@ create table orders (
   shipped_at timestamptz,
   delivered_at timestamptz,
   notes text,
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  -- see migrations/0011 — set once each email actually sends, so a retry
+  -- can't send a duplicate
+  order_confirmation_email_sent_at timestamptz,
+  shipping_email_sent_at timestamptz,
+  cancellation_email_sent_at timestamptz,
+  refund_email_sent_at timestamptz
 );
 
 create table order_items (

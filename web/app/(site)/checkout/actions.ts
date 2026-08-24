@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createRazorpayClient } from "@/lib/razorpay";
 import { getCustomerSession } from "@/lib/customer-session";
 import { syncOrderToZohoIfNeeded } from "@/lib/zoho";
+import { sendOrderConfirmationEmail } from "@/lib/email";
 
 // Same dummy figures as /policies/shipping and the checkout page's own
 // display copy — kept in one place so the server-computed total can
@@ -306,6 +307,7 @@ export async function verifyRazorpayPayment(params: {
   if (paymentError) throw paymentError;
 
   await syncOrderToZohoIfNeeded(dbOrderId);
+  await sendOrderConfirmationEmail(dbOrderId);
 
   return { dbOrderId };
 }
