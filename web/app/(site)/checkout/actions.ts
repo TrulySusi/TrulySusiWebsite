@@ -159,6 +159,104 @@ export async function createRazorpayOrder(cartItems: CartItemInput[], delivery: 
   };
 }
 
+export type OrderSummaryItem = {
+  nameSnapshot: string;
+  variantLabelSnapshot: string;
+  quantity: number;
+  unitPriceInr: number;
+  lineTotalInr: number;
+  imageUrl: string | null;
+};
+
+export type OrderSummary = {
+  orderNumber: string;
+  customerName: string;
+  deliveryAddress: {
+    line1: string;
+    line2: string;
+    landmark: string;
+    city: string;
+    state: string;
+    pincode: string;
+    phone: string;
+  };
+  items: OrderSummaryItem[];
+  subtotalInr: number;
+  shippingFeeInr: number;
+  discountInr: number;
+  totalInr: number;
+};
+
+export async function getOrderSummary(orderNumber: string): Promise<OrderSummary | null> {
+  const supabase = createAdminClient();
+
+  const { data: order } = await supabase
+    .from("orders")
+    .select("id, order_number, customer_name, shipping_address, subtotal_inr, shipping_fee_inr, discount_inr, total_inr")
+    .eq("order_number", orderNumber)
+    .maybeSingle();
+  if (!order) return null;
+
+  const { data: items } = await supabase
+    .from("order_items")
+    .select("name_snapshot, variant_label_snapshot, quantity, unit_price_inr, line_total_inr, product_id")
+    .eq("order_id", order.id);
+
+  const productIds = [...new Set((items ?? []).map((i) => i.product_id).filter((id): id is string => !!id))];
+  const { data: images } = productIds.length
+    ? await supabase
+        .from("product_images")
+        .select("product_id, storage_path, sort_order")
+        .in("product_id", productIds)
+        .order("sort_order", { ascending: true })
+    : { data: [] as { product_id: string; storage_path: string; sort_order: number }[] };
+
+  const coverByProduct = new Map<string, string>();
+  for (const img of images ?? []) {
+    if (!coverByProduct.has(img.product_id)) coverByProduct.set(img.product_id, img.storage_path);
+  }
+
+  const base = process.env.NEXT_PUBLIC_SUPABASE_URL!.replace(/\/$/, "");
+  const address = order.shipping_address as {
+    line1: string;
+    line2: string;
+    landmark: string;
+    city: string;
+    state: string;
+    pincode: string;
+    phone: string;
+  };
+
+  return {
+    orderNumber: order.order_number,
+    customerName: order.customer_name,
+    deliveryAddress: {
+      line1: address.line1,
+      line2: address.line2,
+      landmark: address.landmark,
+      city: address.city,
+      state: address.state,
+      pincode: address.pincode,
+      phone: address.phone,
+    },
+    items: (items ?? []).map((item) => {
+      const storagePath = item.product_id ? coverByProduct.get(item.product_id) : undefined;
+      return {
+        nameSnapshot: item.name_snapshot,
+        variantLabelSnapshot: item.variant_label_snapshot,
+        quantity: item.quantity,
+        unitPriceInr: item.unit_price_inr,
+        lineTotalInr: item.line_total_inr,
+        imageUrl: storagePath ? `${base}/storage/v1/object/public/product-images/${storagePath}` : null,
+      };
+    }),
+    subtotalInr: order.subtotal_inr,
+    shippingFeeInr: order.shipping_fee_inr,
+    discountInr: order.discount_inr,
+    totalInr: order.total_inr,
+  };
+}
+
 export async function verifyRazorpayPayment(params: {
   dbOrderId: string;
   razorpayOrderId: string;
