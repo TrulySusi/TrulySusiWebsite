@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 const BRAND_LINKS = [
@@ -18,6 +19,7 @@ export function SiteFooter() {
       <div className="mx-auto max-w-6xl px-6 py-9 sm:px-10">
         <div className="grid grid-cols-2 gap-x-8 gap-y-7 sm:grid-cols-4">
           <div>
+            <Image src="/brand/06_kuruvi.png" alt="" width={28} height={26} className="mb-3 h-6 w-auto" />
             <h3 className="font-body text-sm font-bold text-cream">Get in touch</h3>
             <ul className="mt-3 space-y-2 font-body text-sm text-cream/80">
               <li>

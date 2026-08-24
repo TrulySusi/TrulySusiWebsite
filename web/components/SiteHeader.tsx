@@ -22,8 +22,19 @@ export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 bg-navy">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-5 sm:px-10 xl:grid xl:grid-cols-3 xl:gap-6">
+    <header className="sticky top-0 z-50 overflow-hidden bg-navy">
+      <div className="absolute inset-0">
+        <Image
+          src="/brand/05_sweet_making.png"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover object-center"
+          priority
+        />
+        <div className="absolute inset-0 bg-navy/88" />
+      </div>
+      <div className="relative mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-5 sm:px-10 xl:grid xl:grid-cols-3 xl:gap-6">
         <Link href="/" className="relative block h-8 w-28 shrink-0 justify-self-start sm:w-36">
           <Image
             src="/brand/wordmark-cream.png"
@@ -97,7 +108,7 @@ export function SiteHeader() {
       </div>
 
       {menuOpen && (
-        <div className="border-t border-cream/10 px-6 pb-6 pt-4 sm:px-10 xl:hidden">
+        <div className="relative border-t border-cream/10 bg-navy/40 px-6 pb-6 pt-4 sm:px-10 xl:hidden">
           <nav>
             <ul className="flex flex-col gap-1">
               {NAV_LINKS.map((link) => {

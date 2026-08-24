@@ -95,7 +95,7 @@ export function AdminNav({ name, role }: { name: string; role: string }) {
 
   return (
     <aside
-      className={`relative flex shrink-0 flex-col border-r border-navy/10 bg-white py-6 transition-all ${
+      className={`relative flex shrink-0 flex-col bg-navy py-6 shadow-[4px_0_16px_-8px_rgba(4,28,53,.3)] transition-all ${
         mounted && collapsed ? "w-[72px] items-center px-2" : "w-56 px-4"
       }`}
     >
@@ -103,7 +103,7 @@ export function AdminNav({ name, role }: { name: string; role: string }) {
         type="button"
         onClick={toggleCollapsed}
         aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        className="absolute -right-3 top-8 flex h-6 w-6 items-center justify-center rounded-full border border-navy/15 bg-white text-navy/50 shadow-sm transition-colors hover:text-navy"
+        className="absolute -right-3 top-8 flex h-6 w-6 items-center justify-center rounded-full border border-navy/15 bg-white text-navy/50 shadow-sm transition-colors hover:text-navy z-10"
       >
         <svg
           viewBox="0 0 20 20"
@@ -117,14 +117,14 @@ export function AdminNav({ name, role }: { name: string; role: string }) {
       </button>
 
       {collapsed ? (
-        <Image src="/brand/icon-navy.png" alt="Truly Susi's" width={32} height={32} className="h-8 w-8" />
+        <Image src="/brand/icon-cream.png" alt="Truly Susi's" width={32} height={32} className="h-8 w-8" />
       ) : (
-        <Link href="/admin" className="font-body text-xl font-semibold text-navy">
+        <Link href="/admin" className="font-body text-xl font-semibold text-cream">
           Truly Susi&rsquo;s
         </Link>
       )}
       {!collapsed && (
-        <p className="mt-0.5 font-body text-xs uppercase tracking-wider text-navy/40">Admin</p>
+        <p className="mt-0.5 font-body text-xs uppercase tracking-wider text-cream/50">Admin</p>
       )}
 
       <nav className={`mt-8 flex w-full flex-col gap-1 ${collapsed ? "items-center" : ""}`}>
@@ -152,7 +152,7 @@ export function AdminNav({ name, role }: { name: string; role: string }) {
               title={collapsed ? link.label : undefined}
               className={`flex items-center gap-2.5 rounded-lg px-3 py-2 font-body text-sm font-medium transition-colors ${
                 collapsed ? "justify-center" : ""
-              } ${active ? "bg-navy text-cream" : "text-navy/70 hover:bg-navy/6"}`}
+              } ${active ? "bg-brass text-navy" : "text-cream/70 hover:bg-white/10"}`}
             >
               {content}
             </Link>
@@ -162,14 +162,14 @@ export function AdminNav({ name, role }: { name: string; role: string }) {
 
       <div className={`mt-auto flex w-full flex-col ${collapsed ? "items-center" : ""}`}>
         {!collapsed && (
-          <Link href="/" className="mb-3 font-body text-xs text-navy/50 hover:text-brass">
+          <Link href="/" className="mb-3 font-body text-xs text-cream/50 hover:text-brass">
             ← View site
           </Link>
         )}
         {!collapsed && (
-          <div className="mb-2 border-t border-navy/10 pt-3">
-            <p className="truncate font-body text-sm font-medium text-navy">{name}</p>
-            <p className="font-body text-xs capitalize text-navy/45">{role}</p>
+          <div className="mb-2 border-t border-white/10 pt-3">
+            <p className="truncate font-body text-sm font-medium text-cream">{name}</p>
+            <p className="font-body text-xs capitalize text-cream/50">{role}</p>
           </div>
         )}
         <button
@@ -177,7 +177,7 @@ export function AdminNav({ name, role }: { name: string; role: string }) {
           onClick={handleLogout}
           disabled={loggingOut}
           title={collapsed ? "Log out" : undefined}
-          className={`flex items-center gap-2.5 rounded-lg px-3 py-2 font-body text-sm font-medium text-navy/70 transition-colors hover:bg-brass/10 hover:text-brass disabled:opacity-60 ${
+          className={`flex items-center gap-2.5 rounded-lg px-3 py-2 font-body text-sm font-medium text-cream/70 transition-colors hover:bg-white/10 hover:text-brass disabled:opacity-60 ${
             collapsed ? "justify-center" : "w-full"
           }`}
         >
