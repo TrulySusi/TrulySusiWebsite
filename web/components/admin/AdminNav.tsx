@@ -8,6 +8,18 @@ import { createClient } from "@/lib/supabase/client";
 
 const NAV_LINKS = [
   {
+    href: "/admin",
+    label: "Dashboard",
+    exact: true,
+    icon: (
+      <path
+        d="M3 3h6v6H3V3Z M11 3h6v4h-6V3Z M11 9h6v8h-6V9Z M3 11h6v6H3v-6Z"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    ),
+  },
+  {
     href: "/admin/products",
     label: "Products",
     icon: (
@@ -117,7 +129,7 @@ export function AdminNav({ name, role }: { name: string; role: string }) {
 
       <nav className={`mt-8 flex w-full flex-col gap-1 ${collapsed ? "items-center" : ""}`}>
         {NAV_LINKS.map((link) => {
-          const active = pathname === link.href || pathname.startsWith(`${link.href}/`);
+          const active = link.exact ? pathname === link.href : pathname === link.href || pathname.startsWith(`${link.href}/`);
           const content = (
             <>
               <svg
