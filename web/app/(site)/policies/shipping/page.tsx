@@ -77,9 +77,12 @@ export default function ShippingPage() {
           </h2>
           <p className="mt-3">
             If something arrives damaged, incomplete, or different from what you ordered, please
-            email us within 48 hours of delivery with a photo of what you received and your order
-            number. We&rsquo;ll arrange a replacement or refund once we&rsquo;ve verified the
-            issue.
+            email{" "}
+            <a href="mailto:support@trulysusi.in" className="text-brass hover:text-navy">
+              support@trulysusi.in
+            </a>{" "}
+            within 48 hours of delivery with a photo of what you received and your order number.
+            We&rsquo;ll arrange a replacement or refund once we&rsquo;ve verified the issue.
           </p>
         </section>
 
@@ -97,8 +100,8 @@ export default function ShippingPage() {
           <p className="mt-3">
             You can cancel an order within 2 hours of placing it, before it goes into production,
             by emailing{" "}
-            <a href="mailto:feedback@trulysusi.in" className="text-brass hover:text-navy">
-              feedback@trulysusi.in
+            <a href="mailto:support@trulysusi.in" className="text-brass hover:text-navy">
+              support@trulysusi.in
             </a>
             . Once your sweets are being made, we&rsquo;re usually not able to cancel the order.
           </p>
