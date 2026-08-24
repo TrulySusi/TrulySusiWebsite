@@ -133,6 +133,27 @@ export async function updatePaymentStatus(orderId: string, paymentStatus: string
   revalidatePath(`/admin/orders/${orderId}`);
 }
 
+export async function deleteOrder(orderId: string) {
+  await requireAdmin();
+  const supabase = createAdminClient();
+  // payments has no cascade FK to orders, unlike order_items — clear it first.
+  await supabase.from("payments").delete().eq("order_id", orderId);
+  const { error } = await supabase.from("orders").delete().eq("id", orderId);
+  if (error) throw error;
+
+  revalidatePath("/admin/orders");
+}
+
+export async function bulkDeleteOrders(orderIds: string[]) {
+  await requireAdmin();
+  const supabase = createAdminClient();
+  await supabase.from("payments").delete().in("order_id", orderIds);
+  const { error } = await supabase.from("orders").delete().in("id", orderIds);
+  if (error) throw error;
+
+  revalidatePath("/admin/orders");
+}
+
 export async function bulkMarkShipped(orderIds: string[], courierName: string) {
   await requireAdmin();
   const supabase = createAdminClient();

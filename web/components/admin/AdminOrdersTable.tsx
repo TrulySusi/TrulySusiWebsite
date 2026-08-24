@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { bulkMarkShipped } from "@/app/admin/orders/actions";
+import { useRouter } from "next/navigation";
+import { bulkDeleteOrders, bulkMarkShipped } from "@/app/admin/orders/actions";
 
 const STATUS_STYLES: Record<string, string> = {
   pending_payment: "bg-navy/10 text-navy/60",
@@ -11,6 +12,13 @@ const STATUS_STYLES: Record<string, string> = {
   shipped: "bg-brass/25 text-brass",
   delivered: "bg-sage/30 text-sage",
   cancelled: "bg-brass/10 text-brass/70",
+  refunded: "bg-navy/10 text-navy/50",
+};
+
+const PAYMENT_STYLES: Record<string, string> = {
+  pending: "bg-navy/10 text-navy/50",
+  paid: "bg-sage/20 text-sage",
+  failed: "bg-brass/15 text-brass",
   refunded: "bg-navy/10 text-navy/50",
 };
 
@@ -26,9 +34,11 @@ type Order = {
 };
 
 export function AdminOrdersTable({ orders }: { orders: Order[] }) {
+  const router = useRouter();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [courierName, setCourierName] = useState("");
   const [applying, setApplying] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   function toggle(id: string) {
     setSelected((prev) => {
@@ -49,6 +59,17 @@ export function AdminOrdersTable({ orders }: { orders: Order[] }) {
     setApplying(false);
     setSelected(new Set());
     setCourierName("");
+    router.refresh();
+  }
+
+  async function handleBulkDelete() {
+    if (!confirm(`Permanently delete ${selected.size} order${selected.size === 1 ? "" : "s"}? This can't be undone.`))
+      return;
+    setDeleting(true);
+    await bulkDeleteOrders([...selected]);
+    setDeleting(false);
+    setSelected(new Set());
+    router.refresh();
   }
 
   return (
@@ -65,10 +86,18 @@ export function AdminOrdersTable({ orders }: { orders: Order[] }) {
           <button
             type="button"
             onClick={handleMarkShipped}
-            disabled={applying}
+            disabled={applying || deleting}
             className="rounded-full bg-brass px-4 py-1.5 font-body text-xs font-semibold text-navy transition-colors hover:bg-brass/90 disabled:opacity-60"
           >
             {applying ? "Applying…" : "Mark as shipped"}
+          </button>
+          <button
+            type="button"
+            onClick={handleBulkDelete}
+            disabled={applying || deleting}
+            className="rounded-full border border-brass/50 px-4 py-1.5 font-body text-xs font-semibold text-brass transition-colors hover:bg-brass/10 disabled:opacity-60"
+          >
+            {deleting ? "Deleting…" : "Delete selected"}
           </button>
           <button
             type="button"
@@ -105,7 +134,7 @@ export function AdminOrdersTable({ orders }: { orders: Order[] }) {
               <th className="px-3 py-3 font-body text-xs font-semibold uppercase tracking-wide text-navy/50">
                 Items
               </th>
-              <th className="px-3 py-3 font-body text-xs font-semibold uppercase tracking-wide text-navy/50">
+              <th className="px-3 py-3 text-right font-body text-xs font-semibold uppercase tracking-wide text-navy/50">
                 Total
               </th>
               <th className="px-3 py-3 font-body text-xs font-semibold uppercase tracking-wide text-navy/50">
@@ -146,15 +175,21 @@ export function AdminOrdersTable({ orders }: { orders: Order[] }) {
                     </Link>
                   </td>
                   <td className="px-3 py-3 font-body text-sm text-navy">{order.customer_name}</td>
-                  <td className="px-3 py-3 font-body text-xs text-navy/60">
-                    {new Date(order.created_at).toLocaleDateString()}
+                  <td className="whitespace-nowrap px-3 py-3 font-body text-xs text-navy/60">
+                    {new Date(order.created_at).toLocaleDateString("en-IN", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
                   </td>
                   <td className="px-3 py-3 font-body text-xs text-navy/60">{itemCount}</td>
-                  <td className="px-3 py-3 font-body text-sm font-bold text-navy">
+                  <td className="px-3 py-3 text-right font-body text-sm font-bold text-navy">
                     ₹{order.total_inr.toFixed(0)}
                   </td>
                   <td className="px-3 py-3">
-                    <span className="font-body text-xs capitalize text-navy/60">
+                    <span
+                      className={`rounded-full px-2.5 py-1 font-body text-[11px] font-semibold capitalize ${PAYMENT_STYLES[order.payment_status] ?? "bg-navy/10 text-navy/60"}`}
+                    >
                       {order.payment_status}
                     </span>
                   </td>
