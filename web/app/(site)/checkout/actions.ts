@@ -1,0 +1,224 @@
+"use server";
+
+import crypto from "crypto";
+import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { createRazorpayClient } from "@/lib/razorpay";
+
+// Same dummy figures as /policies/shipping and the checkout page's own
+// display copy — kept in one place so the server-computed total can
+// never drift from what the customer was shown.
+const FREE_SHIPPING_THRESHOLD = 999;
+const FLAT_SHIPPING_FEE = 79;
+
+export type CartItemInput = {
+  variantId: string;
+  quantity: number;
+};
+
+export type DeliveryInput = {
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  line1: string;
+  line2: string;
+  landmark: string;
+  pincode: string;
+  city: string;
+  state: string;
+  notes: string;
+};
+
+async function generateOrderNumber(supabase: ReturnType<typeof createAdminClient>) {
+  const year = new Date().getFullYear();
+  const { count } = await supabase
+    .from("orders")
+    .select("id", { count: "exact", head: true })
+    .like("order_number", `TS-${year}-%`);
+  const seq = String((count ?? 0) + 1).padStart(6, "0");
+  return `TS-${year}-${seq}`;
+}
+
+export async function createRazorpayOrder(cartItems: CartItemInput[], delivery: DeliveryInput) {
+  if (cartItems.length === 0) throw new Error("Your cart is empty.");
+
+  const supabase = createAdminClient();
+
+  // Re-fetch real price/stock/active state for every item — the amount
+  // charged is computed from this, never from anything the client sent.
+  const variantIds = cartItems.map((i) => i.variantId);
+  const { data: variants, error: variantsError } = await supabase
+    .from("product_variants")
+    .select("id, label, price_inr, stock_qty, is_active, product_id, products ( name )")
+    .in("id", variantIds);
+  if (variantsError) throw variantsError;
+
+  const orderItems: {
+    product_id: string;
+    variant_id: string;
+    name_snapshot: string;
+    variant_label_snapshot: string;
+    unit_price_inr: number;
+    quantity: number;
+    line_total_inr: number;
+  }[] = [];
+
+  for (const item of cartItems) {
+    const variant = variants?.find((v) => v.id === item.variantId);
+    if (!variant || !variant.is_active) {
+      throw new Error("One of the items in your cart is no longer available.");
+    }
+    if (item.quantity < 1 || item.quantity > variant.stock_qty) {
+      throw new Error(`Only ${variant.stock_qty} left of one of your items — please update your cart.`);
+    }
+    const product = variant.products as unknown as { name: string } | { name: string }[] | null;
+    const productName = Array.isArray(product) ? product[0]?.name : product?.name;
+
+    orderItems.push({
+      product_id: variant.product_id,
+      variant_id: variant.id,
+      name_snapshot: productName ?? "",
+      variant_label_snapshot: variant.label,
+      unit_price_inr: variant.price_inr,
+      quantity: item.quantity,
+      line_total_inr: variant.price_inr * item.quantity,
+    });
+  }
+
+  const subtotal = orderItems.reduce((sum, i) => sum + i.line_total_inr, 0);
+  const shippingFee = subtotal > FREE_SHIPPING_THRESHOLD ? 0 : FLAT_SHIPPING_FEE;
+  const total = subtotal + shippingFee;
+
+  // Attach to the signed-in customer if there is one; guests get null.
+  const sessionSupabase = await createClient();
+  const {
+    data: { user },
+  } = await sessionSupabase.auth.getUser();
+
+  const shippingAddress = {
+    firstName: delivery.firstName,
+    lastName: delivery.lastName,
+    phone: delivery.phone,
+    alternatePhone: "",
+    label: "Home",
+    line1: delivery.line1,
+    line2: delivery.line2,
+    landmark: delivery.landmark,
+    pincode: delivery.pincode,
+    city: delivery.city,
+    state: delivery.state,
+    notes: delivery.notes,
+  };
+
+  const orderNumber = await generateOrderNumber(supabase);
+
+  const { data: order, error: orderError } = await supabase
+    .from("orders")
+    .insert({
+      order_number: orderNumber,
+      customer_id: user?.id ?? null,
+      customer_name: `${delivery.firstName} ${delivery.lastName}`.trim(),
+      customer_email: delivery.email,
+      customer_phone: delivery.phone,
+      shipping_address: shippingAddress,
+      subtotal_inr: subtotal,
+      shipping_fee_inr: shippingFee,
+      discount_inr: 0,
+      total_inr: total,
+      payment_method: "razorpay",
+      order_channel: "website",
+      status: "pending_payment",
+      payment_status: "pending",
+    })
+    .select("id")
+    .single();
+  if (orderError) throw orderError;
+
+  const { error: itemsError } = await supabase
+    .from("order_items")
+    .insert(orderItems.map((item) => ({ ...item, order_id: order.id })));
+  if (itemsError) throw itemsError;
+
+  const razorpay = createRazorpayClient();
+  const razorpayOrder = await razorpay.orders.create({
+    amount: Math.round(total * 100),
+    currency: "INR",
+    receipt: orderNumber,
+    notes: { order_id: order.id },
+  });
+
+  await supabase.from("orders").update({ razorpay_order_id: razorpayOrder.id }).eq("id", order.id);
+
+  return {
+    dbOrderId: order.id as string,
+    orderNumber,
+    razorpayOrderId: razorpayOrder.id,
+    amount: Number(razorpayOrder.amount),
+    currency: String(razorpayOrder.currency),
+  };
+}
+
+export async function verifyRazorpayPayment(params: {
+  dbOrderId: string;
+  razorpayOrderId: string;
+  razorpayPaymentId: string;
+  razorpaySignature: string;
+}) {
+  const { dbOrderId, razorpayOrderId, razorpayPaymentId, razorpaySignature } = params;
+  const supabase = createAdminClient();
+
+  const expectedSignature = crypto
+    .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
+    .update(`${razorpayOrderId}|${razorpayPaymentId}`)
+    .digest("hex");
+
+  if (expectedSignature !== razorpaySignature) {
+    throw new Error("Payment verification failed.");
+  }
+
+  const { data: order, error: fetchError } = await supabase
+    .from("orders")
+    .select("id, razorpay_order_id, status, total_inr")
+    .eq("id", dbOrderId)
+    .maybeSingle();
+  if (fetchError) throw fetchError;
+  if (!order || order.razorpay_order_id !== razorpayOrderId) {
+    throw new Error("Order mismatch.");
+  }
+  // Idempotent — a duplicate callback shouldn't double-process a paid order.
+  if (order.status === "paid") {
+    return { dbOrderId };
+  }
+
+  const { error: updateError } = await supabase
+    .from("orders")
+    .update({ status: "paid", payment_status: "paid" })
+    .eq("id", dbOrderId);
+  if (updateError) throw updateError;
+
+  const { error: paymentError } = await supabase.from("payments").insert({
+    order_id: dbOrderId,
+    razorpay_order_id: razorpayOrderId,
+    razorpay_payment_id: razorpayPaymentId,
+    razorpay_signature: razorpaySignature,
+    amount_inr: order.total_inr,
+    status: "captured",
+    verified_at: new Date().toISOString(),
+  });
+  if (paymentError) throw paymentError;
+
+  const { data: items } = await supabase
+    .from("order_items")
+    .select("variant_id, quantity")
+    .eq("order_id", dbOrderId);
+
+  for (const item of items ?? []) {
+    await supabase.rpc("decrement_variant_stock", {
+      variant_id: item.variant_id,
+      qty: item.quantity,
+    });
+  }
+
+  return { dbOrderId };
+}

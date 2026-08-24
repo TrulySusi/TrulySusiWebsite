@@ -248,3 +248,15 @@ create policy "approved reviews are publicly readable" on reviews
 -- no public policies at all — every read/write goes through server-side
 -- Route Handlers using the service-role key, or admin-authenticated queries.
 -- (RLS enabled with zero policies = default-deny for anon/authenticated roles.)
+
+-- ---------- functions ----------
+-- see migrations/0008: atomic stock decrement after a payment is verified,
+-- avoiding a read-then-write race under concurrent purchases.
+create or replace function decrement_variant_stock(variant_id uuid, qty int)
+returns void
+language sql
+as $$
+  update product_variants
+  set stock_qty = greatest(stock_qty - qty, 0)
+  where id = variant_id;
+$$;
