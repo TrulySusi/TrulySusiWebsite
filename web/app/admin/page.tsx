@@ -33,12 +33,28 @@ function istDayRange(now = new Date()) {
   return { start: new Date(startUtcMs), end: new Date(startUtcMs + 24 * 60 * 60 * 1000) };
 }
 
-function StatCard({ label, value, color }: { label: string; value: number; color: "navy" | "brass" | "sage" }) {
-  const colorClass = color === "brass" ? "text-brass" : color === "sage" ? "text-sage" : "text-navy";
+const CARD_STYLES = {
+  navy: { bg: "bg-navy/5", border: "border-navy/15", text: "text-navy" },
+  brass: { bg: "bg-brass/10", border: "border-brass/25", text: "text-brass" },
+  sage: { bg: "bg-sage/10", border: "border-sage/25", text: "text-sage" },
+};
+
+const STATUS_COLOR: Record<string, keyof typeof CARD_STYLES> = {
+  pending_payment: "navy",
+  paid: "sage",
+  packed: "brass",
+  shipped: "brass",
+  delivered: "sage",
+  cancelled: "navy",
+  refunded: "navy",
+};
+
+function StatCard({ label, value, color }: { label: string; value: number; color: keyof typeof CARD_STYLES }) {
+  const s = CARD_STYLES[color];
   return (
-    <div className="rounded-2xl border border-navy/10 bg-white p-5">
+    <div className={`rounded-2xl border p-5 ${s.bg} ${s.border}`}>
       <p className="font-body text-xs font-semibold uppercase tracking-wide text-navy/50">{label}</p>
-      <p className={`mt-2 font-body text-3xl font-bold ${colorClass}`}>{value}</p>
+      <p className={`mt-2 font-body text-3xl font-bold ${s.text}`}>{value}</p>
     </div>
   );
 }
@@ -102,14 +118,23 @@ export default async function AdminDashboardPage() {
             <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-4">
               <StatCard label="Total orders" value={allOrders.length} color="navy" />
               {STATUS_LIST.map((s) => (
-                <StatCard key={s} label={STATUS_LABELS[s]} value={statusCounts[s]} color="navy" />
+                <StatCard key={s} label={STATUS_LABELS[s]} value={statusCounts[s]} color={STATUS_COLOR[s]} />
               ))}
             </div>
           </section>
 
           <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <div className="rounded-2xl border border-navy/10 bg-white p-6">
-              <h2 className="font-body text-lg font-semibold text-navy">Needs attention</h2>
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brass/15 text-brass">
+                  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
+                    <path d="M10 2 18 17H2L10 2Z" strokeLinejoin="round" />
+                    <path d="M10 8v4" strokeLinecap="round" />
+                    <circle cx="10" cy="14.5" r="0.75" fill="currentColor" stroke="none" />
+                  </svg>
+                </div>
+                <h2 className="font-body text-lg font-semibold text-navy">Needs attention</h2>
+              </div>
               {stuckPayments.length === 0 && awaitingPacking.length === 0 ? (
                 <p className="mt-3 font-body text-sm text-navy/50">Nothing waiting — all caught up.</p>
               ) : (
@@ -159,7 +184,15 @@ export default async function AdminDashboardPage() {
             </div>
 
             <div className="rounded-2xl border border-navy/10 bg-white p-6">
-              <h2 className="font-body text-lg font-semibold text-navy">Low stock</h2>
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sage/20 text-sage">
+                  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
+                    <path d="M4 8h12l-1 9H5L4 8Z" strokeLinejoin="round" />
+                    <path d="M6.5 8V6a3.5 3.5 0 0 1 7 0v2" strokeLinecap="round" />
+                  </svg>
+                </div>
+                <h2 className="font-body text-lg font-semibold text-navy">Low stock</h2>
+              </div>
               {!lowStockVariants || lowStockVariants.length === 0 ? (
                 <p className="mt-3 font-body text-sm text-navy/50">Nothing running low.</p>
               ) : (
