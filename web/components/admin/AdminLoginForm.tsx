@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { createAdminSessionClient } from "@/lib/supabase/admin-session-client";
 
 function isValidEmail(v: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
@@ -45,7 +45,7 @@ export function AdminLoginForm() {
     if (!validate()) return;
 
     setSubmitting(true);
-    const supabase = createClient();
+    const supabase = createAdminSessionClient();
     const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
     setSubmitting(false);
 
@@ -65,7 +65,7 @@ export function AdminLoginForm() {
     }
 
     setResetting(true);
-    const supabase = createClient();
+    const supabase = createAdminSessionClient();
     const { error: resetErr } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/account/reset-password?next=admin`,
     });

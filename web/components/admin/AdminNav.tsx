@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createAdminSessionClient } from "@/lib/supabase/admin-session-client";
 
 const NAV_LINKS = [
   {
@@ -88,7 +88,7 @@ export function AdminNav({ name, role }: { name: string; role: string }) {
 
   async function handleLogout() {
     setLoggingOut(true);
-    const supabase = createClient();
+    const supabase = createAdminSessionClient();
     await supabase.auth.signOut();
     router.refresh();
   }
