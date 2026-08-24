@@ -63,8 +63,8 @@ export default function ShippingPage() {
           <p className="mt-3">
             Please double-check your delivery address and phone number at checkout. If you spot a
             mistake, write to us at{" "}
-            <a href="mailto:feedback@trulysusi.in" className="text-brass hover:text-navy">
-              feedback@trulysusi.in
+            <a href="mailto:support@trulysusi.in" className="text-brass hover:text-navy">
+              support@trulysusi.in
             </a>{" "}
             as soon as possible , we can usually correct it before your order is
             dispatched, but not after.
@@ -111,8 +111,8 @@ export default function ShippingPage() {
           <h2 className="font-display text-2xl text-navy">Contact</h2>
           <p className="mt-3">
             For anything shipping-related, write to us at{" "}
-            <a href="mailto:feedback@trulysusi.in" className="text-brass hover:text-navy">
-              feedback@trulysusi.in
+            <a href="mailto:support@trulysusi.in" className="text-brass hover:text-navy">
+              support@trulysusi.in
             </a>
             .
           </p>
