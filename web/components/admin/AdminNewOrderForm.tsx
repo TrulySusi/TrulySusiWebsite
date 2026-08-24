@@ -105,7 +105,7 @@ export function AdminNewOrderForm({ products }: { products: Product[] }) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
       <section className="rounded-2xl border border-navy/10 bg-white p-6">
-        <h2 className="font-display text-xl text-navy">Customer &amp; delivery</h2>
+        <h2 className="font-body text-xl font-semibold text-navy">Customer &amp; delivery</h2>
         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="First name">
             <input name="first_name" required className={fieldClass} />
@@ -169,7 +169,7 @@ export function AdminNewOrderForm({ products }: { products: Product[] }) {
       </section>
 
       <section className="rounded-2xl border border-navy/10 bg-white p-6">
-        <h2 className="font-display text-xl text-navy">Items</h2>
+        <h2 className="font-body text-xl font-semibold text-navy">Items</h2>
         <div className="mt-4 flex flex-col gap-3">
           {items.map((item, index) => {
             const variants = variantsFor(item.productId);
@@ -250,7 +250,7 @@ export function AdminNewOrderForm({ products }: { products: Product[] }) {
       </section>
 
       <section className="rounded-2xl border border-navy/10 bg-white p-6">
-        <h2 className="font-display text-xl text-navy">Payment</h2>
+        <h2 className="font-body text-xl font-semibold text-navy">Payment</h2>
         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="Shipping fee (₹)">
             <input name="shipping_fee_inr" type="number" step="0.01" defaultValue={0} className={fieldClass} />
