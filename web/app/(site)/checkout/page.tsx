@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Script from "next/script";
@@ -179,9 +179,15 @@ export default function CheckoutPage() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  // Set right before clearing the cart on a successful payment, so the
+  // empty-cart guard below doesn't redirect to /cart instead of letting
+  // the order-confirmed navigation happen.
+  const orderCompletedRef = useRef(false);
+
   useEffect(() => {
     if (!mounted) return;
     if (items.length === 0) {
+      if (orderCompletedRef.current) return;
       router.replace("/cart");
       return;
     }
@@ -424,6 +430,7 @@ export default function CheckoutPage() {
               razorpayPaymentId: response.razorpay_payment_id,
               razorpaySignature: response.razorpay_signature,
             });
+            orderCompletedRef.current = true;
             clearCart();
             clearCheckoutDraft();
             router.push(`/order-confirmed?order=${result.orderNumber}`);
