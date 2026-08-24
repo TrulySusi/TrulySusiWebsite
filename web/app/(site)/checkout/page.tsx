@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import Script from "next/script";
 import { useRouter } from "next/navigation";
 import { cartCount, cartSubtotal, useCartStore } from "@/lib/cart-store";
 import {
@@ -13,6 +14,31 @@ import {
 } from "@/lib/checkout-store";
 import { createClient } from "@/lib/supabase/client";
 import { INDIA_STATES, lookupPincode } from "@/lib/india";
+import { createRazorpayOrder, verifyRazorpayPayment } from "./actions";
+
+type RazorpayResponse = {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+};
+
+type RazorpayOptions = {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  order_id: string;
+  prefill?: { name?: string; email?: string; contact?: string };
+  theme?: { color?: string };
+  handler: (response: RazorpayResponse) => void;
+  modal?: { ondismiss?: () => void };
+};
+
+declare global {
+  interface Window {
+    Razorpay?: new (options: RazorpayOptions) => { open: () => void };
+  }
+}
 
 const ADDRESS_LABELS: AddressLabel[] = ["Home", "Work", "Other"];
 
@@ -90,6 +116,7 @@ function rowToDeliveryDetails(row: {
 export default function CheckoutPage() {
   const router = useRouter();
   const items = useCartStore((s) => s.items);
+  const clearCart = useCartStore((s) => s.clear);
   const delivery = useCheckoutStore((s) => s.delivery);
   const setDelivery = useCheckoutStore((s) => s.setDelivery);
   const clearCheckoutDraft = useCheckoutStore((s) => s.clear);
@@ -151,7 +178,6 @@ export default function CheckoutPage() {
 
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     if (!mounted) return;
@@ -368,8 +394,58 @@ export default function CheckoutPage() {
       }
     }
 
-    setSubmitting(false);
-    setSaved(true);
+    try {
+      const cartItemsForServer = items.map((i) => ({ variantId: i.variantId, quantity: i.quantity }));
+      const result = await createRazorpayOrder(cartItemsForServer, form);
+
+      if (!window.Razorpay) {
+        setError("Payment couldn't load. Please refresh the page and try again.");
+        setSubmitting(false);
+        return;
+      }
+
+      const razorpay = new window.Razorpay({
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+        amount: result.amount,
+        currency: result.currency,
+        name: "Truly Susi's",
+        order_id: result.razorpayOrderId,
+        prefill: {
+          name: `${form.firstName} ${form.lastName}`.trim(),
+          email: form.email,
+          contact: form.phone,
+        },
+        theme: { color: "#1c2b4a" },
+        handler: async (response) => {
+          try {
+            await verifyRazorpayPayment({
+              dbOrderId: result.dbOrderId,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+            });
+            clearCart();
+            clearCheckoutDraft();
+            router.push(`/order-confirmed?order=${result.orderNumber}`);
+          } catch {
+            setError(
+              "Your payment went through but we couldn't confirm the order automatically — please contact us with your payment ID so we can sort it out.",
+            );
+            setSubmitting(false);
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setError("Payment cancelled — you can try again whenever you're ready.");
+            setSubmitting(false);
+          },
+        },
+      });
+      razorpay.open();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Couldn't start payment. Please try again.");
+      setSubmitting(false);
+    }
   }
 
   const subtotal = cartSubtotal(items);
@@ -696,21 +772,15 @@ export default function CheckoutPage() {
               All transactions are secure and encrypted.
             </p>
 
-            <div className="mt-4 rounded-lg border border-navy/15 px-4 py-3 opacity-60">
+            <div className="mt-4 rounded-lg border border-navy bg-navy/5 px-4 py-3">
               <p className="font-body text-sm font-semibold text-navy">
                 Razorpay Secure (UPI, Card, NetBanking, Wallets)
               </p>
               <p className="mt-1 font-body text-xs text-navy/50">
-                Coming soon — online payment isn&rsquo;t live yet.
+                You&rsquo;ll be taken to Razorpay&rsquo;s secure payment window after clicking Pay
+                now.
               </p>
             </div>
-
-            {saved && (
-              <p className="mt-4 rounded-lg bg-sage/10 px-4 py-3 font-body text-sm text-navy">
-                Your details are saved. We&rsquo;ll open online payment here as soon as it&rsquo;s
-                live — no need to redo anything.
-              </p>
-            )}
           </section>
 
           {/* Billing address */}
@@ -812,7 +882,7 @@ export default function CheckoutPage() {
             disabled={submitting}
             className="w-full rounded-full bg-navy px-6 py-3.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-navy/90 disabled:opacity-60"
           >
-            {submitting ? "Processing…" : saved ? "Details saved ✓" : "Pay now"}
+            {submitting ? "Processing…" : "Pay now"}
           </button>
         </div>
 
@@ -904,6 +974,7 @@ export default function CheckoutPage() {
           </div>
         </div>
       </form>
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
     </main>
   );
 }
