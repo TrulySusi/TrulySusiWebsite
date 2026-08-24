@@ -1,7 +1,19 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import Image from "next/image";
 import { updateOrderFulfillment, updatePaymentStatus } from "@/app/admin/orders/actions";
+import { placeholderImageUrl } from "@/lib/catalog-shared";
+
+function SectionHeading({ icon, color, children }: { icon: ReactNode; color: "brass" | "sage"; children: ReactNode }) {
+  const colorClass = color === "brass" ? "bg-brass/15 text-brass" : "bg-sage/20 text-sage";
+  return (
+    <div className="flex items-center gap-2.5">
+      <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${colorClass}`}>{icon}</div>
+      <h2 className="font-body text-xl font-semibold text-navy">{children}</h2>
+    </div>
+  );
+}
 
 const fieldClass =
   "w-full rounded-lg border border-navy/15 bg-white px-4 py-3 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 focus:ring-navy/20";
@@ -66,6 +78,7 @@ type OrderItem = {
   unit_price_inr: number;
   quantity: number;
   line_total_inr: number;
+  imageUrl?: string | null;
 };
 
 export function AdminOrderDetail({ order, items }: { order: Order; items: OrderItem[] }) {
@@ -101,12 +114,31 @@ export function AdminOrderDetail({ order, items }: { order: Order; items: OrderI
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_360px]">
       <div className="flex flex-col gap-6">
         <section className="rounded-2xl border border-navy/10 bg-white p-6">
-          <h2 className="font-body text-xl font-semibold text-navy">Items</h2>
+          <SectionHeading
+            color="brass"
+            icon={
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
+                <path d="M5 7h10l-1 10H6L5 7Z" strokeLinejoin="round" />
+                <path d="M7.5 7V5a2.5 2.5 0 0 1 5 0v2" strokeLinecap="round" />
+              </svg>
+            }
+          >
+            Items
+          </SectionHeading>
           <div className="mt-4 flex flex-col gap-2">
             {items.map((item) => (
-              <div key={item.id} className="flex items-center justify-between border-b border-navy/6 py-2 last:border-0">
-                <div>
-                  <p className="font-body text-sm font-medium text-navy">{item.name_snapshot}</p>
+              <div key={item.id} className="flex items-center gap-3 border-b border-navy/6 py-2 last:border-0">
+                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-cream">
+                  <Image
+                    src={item.imageUrl ?? placeholderImageUrl(item.name_snapshot)}
+                    alt={item.name_snapshot}
+                    fill
+                    className="object-cover"
+                    sizes="48px"
+                  />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-body text-sm font-medium text-navy">{item.name_snapshot}</p>
                   <p className="font-body text-xs text-navy/50">
                     {item.variant_label_snapshot} &middot; qty {item.quantity} &middot; ₹{item.unit_price_inr} each
                   </p>
@@ -138,7 +170,17 @@ export function AdminOrderDetail({ order, items }: { order: Order; items: OrderI
         </section>
 
         <section className="rounded-2xl border border-navy/10 bg-white p-6">
-          <h2 className="font-body text-xl font-semibold text-navy">Customer &amp; delivery</h2>
+          <SectionHeading
+            color="sage"
+            icon={
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
+                <path d="M10 18s6-5.2 6-9.6A6 6 0 0 0 4 8.4C4 12.8 10 18 10 18Z" strokeLinejoin="round" />
+                <circle cx="10" cy="8.4" r="2" />
+              </svg>
+            }
+          >
+            Customer &amp; delivery
+          </SectionHeading>
           <div className="mt-4 grid grid-cols-1 gap-x-6 gap-y-1 font-body text-sm text-navy/80 sm:grid-cols-2">
             <p>
               <span className="text-navy/50">Name: </span>
@@ -168,7 +210,19 @@ export function AdminOrderDetail({ order, items }: { order: Order; items: OrderI
         </section>
 
         <form onSubmit={handleSubmit} className="rounded-2xl border border-navy/10 bg-white p-6">
-          <h2 className="font-body text-xl font-semibold text-navy">Fulfillment</h2>
+          <SectionHeading
+            color="brass"
+            icon={
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
+                <path d="M2 6h9v8H2V6Z" strokeLinejoin="round" />
+                <path d="M11 9h4l3 3v2h-7V9Z" strokeLinejoin="round" />
+                <circle cx="6" cy="15.5" r="1.5" />
+                <circle cx="14.5" cy="15.5" r="1.5" />
+              </svg>
+            }
+          >
+            Fulfillment
+          </SectionHeading>
           <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label="Order status">
               <select name="status" defaultValue={order.status} className={fieldClass}>
@@ -207,7 +261,17 @@ export function AdminOrderDetail({ order, items }: { order: Order; items: OrderI
       </div>
 
       <div className="rounded-2xl border border-navy/10 bg-white p-6">
-        <h2 className="font-body text-xl font-semibold text-navy">Payment</h2>
+        <SectionHeading
+          color="sage"
+          icon={
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
+              <rect x="2" y="5" width="16" height="10" rx="1.5" />
+              <path d="M2 8.5h16" />
+            </svg>
+          }
+        >
+          Payment
+        </SectionHeading>
         <p className="mt-3 font-body text-sm text-navy/70">
           <span className="text-navy/50">Method: </span>
           <span className="capitalize">{order.payment_method}</span>

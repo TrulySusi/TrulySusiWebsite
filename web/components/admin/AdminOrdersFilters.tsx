@@ -29,6 +29,7 @@ export function AdminOrdersFilters() {
     else params.delete("q");
     if (merged.status) params.set("status", merged.status);
     else params.delete("status");
+    params.delete("page");
     startTransition(() => {
       router.push(`/admin/orders${params.toString() ? `?${params.toString()}` : ""}`);
     });
