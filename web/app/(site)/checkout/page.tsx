@@ -13,6 +13,7 @@ import {
   type DeliveryDetails,
 } from "@/lib/checkout-store";
 import { createClient } from "@/lib/supabase/client";
+import { getCustomerSession } from "@/lib/customer-session";
 import { INDIA_STATES, lookupPincode } from "@/lib/india";
 import { createRazorpayOrder, verifyRazorpayPayment } from "./actions";
 
@@ -130,9 +131,8 @@ export default function CheckoutPage() {
   const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => {
-      setLoggedInEmail(data.user?.email ?? null);
+    getCustomerSession().then((session) => {
+      setLoggedInEmail(session?.email ?? null);
       setSessionChecked(true);
     });
   }, []);
@@ -198,16 +198,14 @@ export default function CheckoutPage() {
     if (!mounted || delivery.firstName) return;
 
     async function loadSavedAddresses() {
+      const session = await getCustomerSession();
+      if (!session) return;
       const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
 
       const { data: rows } = await supabase
         .from("addresses")
         .select("*")
-        .eq("customer_id", user.id)
+        .eq("customer_id", session.id)
         .order("is_default", { ascending: false })
         .order("created_at", { ascending: false });
       if (!rows || rows.length === 0) return;
@@ -364,19 +362,17 @@ export default function CheckoutPage() {
     setSubmitting(true);
     setDelivery(form);
 
-    const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const customerSession = await getCustomerSession();
 
-    if (user && saveAddress) {
+    if (customerSession && saveAddress) {
+      const supabase = createClient();
       await supabase
         .from("addresses")
         .update({ is_default: false })
-        .eq("customer_id", user.id);
+        .eq("customer_id", customerSession.id);
 
       const row = {
-        customer_id: user.id,
+        customer_id: customerSession.id,
         full_name: `${form.firstName} ${form.lastName}`.trim(),
         first_name: form.firstName,
         last_name: form.lastName,

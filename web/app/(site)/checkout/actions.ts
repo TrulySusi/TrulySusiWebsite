@@ -1,9 +1,9 @@
 "use server";
 
 import crypto from "crypto";
-import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createRazorpayClient } from "@/lib/razorpay";
+import { getCustomerSession } from "@/lib/customer-session";
 
 // Same dummy figures as /policies/shipping and the checkout page's own
 // display copy — kept in one place so the server-computed total can
@@ -90,11 +90,9 @@ export async function createRazorpayOrder(cartItems: CartItemInput[], delivery: 
   const shippingFee = subtotal > FREE_SHIPPING_THRESHOLD ? 0 : FLAT_SHIPPING_FEE;
   const total = subtotal + shippingFee;
 
-  // Attach to the signed-in customer if there is one; guests get null.
-  const sessionSupabase = await createClient();
-  const {
-    data: { user },
-  } = await sessionSupabase.auth.getUser();
+  // Attach to the signed-in customer if there is one; guests (and admins
+  // shopping the storefront themselves) get null.
+  const customerSession = await getCustomerSession();
 
   const shippingAddress = {
     firstName: delivery.firstName,
@@ -117,7 +115,7 @@ export async function createRazorpayOrder(cartItems: CartItemInput[], delivery: 
     .from("orders")
     .insert({
       order_number: orderNumber,
-      customer_id: user?.id ?? null,
+      customer_id: customerSession?.id ?? null,
       customer_name: `${delivery.firstName} ${delivery.lastName}`.trim(),
       customer_email: delivery.email,
       customer_phone: delivery.phone,
