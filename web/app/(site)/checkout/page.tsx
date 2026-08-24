@@ -203,12 +203,13 @@ export default function CheckoutPage() {
     if (!session) return;
     const supabase = createClient();
 
-    const { data: rows } = await supabase
+    const { data: rows, error } = await supabase
       .from("addresses")
       .select("*")
       .eq("customer_id", session.id)
       .order("is_default", { ascending: false })
       .order("created_at", { ascending: false });
+    if (error) console.error("Couldn't load saved addresses:", error.message);
     if (!rows || rows.length === 0) return;
 
     const all: SavedAddress[] = rows.map((row) => ({

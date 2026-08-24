@@ -91,7 +91,8 @@ create table addresses (
   state text not null,
   pincode text not null,
   notes text,                    -- delivery instructions, see migrations/0004
-  is_default boolean not null default false
+  is_default boolean not null default false,
+  created_at timestamptz not null default now()  -- see migrations/0009
 );
 
 -- ---------- orders ----------
