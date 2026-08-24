@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getAdminSession } from "@/lib/admin-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { syncOrderToZohoIfNeeded } from "@/lib/zoho";
 
 async function requireAdmin() {
   const { admin } = await getAdminSession();
@@ -93,6 +94,8 @@ export async function createManualOrder(formData: FormData, items: ManualOrderIt
   );
   if (itemsError) throw itemsError;
 
+  if (paymentStatus === "paid") await syncOrderToZohoIfNeeded(order.id);
+
   revalidatePath("/admin/orders");
   return order.id as string;
 }
@@ -128,6 +131,8 @@ export async function updatePaymentStatus(orderId: string, paymentStatus: string
     .update({ payment_status: paymentStatus })
     .eq("id", orderId);
   if (error) throw error;
+
+  if (paymentStatus === "paid") await syncOrderToZohoIfNeeded(orderId);
 
   revalidatePath("/admin/orders");
   revalidatePath(`/admin/orders/${orderId}`);

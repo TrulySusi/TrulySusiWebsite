@@ -115,6 +115,8 @@ create table orders (
   razorpay_order_id text,
   gst_invoice_number text,
   zoho_deal_id text,
+  zoho_invoice_id text,          -- see migrations/0010; set once synced, so a
+                                  -- retry doesn't create a duplicate invoice
   courier_name text,             -- see migrations/0007
   tracking_number text,
   tracking_url text,

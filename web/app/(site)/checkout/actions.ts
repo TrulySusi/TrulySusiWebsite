@@ -4,6 +4,7 @@ import crypto from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createRazorpayClient } from "@/lib/razorpay";
 import { getCustomerSession } from "@/lib/customer-session";
+import { syncOrderToZohoIfNeeded } from "@/lib/zoho";
 
 // Same dummy figures as /policies/shipping and the checkout page's own
 // display copy — kept in one place so the server-computed total can
@@ -303,6 +304,8 @@ export async function verifyRazorpayPayment(params: {
     verified_at: new Date().toISOString(),
   });
   if (paymentError) throw paymentError;
+
+  await syncOrderToZohoIfNeeded(dbOrderId);
 
   return { dbOrderId };
 }
