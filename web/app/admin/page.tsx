@@ -136,7 +136,7 @@ export default async function AdminDashboardPage() {
                 <h2 className="font-body text-lg font-semibold text-navy">Needs attention</h2>
               </div>
               {stuckPayments.length === 0 && awaitingPacking.length === 0 ? (
-                <p className="mt-3 font-body text-sm text-navy/50">Nothing waiting — all caught up.</p>
+                <p className="mt-3 font-body text-sm text-navy/50">Nothing waiting - all caught up.</p>
               ) : (
                 <div className="mt-4 space-y-5">
                   {stuckPayments.length > 0 && (
