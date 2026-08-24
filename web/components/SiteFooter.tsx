@@ -15,10 +15,19 @@ const POLICY_LINKS = [
 
 export function SiteFooter() {
   return (
-    <footer className="bg-navy text-cream">
+    <footer className="relative bg-navy text-cream">
+      {/* On wide screens there's real empty margin left of the centered
+          content — put a bigger kuruvi there instead of in the flow. */}
+      <Image
+        src="/brand/06_kuruvi.png"
+        alt=""
+        width={220}
+        height={205}
+        className="pointer-events-none absolute left-10 top-1/2 hidden h-28 w-auto -translate-y-1/2 2xl:block"
+      />
       <div className="mx-auto max-w-6xl px-6 py-9 sm:px-10">
         <div className="flex flex-col gap-8 sm:flex-row sm:gap-10">
-          <div className="flex shrink-0 items-start sm:w-32">
+          <div className="flex shrink-0 items-start sm:w-32 2xl:hidden">
             <Image src="/brand/06_kuruvi.png" alt="" width={112} height={104} className="h-16 w-auto sm:h-20" />
           </div>
 
