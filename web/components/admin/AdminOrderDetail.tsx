@@ -101,7 +101,7 @@ export function AdminOrderDetail({ order, items }: { order: Order; items: OrderI
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_360px]">
       <div className="flex flex-col gap-6">
         <section className="rounded-2xl border border-navy/10 bg-white p-6">
-          <h2 className="font-display text-xl text-navy">Items</h2>
+          <h2 className="font-body text-xl font-semibold text-navy">Items</h2>
           <div className="mt-4 flex flex-col gap-2">
             {items.map((item) => (
               <div key={item.id} className="flex items-center justify-between border-b border-navy/6 py-2 last:border-0">
@@ -138,7 +138,7 @@ export function AdminOrderDetail({ order, items }: { order: Order; items: OrderI
         </section>
 
         <section className="rounded-2xl border border-navy/10 bg-white p-6">
-          <h2 className="font-display text-xl text-navy">Customer &amp; delivery</h2>
+          <h2 className="font-body text-xl font-semibold text-navy">Customer &amp; delivery</h2>
           <div className="mt-4 grid grid-cols-1 gap-x-6 gap-y-1 font-body text-sm text-navy/80 sm:grid-cols-2">
             <p>
               <span className="text-navy/50">Name: </span>
@@ -168,7 +168,7 @@ export function AdminOrderDetail({ order, items }: { order: Order; items: OrderI
         </section>
 
         <form onSubmit={handleSubmit} className="rounded-2xl border border-navy/10 bg-white p-6">
-          <h2 className="font-display text-xl text-navy">Fulfillment</h2>
+          <h2 className="font-body text-xl font-semibold text-navy">Fulfillment</h2>
           <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label="Order status">
               <select name="status" defaultValue={order.status} className={fieldClass}>
@@ -207,7 +207,7 @@ export function AdminOrderDetail({ order, items }: { order: Order; items: OrderI
       </div>
 
       <div className="rounded-2xl border border-navy/10 bg-white p-6">
-        <h2 className="font-display text-xl text-navy">Payment</h2>
+        <h2 className="font-body text-xl font-semibold text-navy">Payment</h2>
         <p className="mt-3 font-body text-sm text-navy/70">
           <span className="text-navy/50">Method: </span>
           <span className="capitalize">{order.payment_method}</span>

@@ -19,7 +19,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     return (
       <main className="flex min-h-screen items-center justify-center bg-cream px-6">
         <div className="max-w-sm rounded-2xl border border-navy/10 bg-white p-8 text-center">
-          <h1 className="font-display text-2xl text-navy">Not authorized</h1>
+          <h1 className="font-body text-2xl font-semibold text-navy">Not authorized</h1>
           <p className="mt-3 font-body text-sm text-navy/60">
             {authedEmail} isn&rsquo;t set up as an admin. Ask the site owner to add you.
           </p>

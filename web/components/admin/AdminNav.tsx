@@ -107,7 +107,7 @@ export function AdminNav({ name, role }: { name: string; role: string }) {
       {collapsed ? (
         <Image src="/brand/icon-navy.png" alt="Truly Susi's" width={32} height={32} className="h-8 w-8" />
       ) : (
-        <Link href="/admin" className="font-display text-xl text-navy">
+        <Link href="/admin" className="font-body text-xl font-semibold text-navy">
           Truly Susi&rsquo;s
         </Link>
       )}

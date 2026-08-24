@@ -215,7 +215,7 @@ export function AdminVariantsEditor({
 }) {
   return (
     <div className="rounded-2xl border border-navy/10 bg-white p-6">
-      <h2 className="font-display text-xl text-navy">Variants</h2>
+      <h2 className="font-body text-xl font-semibold text-navy">Variants</h2>
       <p className="mt-1 font-body text-xs text-navy/50">
         Pack sizes customers can choose from — price, stock, and whether it&rsquo;s buyable.
       </p>

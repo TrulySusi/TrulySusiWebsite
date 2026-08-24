@@ -84,7 +84,7 @@ export function AdminReviewsList({ reviews }: { reviews: Review[] }) {
   return (
     <div className="flex flex-col gap-8">
       <section>
-        <h2 className="font-display text-xl text-navy">
+        <h2 className="font-body text-xl font-semibold text-navy">
           Pending ({pending.length})
         </h2>
         <div className="mt-4 flex flex-col gap-3">
@@ -97,7 +97,7 @@ export function AdminReviewsList({ reviews }: { reviews: Review[] }) {
       </section>
 
       <section>
-        <h2 className="font-display text-xl text-navy">
+        <h2 className="font-body text-xl font-semibold text-navy">
           Approved ({approved.length})
         </h2>
         <div className="mt-4 flex flex-col gap-3">

@@ -97,7 +97,7 @@ export function AdminImagesEditor({
 
   return (
     <div className="rounded-2xl border border-navy/10 bg-white p-6">
-      <h2 className="font-display text-xl text-navy">Images</h2>
+      <h2 className="font-body text-xl font-semibold text-navy">Images</h2>
       <p className="mt-1 font-body text-xs text-navy/50">
         Up to {MAX_IMAGES}. The first image is the cover shown on the site. Leave "which pack
         size" unset for a general photo shown for every variant, or tag it to one variant (e.g. a

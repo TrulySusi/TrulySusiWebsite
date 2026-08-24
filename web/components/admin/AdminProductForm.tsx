@@ -91,7 +91,7 @@ export function AdminProductForm({
       onSubmit={handleSubmit}
       className="flex flex-col gap-4 rounded-2xl border border-navy/10 bg-white p-6"
     >
-      <h2 className="font-display text-xl text-navy">Basic info</h2>
+      <h2 className="font-body text-xl font-semibold text-navy">Basic info</h2>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Field label="Product name">
