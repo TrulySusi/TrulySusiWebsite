@@ -5,7 +5,17 @@ const ACCOUNTS_DOMAIN = process.env.ZOHO_ACCOUNTS_DOMAIN!;
 const API_DOMAIN = process.env.ZOHO_API_DOMAIN!;
 const ORG_ID = process.env.ZOHO_ORGANIZATION_ID!;
 
-async function getAccessToken(): Promise<string> {
+// Zoho access tokens last ~1hr; caching in-module avoids requesting a new
+// one on every single API call within a sync (a full order sync makes 4+
+// calls) and avoids hitting Zoho's own rate limit on the token endpoint.
+// Cross-request reuse isn't guaranteed on serverless (a cold isolate has
+// no cache), but that's a bonus on top of the within-request savings this
+// is actually needed for.
+let cachedToken: { value: string; expiresAt: number } | null = null;
+
+export async function getZohoAccessToken(): Promise<string> {
+  if (cachedToken && cachedToken.expiresAt > Date.now()) return cachedToken.value;
+
   const res = await fetch(`${ACCOUNTS_DOMAIN}/oauth/v2/token`, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -18,11 +28,22 @@ async function getAccessToken(): Promise<string> {
   });
   const data = await res.json();
   if (!data.access_token) throw new Error(`Zoho token refresh failed: ${JSON.stringify(data)}`);
-  return data.access_token as string;
+
+  // expires_in is seconds (3600); refresh 5 minutes early to be safe.
+  cachedToken = { value: data.access_token, expiresAt: Date.now() + (data.expires_in - 300) * 1000 };
+  return cachedToken.value;
+}
+
+class ZohoApiError extends Error {
+  code: number;
+  constructor(path: string, code: number, message: string) {
+    super(`Zoho API error (${path}): ${message}`);
+    this.code = code;
+  }
 }
 
 async function zohoFetch(path: string, init: RequestInit = {}) {
-  const token = await getAccessToken();
+  const token = await getZohoAccessToken();
   const url = new URL(`${API_DOMAIN}${path}`);
   if (!url.searchParams.has("organization_id")) url.searchParams.set("organization_id", ORG_ID);
 
@@ -31,9 +52,15 @@ async function zohoFetch(path: string, init: RequestInit = {}) {
     headers: { ...(init.headers ?? {}), Authorization: `Zoho-oauthtoken ${token}`, "Content-Type": "application/json" },
   });
   const data = await res.json();
-  if (data.code !== 0) throw new Error(`Zoho API error (${path}): ${data.message}`);
+  if (data.code !== 0) throw new ZohoApiError(path, data.code, data.message);
   return data;
 }
+
+// Zoho's "contact name already exists" error — thrown when the email-based
+// lookup found nothing but the name collides with an unrelated existing
+// contact (e.g. the shop owner's own name, or a repeat customer whose
+// earlier order used a different email).
+const CONTACT_NAME_EXISTS = 3062;
 
 // Contacts are matched by email — Zoho only indexes the email that's set on
 // a contact_person, not a flat top-level field, so it has to be nested here
@@ -43,15 +70,24 @@ async function findOrCreateContact(params: { name: string; email: string; phone:
   const existing = search.contacts?.[0];
   if (existing) return existing.contact_id as string;
 
-  const created = await zohoFetch(`/books/v3/contacts`, {
-    method: "POST",
-    body: JSON.stringify({
-      contact_name: params.name,
-      contact_type: "customer",
-      contact_persons: [{ first_name: params.name, email: params.email, phone: params.phone, is_primary_contact: true }],
-    }),
-  });
-  return created.contact.contact_id as string;
+  try {
+    const created = await zohoFetch(`/books/v3/contacts`, {
+      method: "POST",
+      body: JSON.stringify({
+        contact_name: params.name,
+        contact_type: "customer",
+        contact_persons: [{ first_name: params.name, email: params.email, phone: params.phone, is_primary_contact: true }],
+      }),
+    });
+    return created.contact.contact_id as string;
+  } catch (err) {
+    if (err instanceof ZohoApiError && err.code === CONTACT_NAME_EXISTS) {
+      const byName = await zohoFetch(`/books/v3/contacts?contact_name=${encodeURIComponent(params.name)}`);
+      const match = byName.contacts?.[0];
+      if (match) return match.contact_id as string;
+    }
+    throw err;
+  }
 }
 
 export type ZohoOrderInput = {

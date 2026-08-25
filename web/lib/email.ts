@@ -2,11 +2,11 @@ import "server-only";
 import { Resend } from "resend";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { productImageUrl } from "@/lib/catalog-shared";
+import { getZohoAccessToken } from "@/lib/zoho";
 
 const FROM_ADDRESS = "Truly Susi's <orders@trulysusi.in>";
 const SUPPORT_EMAIL = "support@trulysusi.in";
 
-const ZOHO_ACCOUNTS_DOMAIN = process.env.ZOHO_ACCOUNTS_DOMAIN!;
 const ZOHO_API_DOMAIN = process.env.ZOHO_API_DOMAIN!;
 const ZOHO_ORG_ID = process.env.ZOHO_ORGANIZATION_ID!;
 
@@ -72,21 +72,9 @@ Truly Susi&rsquo;s &middot; Salem, Tamil Nadu
 
 async function fetchZohoInvoicePdf(invoiceId: string): Promise<Buffer | null> {
   try {
-    const tokenRes = await fetch(`${ZOHO_ACCOUNTS_DOMAIN}/oauth/v2/token`, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        grant_type: "refresh_token",
-        client_id: process.env.ZOHO_CLIENT_ID!,
-        client_secret: process.env.ZOHO_CLIENT_SECRET!,
-        refresh_token: process.env.ZOHO_REFRESH_TOKEN!,
-      }),
-    });
-    const tokenData = await tokenRes.json();
-    if (!tokenData.access_token) return null;
-
+    const token = await getZohoAccessToken();
     const pdfRes = await fetch(`${ZOHO_API_DOMAIN}/books/v3/invoices/${invoiceId}?organization_id=${ZOHO_ORG_ID}&accept=pdf`, {
-      headers: { Authorization: `Zoho-oauthtoken ${tokenData.access_token}` },
+      headers: { Authorization: `Zoho-oauthtoken ${token}` },
     });
     if (!pdfRes.ok) return null;
     return Buffer.from(await pdfRes.arrayBuffer());
@@ -173,7 +161,7 @@ export async function sendOrderConfirmationEmail(orderId: string): Promise<void>
       from: FROM_ADDRESS,
       to: order.customer_email,
       replyTo: SUPPORT_EMAIL,
-      subject: `Order confirmed — ${order.order_number}`,
+      subject: `Order confirmed · ${order.order_number}`,
       html: emailShell(`Your order ${order.order_number} is confirmed.`, body),
       attachments: attachments.length ? attachments : undefined,
     });
@@ -226,7 +214,7 @@ export async function sendShippingNotificationEmail(orderId: string): Promise<vo
       from: FROM_ADDRESS,
       to: order.customer_email,
       replyTo: SUPPORT_EMAIL,
-      subject: `Your order has shipped — ${order.order_number}`,
+      subject: `Your order has shipped · ${order.order_number}`,
       html: emailShell(`Order ${order.order_number} has shipped.`, body),
     });
     if (error) throw new Error(error.message);
@@ -258,7 +246,7 @@ async function sendStatusChangeEmail(params: {
         ? `
       <h1 style="font-family:Georgia,'Times New Roman',serif;font-size:22px;margin:0 0 8px;">Order cancelled</h1>
       <p style="margin:0 0 24px;color:#1c2b4a99;">Your order ${order.order_number} has been cancelled.</p>
-      <p style="margin:0;">If you were charged, a refund of ${formatInr(order.total_inr)} will be initiated — banks typically take 5&ndash;7 business days to reflect it once processed.</p>
+      <p style="margin:0;">If you were charged, a refund of ${formatInr(order.total_inr)} will be initiated. Banks typically take 5&ndash;7 business days to reflect it once processed.</p>
     `
         : `
       <h1 style="font-family:Georgia,'Times New Roman',serif;font-size:22px;margin:0 0 8px;">Your refund has been processed</h1>
@@ -271,7 +259,7 @@ async function sendStatusChangeEmail(params: {
       from: FROM_ADDRESS,
       to: order.customer_email,
       replyTo: SUPPORT_EMAIL,
-      subject: params.kind === "cancelled" ? `Order cancelled — ${order.order_number}` : `Refund processed — ${order.order_number}`,
+      subject: params.kind === "cancelled" ? `Order cancelled · ${order.order_number}` : `Refund processed · ${order.order_number}`,
       html: emailShell(params.kind === "cancelled" ? "Your order has been cancelled." : "Your refund has been processed.", body),
     });
     if (error) throw new Error(error.message);
