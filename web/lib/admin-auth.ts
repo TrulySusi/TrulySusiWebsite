@@ -1,5 +1,5 @@
 import "server-only";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminSessionServerClient } from "@/lib/supabase/admin-session-server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export type AdminUser = {
@@ -17,7 +17,7 @@ export async function getAdminSession(): Promise<{
   authedEmail: string | null;
   admin: AdminUser | null;
 }> {
-  const supabase = await createClient();
+  const supabase = await createAdminSessionServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

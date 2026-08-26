@@ -1,9 +1,11 @@
 "use server";
 
 import crypto from "crypto";
-import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createRazorpayClient } from "@/lib/razorpay";
+import { getCustomerSession } from "@/lib/customer-session";
+import { syncOrderToZohoIfNeeded } from "@/lib/zoho";
+import { sendOrderConfirmationEmail } from "@/lib/email";
 
 // Same dummy figures as /policies/shipping and the checkout page's own
 // display copy — kept in one place so the server-computed total can
@@ -50,7 +52,7 @@ export async function createRazorpayOrder(cartItems: CartItemInput[], delivery: 
   const variantIds = cartItems.map((i) => i.variantId);
   const { data: variants, error: variantsError } = await supabase
     .from("product_variants")
-    .select("id, label, price_inr, stock_qty, is_active, product_id, products ( name )")
+    .select("id, label, price_inr, is_active, product_id, products ( name )")
     .in("id", variantIds);
   if (variantsError) throw variantsError;
 
@@ -69,8 +71,8 @@ export async function createRazorpayOrder(cartItems: CartItemInput[], delivery: 
     if (!variant || !variant.is_active) {
       throw new Error("One of the items in your cart is no longer available.");
     }
-    if (item.quantity < 1 || item.quantity > variant.stock_qty) {
-      throw new Error(`Only ${variant.stock_qty} left of one of your items — please update your cart.`);
+    if (item.quantity < 1) {
+      throw new Error("Quantity must be at least 1.");
     }
     const product = variant.products as unknown as { name: string } | { name: string }[] | null;
     const productName = Array.isArray(product) ? product[0]?.name : product?.name;
@@ -90,11 +92,9 @@ export async function createRazorpayOrder(cartItems: CartItemInput[], delivery: 
   const shippingFee = subtotal > FREE_SHIPPING_THRESHOLD ? 0 : FLAT_SHIPPING_FEE;
   const total = subtotal + shippingFee;
 
-  // Attach to the signed-in customer if there is one; guests get null.
-  const sessionSupabase = await createClient();
-  const {
-    data: { user },
-  } = await sessionSupabase.auth.getUser();
+  // Attach to the signed-in customer if there is one; guests (and admins
+  // shopping the storefront themselves) get null.
+  const customerSession = await getCustomerSession();
 
   const shippingAddress = {
     firstName: delivery.firstName,
@@ -117,7 +117,7 @@ export async function createRazorpayOrder(cartItems: CartItemInput[], delivery: 
     .from("orders")
     .insert({
       order_number: orderNumber,
-      customer_id: user?.id ?? null,
+      customer_id: customerSession?.id ?? null,
       customer_name: `${delivery.firstName} ${delivery.lastName}`.trim(),
       customer_email: delivery.email,
       customer_phone: delivery.phone,
@@ -306,17 +306,8 @@ export async function verifyRazorpayPayment(params: {
   });
   if (paymentError) throw paymentError;
 
-  const { data: items } = await supabase
-    .from("order_items")
-    .select("variant_id, quantity")
-    .eq("order_id", dbOrderId);
-
-  for (const item of items ?? []) {
-    await supabase.rpc("decrement_variant_stock", {
-      variant_id: item.variant_id,
-      qty: item.quantity,
-    });
-  }
+  await syncOrderToZohoIfNeeded(dbOrderId);
+  await sendOrderConfirmationEmail(dbOrderId);
 
   return { dbOrderId };
 }

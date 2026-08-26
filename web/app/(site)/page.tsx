@@ -162,12 +162,12 @@ export default async function Home() {
             className="mx-auto h-[104px] w-auto"
           />
           <h2 className="mt-6 font-display text-3xl text-navy">Meet our Kuruvi</h2>
-          <p className="mx-auto mt-4 max-w-md font-body text-[15px] leading-relaxed text-navy/70">
+          <p className="mx-auto mt-4 max-w-md text-center font-body text-[15px] leading-relaxed text-navy/70">
             In Tamil, குருவி means House Sparrow, the little bird that always finds its way
             home. Our Kuruvi is the messenger that flies between Susi&rsquo;s kitchen and your
             doorstep, carrying something sweet every time.
           </p>
-          <p className="mt-4 font-body text-xs uppercase tracking-[0.2em] text-navy/45">
+          <p className="mt-4 text-center font-body text-xs uppercase tracking-[0.2em] text-navy/45">
             குருவி -  The Little Messenger
           </p>
         </div>

@@ -23,7 +23,7 @@ export default async function AdminProductsPage({
   let query = supabase
     .from("products")
     .select(
-      "id, slug, name, status, sort_order, product_variants ( price_inr, is_active, stock_qty ), categories ( name ), product_images ( storage_path, sort_order )",
+      "id, slug, name, status, sort_order, product_variants ( price_inr, is_active ), categories ( name ), product_images ( storage_path, sort_order )",
     )
     .order("sort_order");
 
@@ -60,11 +60,9 @@ export default async function AdminProductsPage({
               const variants = (p.product_variants ?? []) as {
                 price_inr: number;
                 is_active: boolean;
-                stock_qty: number;
               }[];
               const activePrices = variants.filter((v) => v.is_active).map((v) => v.price_inr);
               const price = activePrices.length > 0 ? Math.min(...activePrices) : null;
-              const totalStock = variants.reduce((sum, v) => sum + v.stock_qty, 0);
               const category = p.categories as unknown as { name: string }[] | { name: string } | null;
               const categoryName = Array.isArray(category) ? category[0]?.name : category?.name;
 
@@ -103,13 +101,12 @@ export default async function AdminProductsPage({
                       {categoryName ?? "Uncategorized"} &middot; {variants.length} variant
                       {variants.length === 1 ? "" : "s"}
                     </p>
-                    <div className="mt-auto flex items-center justify-between pt-3">
+                    <div className="mt-auto pt-3">
                       {price !== null ? (
                         <span className="font-body text-sm font-bold text-navy">from ₹{price}</span>
                       ) : (
                         <span className="font-body text-xs text-navy/40">No price set</span>
                       )}
-                      <span className="font-body text-xs text-navy/50">stock {totalStock}</span>
                     </div>
                   </div>
                 </Link>

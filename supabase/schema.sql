@@ -91,7 +91,8 @@ create table addresses (
   state text not null,
   pincode text not null,
   notes text,                    -- delivery instructions, see migrations/0004
-  is_default boolean not null default false
+  is_default boolean not null default false,
+  created_at timestamptz not null default now()  -- see migrations/0009
 );
 
 -- ---------- orders ----------
@@ -114,13 +115,21 @@ create table orders (
   razorpay_order_id text,
   gst_invoice_number text,
   zoho_deal_id text,
+  zoho_invoice_id text,          -- see migrations/0010; set once synced, so a
+                                  -- retry doesn't create a duplicate invoice
   courier_name text,             -- see migrations/0007
   tracking_number text,
   tracking_url text,
   shipped_at timestamptz,
   delivered_at timestamptz,
   notes text,
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  -- see migrations/0011 — set once each email actually sends, so a retry
+  -- can't send a duplicate
+  order_confirmation_email_sent_at timestamptz,
+  shipping_email_sent_at timestamptz,
+  cancellation_email_sent_at timestamptz,
+  refund_email_sent_at timestamptz
 );
 
 create table order_items (

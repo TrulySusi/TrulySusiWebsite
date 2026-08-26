@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { createAdminSessionClient } from "@/lib/supabase/admin-session-client";
 
 export default function ResetPasswordPage() {
   return (
@@ -26,10 +27,13 @@ function ResetPasswordForm() {
   useEffect(() => {
     // Supabase's client detects the recovery token in the URL and
     // establishes a session automatically; just wait for that to settle
-    // before showing the form.
-    const supabase = createClient();
+    // before showing the form. Admin resets need to land in the admin
+    // session cookie, not the customer one, so they end up actually
+    // signed into /admin afterward.
+    const supabase = isAdmin ? createAdminSessionClient() : createClient();
     supabase.auth.getSession().then(() => setReady(true));
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAdmin]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -45,7 +49,7 @@ function ResetPasswordForm() {
     }
 
     setSubmitting(true);
-    const supabase = createClient();
+    const supabase = isAdmin ? createAdminSessionClient() : createClient();
     const { error: updateError } = await supabase.auth.updateUser({ password });
     setSubmitting(false);
 

@@ -1,35 +1,10 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
-import {
-  defaultVariant,
-  productPhotoUrl,
-  startingPrice,
-  tamilName,
-  type ProductSummary,
-} from "@/lib/catalog-shared";
-import { useCartStore } from "@/lib/cart-store";
+import { productPhotoUrl, startingPrice, tamilName, type ProductSummary } from "@/lib/catalog-shared";
 
 export function ProductCard({ product }: { product: ProductSummary }) {
   const price = startingPrice(product.product_variants);
-  const variant = defaultVariant(product.product_variants);
   const tamil = tamilName(product.slug);
-  const addItem = useCartStore((s) => s.addItem);
-
-  function handleQuickAdd(e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!variant) return;
-    addItem({
-      variantId: variant.id,
-      productSlug: product.slug,
-      productName: product.name,
-      variantLabel: variant.label,
-      priceInr: variant.price_inr,
-      imageUrl: productPhotoUrl(product),
-    });
-  }
 
   return (
     <Link
@@ -58,24 +33,11 @@ export function ProductCard({ product }: { product: ProductSummary }) {
             {product.short_description}
           </p>
         )}
-        <div className="mt-3 flex items-center justify-between gap-3">
-          {price !== null ? (
-            <span className="whitespace-nowrap font-body text-base font-bold text-navy">
-              From &#8377;{price.toFixed(0)}
-            </span>
-          ) : (
-            <span />
-          )}
-          {variant && (
-            <button
-              type="button"
-              onClick={handleQuickAdd}
-              className="rounded-full bg-brass/15 px-4 py-1.5 font-body text-xs font-semibold text-navy transition-colors hover:bg-navy hover:text-cream"
-            >
-              Add
-            </button>
-          )}
-        </div>
+        {price !== null && (
+          <p className="mt-3 whitespace-nowrap font-body text-base font-bold text-navy">
+            From &#8377;{price.toFixed(0)}
+          </p>
+        )}
       </div>
     </Link>
   );
