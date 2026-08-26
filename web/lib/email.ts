@@ -161,7 +161,7 @@ export async function sendOrderConfirmationEmail(orderId: string): Promise<void>
       from: FROM_ADDRESS,
       to: order.customer_email,
       replyTo: SUPPORT_EMAIL,
-      subject: `Order confirmed · ${order.order_number}`,
+      subject: `Order confirmed: ${order.order_number}`,
       html: emailShell(`Your order ${order.order_number} is confirmed.`, body),
       attachments: attachments.length ? attachments : undefined,
     });
@@ -214,7 +214,7 @@ export async function sendShippingNotificationEmail(orderId: string): Promise<vo
       from: FROM_ADDRESS,
       to: order.customer_email,
       replyTo: SUPPORT_EMAIL,
-      subject: `Your order has shipped · ${order.order_number}`,
+      subject: `Your order has shipped: ${order.order_number}`,
       html: emailShell(`Order ${order.order_number} has shipped.`, body),
     });
     if (error) throw new Error(error.message);
@@ -259,7 +259,7 @@ async function sendStatusChangeEmail(params: {
       from: FROM_ADDRESS,
       to: order.customer_email,
       replyTo: SUPPORT_EMAIL,
-      subject: params.kind === "cancelled" ? `Order cancelled · ${order.order_number}` : `Refund processed · ${order.order_number}`,
+      subject: params.kind === "cancelled" ? `Order cancelled: ${order.order_number}` : `Refund processed: ${order.order_number}`,
       html: emailShell(params.kind === "cancelled" ? "Your order has been cancelled." : "Your refund has been processed.", body),
     });
     if (error) throw new Error(error.message);
