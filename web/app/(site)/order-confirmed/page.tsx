@@ -15,6 +15,7 @@ function formatInr(amount: number) {
 function OrderConfirmedContent() {
   const searchParams = useSearchParams();
   const orderNumber = searchParams.get("order");
+  const addressNotSaved = searchParams.get("addressNotSaved") === "1";
   const [summary, setSummary] = useState<OrderSummary | null | undefined>(undefined);
   const [signedIn, setSignedIn] = useState(false);
 
@@ -43,6 +44,14 @@ function OrderConfirmedContent() {
           </p>
         )}
       </div>
+
+      {addressNotSaved && (
+        <div className="mt-8 rounded-xl bg-brass/10 px-5 py-4 text-center font-body text-sm text-brass">
+          You were signed out partway through checkout, so we couldn&rsquo;t save this delivery
+          address to your account — your order itself is unaffected. Sign in again next time to
+          keep your addresses on file.
+        </div>
+      )}
 
       {summary && (
         <div className="mt-10 space-y-6">

@@ -368,6 +368,11 @@ export default function CheckoutPage() {
     setDelivery(form);
 
     const customerSession = await getCustomerSession();
+    // If the UI showed "Signed in as ..." but the session has since expired,
+    // getCustomerSession() now returns null — the address quietly wouldn't
+    // get saved with no explanation. Flag it so we can tell the customer
+    // after checkout, without blocking the order over it.
+    const sessionExpired = !!loggedInEmail && !customerSession;
 
     if (customerSession && saveAddress) {
       const supabase = createClient();
@@ -436,7 +441,10 @@ export default function CheckoutPage() {
             orderCompletedRef.current = true;
             clearCart();
             clearCheckoutDraft();
-            router.push(`/order-confirmed?order=${result.orderNumber}`);
+            const confirmUrl = sessionExpired
+              ? `/order-confirmed?order=${result.orderNumber}&addressNotSaved=1`
+              : `/order-confirmed?order=${result.orderNumber}`;
+            router.push(confirmUrl);
           } catch {
             setError(
               "Your payment went through but we couldn't confirm the order automatically — please contact us with your payment ID so we can sort it out.",
