@@ -134,7 +134,7 @@ export default function TrackOrderPage() {
               {result.deliveryAddress.line2 && <>, {result.deliveryAddress.line2}</>}
               {result.deliveryAddress.landmark && <>, near {result.deliveryAddress.landmark}</>}
               <br />
-              {result.deliveryAddress.city}, {result.deliveryAddress.state} &mdash; {result.deliveryAddress.pincode}
+              {result.deliveryAddress.city}, {result.deliveryAddress.state}, {result.deliveryAddress.pincode}
             </p>
           </div>
         </div>

@@ -447,14 +447,14 @@ export default function CheckoutPage() {
             router.push(confirmUrl);
           } catch {
             setError(
-              "Your payment went through but we couldn't confirm the order automatically — please contact us with your payment ID so we can sort it out.",
+              "Your payment went through but we couldn't confirm the order automatically. Please contact us with your payment ID so we can sort it out.",
             );
             setSubmitting(false);
           }
         },
         modal: {
           ondismiss: () => {
-            setError("Payment cancelled — you can try again whenever you're ready.");
+            setError("Payment cancelled. You can try again whenever you're ready.");
             setSubmitting(false);
           },
         },
@@ -623,7 +623,7 @@ export default function CheckoutPage() {
             </div>
             {loadedSaved && (
               <p className="mt-2 font-body text-xs text-sage">
-                Loaded your saved address — edit anything that&rsquo;s changed.
+                Loaded your saved address. Edit anything that&rsquo;s changed.
               </p>
             )}
 

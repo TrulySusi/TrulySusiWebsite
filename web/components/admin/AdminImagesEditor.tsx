@@ -174,7 +174,7 @@ export function AdminImagesEditor({
 
       {images.length >= MAX_IMAGES ? (
         <p className="mt-4 font-body text-xs text-navy/50">
-          Maximum of {MAX_IMAGES} images reached — delete one to add another.
+          Maximum of {MAX_IMAGES} images reached. Delete one to add another.
         </p>
       ) : (
         <div className="mt-4 flex flex-wrap items-end gap-3 rounded-lg bg-cream p-3">

@@ -40,7 +40,7 @@ export function AdminNewProductForm({ categories }: { categories: { id: string; 
       <Field label="Product name">
         <input name="name" required className={fieldClass} />
       </Field>
-      <Field label="URL slug" hint="Optional — generated from the name if left blank">
+      <Field label="URL slug" hint="Optional: generated from the name if left blank">
         <input name="slug" className={fieldClass} />
       </Field>
       <Field label="Category">

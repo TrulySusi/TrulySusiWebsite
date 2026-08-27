@@ -236,7 +236,7 @@ export function AdminOrderDetail({ order, items }: { order: Order; items: OrderI
             Fulfillment
           </SectionHeading>
           <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Field label="Order status" hint={autoAdvanced ? "Advanced to Shipped since a tracking number was added — change it if that's not right." : undefined}>
+            <Field label="Order status" hint={autoAdvanced ? "Advanced to Shipped since a tracking number was added. Change it if that's not right." : undefined}>
               <select
                 name="status"
                 value={status}

@@ -90,7 +90,7 @@ export function ReviewsWidget() {
                 </>
               ) : (
                 !loading && (
-                  <p className="mt-2 font-body text-xs text-navy/50">No reviews yet — be the first!</p>
+                  <p className="mt-2 font-body text-xs text-navy/50">No reviews yet. Be the first!</p>
                 )
               )}
               <button

@@ -6,6 +6,8 @@ import { getZohoAccessToken } from "@/lib/zoho";
 
 const FROM_ADDRESS = "Truly Susi's <orders@trulysusi.in>";
 const SUPPORT_EMAIL = "support@trulysusi.in";
+const SITE_URL = "https://www.trulysusi.in";
+const LOGO_URL = `${SITE_URL}/brand/wordmark-cream.png`;
 
 const ZOHO_API_DOMAIN = process.env.ZOHO_API_DOMAIN!;
 const ZOHO_ORG_ID = process.env.ZOHO_ORGANIZATION_ID!;
@@ -39,9 +41,65 @@ function addressBlock(addr: ShippingAddress) {
     <p style="margin:0;line-height:1.6;">
       ${addr.firstName} ${addr.lastName}<br>
       ${addr.line1}${addr.line2 ? `, ${addr.line2}` : ""}${addr.landmark ? `, near ${addr.landmark}` : ""}<br>
-      ${addr.city}, ${addr.state} &mdash; ${addr.pincode}<br>
+      ${addr.city}, ${addr.state}, ${addr.pincode}<br>
       ${addr.phone}
     </p>`;
+}
+
+type OrderItemRow = {
+  name_snapshot: string;
+  variant_label_snapshot: string;
+  quantity: number;
+  product_id: string | null;
+  line_total_inr?: number;
+};
+
+type ProductInfo = {
+  id: string;
+  shelf_life_days: number | null;
+  product_images: { storage_path: string; sort_order: number }[];
+};
+
+async function fetchProductInfo(
+  supabase: ReturnType<typeof createAdminClient>,
+  productIds: string[],
+): Promise<Map<string, ProductInfo>> {
+  const { data: products } = productIds.length
+    ? await supabase.from("products").select("id, shelf_life_days, product_images ( storage_path, sort_order )").in("id", productIds)
+    : { data: [] as ProductInfo[] };
+  return new Map((products ?? []).map((p) => [p.id, p]));
+}
+
+function buildItemRows(
+  items: OrderItemRow[],
+  productById: Map<string, ProductInfo>,
+  opts: { showPrice: boolean; showShelfLife: boolean },
+) {
+  return items
+    .map((item) => {
+      const product = item.product_id ? productById.get(item.product_id) : undefined;
+      const cover = product?.product_images ? [...product.product_images].sort((a, b) => a.sort_order - b.sort_order)[0] : undefined;
+      const imgSrc = cover ? productImageUrl(cover.storage_path) : "";
+      const shelfLife = opts.showShelfLife && product?.shelf_life_days ? ` &middot; Best before ${product.shelf_life_days} days` : "";
+      return `
+        <tr>
+          <td style="padding:10px 0;border-bottom:1px solid #1c2b4a1a;" width="56">
+            ${imgSrc ? `<img src="${imgSrc}" width="48" height="48" style="border-radius:8px;object-fit:cover;display:block;" alt="">` : ""}
+          </td>
+          <td style="padding:10px 12px;border-bottom:1px solid #1c2b4a1a;">
+            <div style="font-weight:600;">${item.name_snapshot}</div>
+            <div style="color:#1c2b4a99;font-size:12px;">${item.variant_label_snapshot} &middot; Qty ${item.quantity}${shelfLife}</div>
+          </td>
+          ${
+            opts.showPrice
+              ? `<td style="padding:10px 0;border-bottom:1px solid #1c2b4a1a;text-align:right;font-weight:600;white-space:nowrap;">
+            ${formatInr(item.line_total_inr!)}
+          </td>`
+              : ""
+          }
+        </tr>`;
+    })
+    .join("");
 }
 
 function emailShell(previewText: string, bodyHtml: string) {
@@ -54,7 +112,7 @@ function emailShell(previewText: string, bodyHtml: string) {
 <tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:12px;overflow:hidden;">
 <tr><td style="background:#1c2b4a;padding:28px 32px;text-align:center;">
-<span style="font-family:Georgia,'Times New Roman',serif;font-size:24px;color:#faf3e9;">Truly Susi&rsquo;s</span>
+<img src="${LOGO_URL}" width="160" height="36" alt="Truly Susi's" style="display:block;margin:0 auto;border:0;">
 </td></tr>
 <tr><td style="padding:32px;font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1c2b4a;font-size:14px;">
 ${bodyHtml}
@@ -104,32 +162,8 @@ export async function sendOrderConfirmationEmail(orderId: string): Promise<void>
       .eq("order_id", orderId);
 
     const productIds = [...new Set((items ?? []).map((i) => i.product_id).filter((id): id is string => !!id))];
-    const { data: products } = productIds.length
-      ? await supabase.from("products").select("id, shelf_life_days, product_images ( storage_path, sort_order )").in("id", productIds)
-      : { data: [] as { id: string; shelf_life_days: number | null; product_images: { storage_path: string; sort_order: number }[] }[] };
-
-    const productById = new Map((products ?? []).map((p) => [p.id, p]));
-
-    const itemRows = (items ?? [])
-      .map((item) => {
-        const product = item.product_id ? productById.get(item.product_id) : undefined;
-        const cover = product?.product_images ? [...product.product_images].sort((a, b) => a.sort_order - b.sort_order)[0] : undefined;
-        const imgSrc = cover ? productImageUrl(cover.storage_path) : "";
-        return `
-        <tr>
-          <td style="padding:10px 0;border-bottom:1px solid #1c2b4a1a;" width="56">
-            ${imgSrc ? `<img src="${imgSrc}" width="48" height="48" style="border-radius:8px;object-fit:cover;display:block;" alt="">` : ""}
-          </td>
-          <td style="padding:10px 12px;border-bottom:1px solid #1c2b4a1a;">
-            <div style="font-weight:600;">${item.name_snapshot}</div>
-            <div style="color:#1c2b4a99;font-size:12px;">${item.variant_label_snapshot} &middot; Qty ${item.quantity}${product?.shelf_life_days ? ` &middot; Best before ${product.shelf_life_days} days` : ""}</div>
-          </td>
-          <td style="padding:10px 0;border-bottom:1px solid #1c2b4a1a;text-align:right;font-weight:600;white-space:nowrap;">
-            ${formatInr(item.line_total_inr)}
-          </td>
-        </tr>`;
-      })
-      .join("");
+    const productById = await fetchProductInfo(supabase, productIds);
+    const itemRows = buildItemRows(items ?? [], productById, { showPrice: true, showShelfLife: true });
 
     const addr = order.shipping_address as ShippingAddress;
 
@@ -180,14 +214,24 @@ export async function sendShippingNotificationEmail(orderId: string): Promise<vo
   try {
     const { data: order } = await supabase
       .from("orders")
-      .select("order_number, customer_email, shipping_address, courier_name, tracking_number, tracking_url, shipping_email_sent_at")
+      .select(
+        "order_number, customer_id, customer_email, shipping_address, courier_name, tracking_number, tracking_url, shipping_email_sent_at",
+      )
       .eq("id", orderId)
       .maybeSingle();
     if (!order || order.shipping_email_sent_at || !order.customer_email) return;
 
-    const { data: items } = await supabase.from("order_items").select("name_snapshot, quantity").eq("order_id", orderId);
+    const { data: items } = await supabase
+      .from("order_items")
+      .select("name_snapshot, variant_label_snapshot, quantity, product_id")
+      .eq("order_id", orderId);
+
+    const productIds = [...new Set((items ?? []).map((i) => i.product_id).filter((id): id is string => !!id))];
+    const productById = await fetchProductInfo(supabase, productIds);
+    const itemRows = buildItemRows(items ?? [], productById, { showPrice: false, showShelfLife: false });
+
     const addr = order.shipping_address as ShippingAddress;
-    const itemsSummary = (items ?? []).map((i) => `${i.name_snapshot} &times;${i.quantity}`).join(", ");
+    const orderLink = order.customer_id ? `${SITE_URL}/account/orders` : `${SITE_URL}/track-order`;
 
     const body = `
       <h1 style="font-family:Georgia,'Times New Roman',serif;font-size:22px;margin:0 0 8px;">Your sweets are on the way!</h1>
@@ -203,9 +247,9 @@ export async function sendShippingNotificationEmail(orderId: string): Promise<vo
       </table>`
           : ""
       }
-      <p style="margin:0 0 4px;font-size:12px;color:#1c2b4a99;text-transform:uppercase;letter-spacing:0.05em;">Items</p>
-      <p style="margin:0 0 24px;">${itemsSummary}</p>
-      <p style="margin:0 0 4px;font-size:12px;color:#1c2b4a99;text-transform:uppercase;letter-spacing:0.05em;">Delivering to</p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${itemRows}</table>
+      <p style="margin:20px 0 0;"><a href="${orderLink}" style="color:#c98a2f;font-weight:600;">View order details &rarr;</a></p>
+      <p style="margin:24px 0 4px;font-size:12px;color:#1c2b4a99;text-transform:uppercase;letter-spacing:0.05em;">Delivering to</p>
       ${addressBlock(addr)}
     `;
 

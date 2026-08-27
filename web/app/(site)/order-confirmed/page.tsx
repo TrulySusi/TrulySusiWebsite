@@ -48,7 +48,7 @@ function OrderConfirmedContent() {
       {addressNotSaved && (
         <div className="mt-8 rounded-xl bg-brass/10 px-5 py-4 text-center font-body text-sm text-brass">
           You were signed out partway through checkout, so we couldn&rsquo;t save this delivery
-          address to your account — your order itself is unaffected. Sign in again next time to
+          address to your account. Your order itself is unaffected. Sign in again next time to
           keep your addresses on file.
         </div>
       )}
@@ -111,7 +111,7 @@ function OrderConfirmedContent() {
               {summary.deliveryAddress.line2 && <>, {summary.deliveryAddress.line2}</>}
               {summary.deliveryAddress.landmark && <>, {summary.deliveryAddress.landmark}</>}
               <br />
-              {summary.deliveryAddress.city}, {summary.deliveryAddress.state} — {summary.deliveryAddress.pincode}
+              {summary.deliveryAddress.city}, {summary.deliveryAddress.state}, {summary.deliveryAddress.pincode}
               <br />
               {summary.deliveryAddress.phone}
             </p>

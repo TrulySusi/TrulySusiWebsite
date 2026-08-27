@@ -117,7 +117,7 @@ export function AdminReviewsList({ reviews }: { reviews: Review[] }) {
         <StatCard label="Total reviews" value={String(reviews.length)} color="navy" />
         <StatCard label="Pending" value={String(pending.length)} color="brass" />
         <StatCard label="Live" value={String(approved.length)} color="sage" />
-        <StatCard label="Average rating" value={reviews.length > 0 ? average.toFixed(1) : "—"} color="navy" />
+        <StatCard label="Average rating" value={reviews.length > 0 ? average.toFixed(1) : "N/A"} color="navy" />
       </div>
 
       <AdminProductTabs
