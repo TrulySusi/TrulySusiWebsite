@@ -54,7 +54,7 @@ export async function createRazorpayOrder(cartItems: CartItemInput[], delivery: 
     .from("product_variants")
     .select("id, label, price_inr, is_active, product_id, products ( name )")
     .in("id", variantIds);
-  if (variantsError) throw variantsError;
+  if (variantsError) throw new Error(variantsError.message);
 
   const orderItems: {
     product_id: string;
@@ -133,12 +133,12 @@ export async function createRazorpayOrder(cartItems: CartItemInput[], delivery: 
     })
     .select("id")
     .single();
-  if (orderError) throw orderError;
+  if (orderError) throw new Error(orderError.message);
 
   const { error: itemsError } = await supabase
     .from("order_items")
     .insert(orderItems.map((item) => ({ ...item, order_id: order.id })));
-  if (itemsError) throw itemsError;
+  if (itemsError) throw new Error(itemsError.message);
 
   const razorpay = createRazorpayClient();
   const razorpayOrder = await razorpay.orders.create({
@@ -280,7 +280,7 @@ export async function verifyRazorpayPayment(params: {
     .select("id, razorpay_order_id, status, total_inr")
     .eq("id", dbOrderId)
     .maybeSingle();
-  if (fetchError) throw fetchError;
+  if (fetchError) throw new Error(fetchError.message);
   if (!order || order.razorpay_order_id !== razorpayOrderId) {
     throw new Error("Order mismatch.");
   }
@@ -293,7 +293,7 @@ export async function verifyRazorpayPayment(params: {
     .from("orders")
     .update({ status: "paid", payment_status: "paid" })
     .eq("id", dbOrderId);
-  if (updateError) throw updateError;
+  if (updateError) throw new Error(updateError.message);
 
   const { error: paymentError } = await supabase.from("payments").insert({
     order_id: dbOrderId,
@@ -304,7 +304,19 @@ export async function verifyRazorpayPayment(params: {
     status: "captured",
     verified_at: new Date().toISOString(),
   });
-  if (paymentError) throw paymentError;
+  if (paymentError && paymentError.code !== "23505") {
+    // Anything other than "this payment was already recorded" is a real
+    // failure — surface it as a proper Error, not the raw Postgrest object
+    // (which Next.js can't serialize cleanly across the server/client
+    // boundary and shows the customer an opaque "something went wrong").
+    throw new Error(paymentError.message);
+  }
+  // 23505 = duplicate razorpay_payment_id: this exact payment was already
+  // recorded by a concurrent call (Razorpay's own callback firing twice,
+  // or a client retry). The order is genuinely paid either way — treat
+  // this as success rather than failing a payment that already went
+  // through, which would otherwise show the customer a scary error for
+  // money that was already charged and an order that's already confirmed.
 
   await syncOrderToZohoIfNeeded(dbOrderId);
   await sendOrderConfirmationEmail(dbOrderId);
