@@ -499,7 +499,7 @@ export default function CheckoutPage() {
                   <button
                     type="button"
                     onClick={() => setShowSignIn(true)}
-                    className="font-body text-xs font-semibold text-brass hover:text-navy"
+                    className="rounded-full border-2 border-brass px-4 py-1.5 font-body text-xs font-semibold text-brass transition-colors hover:bg-brass hover:text-white"
                   >
                     Sign in
                   </button>
