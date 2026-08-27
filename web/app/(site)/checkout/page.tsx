@@ -499,7 +499,11 @@ export default function CheckoutPage() {
 
             {loggedInEmail ? (
               <p className="mt-3 font-body text-sm text-navy/70">
-                Signed in as <span className="font-semibold text-navy">{loggedInEmail}</span>
+                Signed in as <span className="font-semibold text-navy">{loggedInEmail}</span>{" "}
+                &middot;{" "}
+                <Link href="/account/orders" className="font-semibold text-brass hover:text-navy">
+                  My orders
+                </Link>
               </p>
             ) : (
               <div className="mt-4">

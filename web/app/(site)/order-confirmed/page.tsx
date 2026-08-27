@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { placeholderImageUrl } from "@/lib/catalog-shared";
 import { getOrderSummary, type OrderSummary } from "../checkout/actions";
+import { getCustomerSession } from "@/lib/customer-session";
 
 function formatInr(amount: number) {
   return `₹${amount.toLocaleString("en-IN")}`;
@@ -15,11 +16,16 @@ function OrderConfirmedContent() {
   const searchParams = useSearchParams();
   const orderNumber = searchParams.get("order");
   const [summary, setSummary] = useState<OrderSummary | null | undefined>(undefined);
+  const [signedIn, setSignedIn] = useState(false);
 
   useEffect(() => {
     if (!orderNumber) return;
     getOrderSummary(orderNumber).then(setSummary);
   }, [orderNumber]);
+
+  useEffect(() => {
+    getCustomerSession().then((session) => setSignedIn(!!session));
+  }, []);
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-24 sm:px-10">
@@ -111,6 +117,11 @@ function OrderConfirmedContent() {
         >
           Continue shopping
         </Link>
+        {signedIn && (
+          <Link href="/account/orders" className="font-body text-sm text-navy/50 hover:text-brass">
+            View my orders
+          </Link>
+        )}
         <Link href="/" className="font-body text-sm text-navy/50 hover:text-brass">
           Back to home
         </Link>
