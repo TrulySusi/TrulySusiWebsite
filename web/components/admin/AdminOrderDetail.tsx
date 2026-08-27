@@ -86,6 +86,18 @@ export function AdminOrderDetail({ order, items }: { order: Order; items: OrderI
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [markingPaid, setMarkingPaid] = useState(false);
+  const [status, setStatus] = useState(order.status);
+  const [autoAdvanced, setAutoAdvanced] = useState(false);
+
+  // Entering a tracking number clearly means "this shipped" — advance the
+  // status automatically instead of relying on the admin to also remember
+  // to flip the dropdown (still visible and editable, just pre-filled).
+  function handleTrackingNumberChange(value: string) {
+    if (value.trim() && ["pending_payment", "paid", "packed"].includes(status)) {
+      setStatus("shipped");
+      setAutoAdvanced(true);
+    }
+  }
 
   const addr = order.shipping_address ?? {};
 
@@ -224,8 +236,16 @@ export function AdminOrderDetail({ order, items }: { order: Order; items: OrderI
             Fulfillment
           </SectionHeading>
           <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Field label="Order status">
-              <select name="status" defaultValue={order.status} className={fieldClass}>
+            <Field label="Order status" hint={autoAdvanced ? "Advanced to Shipped since a tracking number was added. Change it if that's not right." : undefined}>
+              <select
+                name="status"
+                value={status}
+                onChange={(e) => {
+                  setStatus(e.target.value);
+                  setAutoAdvanced(false);
+                }}
+                className={fieldClass}
+              >
                 {STATUS_OPTIONS.map((s) => (
                   <option key={s} value={s} className="capitalize">
                     {s.replace("_", " ")}
@@ -237,7 +257,12 @@ export function AdminOrderDetail({ order, items }: { order: Order; items: OrderI
               <input name="courier_name" defaultValue={order.courier_name ?? ""} className={fieldClass} />
             </Field>
             <Field label="Tracking number">
-              <input name="tracking_number" defaultValue={order.tracking_number ?? ""} className={fieldClass} />
+              <input
+                name="tracking_number"
+                defaultValue={order.tracking_number ?? ""}
+                onChange={(e) => handleTrackingNumberChange(e.target.value)}
+                className={fieldClass}
+              />
             </Field>
             <Field label="Tracking URL">
               <input name="tracking_url" defaultValue={order.tracking_url ?? ""} className={fieldClass} />

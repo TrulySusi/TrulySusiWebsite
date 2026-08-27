@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { placeholderImageUrl } from "@/lib/catalog-shared";
 import { getOrderSummary, type OrderSummary } from "../checkout/actions";
+import { getCustomerSession } from "@/lib/customer-session";
 
 function formatInr(amount: number) {
   return `₹${amount.toLocaleString("en-IN")}`;
@@ -14,12 +15,18 @@ function formatInr(amount: number) {
 function OrderConfirmedContent() {
   const searchParams = useSearchParams();
   const orderNumber = searchParams.get("order");
+  const addressNotSaved = searchParams.get("addressNotSaved") === "1";
   const [summary, setSummary] = useState<OrderSummary | null | undefined>(undefined);
+  const [signedIn, setSignedIn] = useState(false);
 
   useEffect(() => {
     if (!orderNumber) return;
     getOrderSummary(orderNumber).then(setSummary);
   }, [orderNumber]);
+
+  useEffect(() => {
+    getCustomerSession().then((session) => setSignedIn(!!session));
+  }, []);
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-24 sm:px-10">
@@ -37,6 +44,14 @@ function OrderConfirmedContent() {
           </p>
         )}
       </div>
+
+      {addressNotSaved && (
+        <div className="mt-8 rounded-xl bg-brass/10 px-5 py-4 text-center font-body text-sm text-brass">
+          You were signed out partway through checkout, so we couldn&rsquo;t save this delivery
+          address to your account. Your order itself is unaffected. Sign in again next time to
+          keep your addresses on file.
+        </div>
+      )}
 
       {summary && (
         <div className="mt-10 space-y-6">
@@ -96,7 +111,7 @@ function OrderConfirmedContent() {
               {summary.deliveryAddress.line2 && <>, {summary.deliveryAddress.line2}</>}
               {summary.deliveryAddress.landmark && <>, {summary.deliveryAddress.landmark}</>}
               <br />
-              {summary.deliveryAddress.city}, {summary.deliveryAddress.state} — {summary.deliveryAddress.pincode}
+              {summary.deliveryAddress.city}, {summary.deliveryAddress.state}, {summary.deliveryAddress.pincode}
               <br />
               {summary.deliveryAddress.phone}
             </p>
@@ -111,6 +126,11 @@ function OrderConfirmedContent() {
         >
           Continue shopping
         </Link>
+        {signedIn && (
+          <Link href="/account/orders" className="font-body text-sm text-navy/50 hover:text-brass">
+            View my orders
+          </Link>
+        )}
         <Link href="/" className="font-body text-sm text-navy/50 hover:text-brass">
           Back to home
         </Link>

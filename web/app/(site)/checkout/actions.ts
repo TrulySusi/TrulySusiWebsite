@@ -4,8 +4,7 @@ import crypto from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createRazorpayClient } from "@/lib/razorpay";
 import { getCustomerSession } from "@/lib/customer-session";
-import { syncOrderToZohoIfNeeded } from "@/lib/zoho";
-import { sendOrderConfirmationEmail } from "@/lib/email";
+import { completeOrderPayment } from "@/lib/order-payment";
 
 // Same dummy figures as /policies/shipping and the checkout page's own
 // display copy — kept in one place so the server-computed total can
@@ -264,62 +263,20 @@ export async function verifyRazorpayPayment(params: {
   razorpaySignature: string;
 }) {
   const { dbOrderId, razorpayOrderId, razorpayPaymentId, razorpaySignature } = params;
-  const supabase = createAdminClient();
 
   const expectedSignature = crypto
     .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
     .update(`${razorpayOrderId}|${razorpayPaymentId}`)
     .digest("hex");
 
-  if (expectedSignature !== razorpaySignature) {
+  const expectedBuffer = Buffer.from(expectedSignature);
+  const actualBuffer = Buffer.from(razorpaySignature);
+  const signatureValid =
+    expectedBuffer.length === actualBuffer.length && crypto.timingSafeEqual(expectedBuffer, actualBuffer);
+  if (!signatureValid) {
     throw new Error("Payment verification failed.");
   }
 
-  const { data: order, error: fetchError } = await supabase
-    .from("orders")
-    .select("id, razorpay_order_id, status, total_inr")
-    .eq("id", dbOrderId)
-    .maybeSingle();
-  if (fetchError) throw new Error(fetchError.message);
-  if (!order || order.razorpay_order_id !== razorpayOrderId) {
-    throw new Error("Order mismatch.");
-  }
-  // Idempotent — a duplicate callback shouldn't double-process a paid order.
-  if (order.status === "paid") {
-    return { dbOrderId };
-  }
-
-  const { error: updateError } = await supabase
-    .from("orders")
-    .update({ status: "paid", payment_status: "paid" })
-    .eq("id", dbOrderId);
-  if (updateError) throw new Error(updateError.message);
-
-  const { error: paymentError } = await supabase.from("payments").insert({
-    order_id: dbOrderId,
-    razorpay_order_id: razorpayOrderId,
-    razorpay_payment_id: razorpayPaymentId,
-    razorpay_signature: razorpaySignature,
-    amount_inr: order.total_inr,
-    status: "captured",
-    verified_at: new Date().toISOString(),
-  });
-  if (paymentError && paymentError.code !== "23505") {
-    // Anything other than "this payment was already recorded" is a real
-    // failure — surface it as a proper Error, not the raw Postgrest object
-    // (which Next.js can't serialize cleanly across the server/client
-    // boundary and shows the customer an opaque "something went wrong").
-    throw new Error(paymentError.message);
-  }
-  // 23505 = duplicate razorpay_payment_id: this exact payment was already
-  // recorded by a concurrent call (Razorpay's own callback firing twice,
-  // or a client retry). The order is genuinely paid either way — treat
-  // this as success rather than failing a payment that already went
-  // through, which would otherwise show the customer a scary error for
-  // money that was already charged and an order that's already confirmed.
-
-  await syncOrderToZohoIfNeeded(dbOrderId);
-  await sendOrderConfirmationEmail(dbOrderId);
-
+  await completeOrderPayment({ dbOrderId, razorpayOrderId, razorpayPaymentId, razorpaySignature });
   return { dbOrderId };
 }

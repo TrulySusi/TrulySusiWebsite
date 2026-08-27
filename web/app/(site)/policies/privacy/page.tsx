@@ -29,7 +29,7 @@ export default function PrivacyPage() {
             <li>Details of what you ordered</li>
           </ul>
           <p className="mt-3">
-            We don&rsquo;t collect or store your card or payment details ourselves &mdash; that
+            We don&rsquo;t collect or store your card or payment details ourselves. That
             will be handled directly by our payment provider once online payment is live.
           </p>
         </section>
@@ -38,8 +38,8 @@ export default function PrivacyPage() {
           <h2 className="font-display text-2xl text-navy">How we use it</h2>
           <p className="mt-3">
             We use your information to prepare, confirm, and deliver your order, and to contact
-            you about it &mdash; currently over WhatsApp or email, since online order tracking
-            isn&rsquo;t live yet. We don&rsquo;t use your information for anything beyond running
+            you about it (currently over WhatsApp or email, since online order tracking
+            isn&rsquo;t live yet). We don&rsquo;t use your information for anything beyond running
             your order and responding to enquiries you send us.
           </p>
         </section>
@@ -48,7 +48,7 @@ export default function PrivacyPage() {
           <h2 className="font-display text-2xl text-navy">Cookies &amp; local storage</h2>
           <p className="mt-3">
             Your cart contents are saved in your browser&rsquo;s local storage so it&rsquo;s still
-            there if you come back later &mdash; this stays on your device and isn&rsquo;t sent to
+            there if you come back later. This stays on your device and isn&rsquo;t sent to
             us until you check out. If you log in, a session cookie keeps you signed in. We do not
             currently use any third-party analytics or advertising cookies to track you across the
             Site.

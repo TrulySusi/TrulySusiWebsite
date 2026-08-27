@@ -368,6 +368,11 @@ export default function CheckoutPage() {
     setDelivery(form);
 
     const customerSession = await getCustomerSession();
+    // If the UI showed "Signed in as ..." but the session has since expired,
+    // getCustomerSession() now returns null — the address quietly wouldn't
+    // get saved with no explanation. Flag it so we can tell the customer
+    // after checkout, without blocking the order over it.
+    const sessionExpired = !!loggedInEmail && !customerSession;
 
     if (customerSession && saveAddress) {
       const supabase = createClient();
@@ -436,17 +441,20 @@ export default function CheckoutPage() {
             orderCompletedRef.current = true;
             clearCart();
             clearCheckoutDraft();
-            router.push(`/order-confirmed?order=${result.orderNumber}`);
+            const confirmUrl = sessionExpired
+              ? `/order-confirmed?order=${result.orderNumber}&addressNotSaved=1`
+              : `/order-confirmed?order=${result.orderNumber}`;
+            router.push(confirmUrl);
           } catch {
             setError(
-              "Your payment went through but we couldn't confirm the order automatically — please contact us with your payment ID so we can sort it out.",
+              "Your payment went through but we couldn't confirm the order automatically. Please contact us with your payment ID so we can sort it out.",
             );
             setSubmitting(false);
           }
         },
         modal: {
           ondismiss: () => {
-            setError("Payment cancelled — you can try again whenever you're ready.");
+            setError("Payment cancelled. You can try again whenever you're ready.");
             setSubmitting(false);
           },
         },
@@ -485,7 +493,7 @@ export default function CheckoutPage() {
                 </div>
                 <h2 className="font-display text-2xl text-navy">Contact</h2>
               </div>
-              {loggedInEmail ? (
+              {loggedInEmail && (
                 <button
                   type="button"
                   onClick={handleLogout}
@@ -494,25 +502,44 @@ export default function CheckoutPage() {
                 >
                   {loggingOut ? "Logging out…" : "Log out"}
                 </button>
-              ) : (
-                !showSignIn && (
-                  <button
-                    type="button"
-                    onClick={() => setShowSignIn(true)}
-                    className="font-body text-xs font-semibold text-brass hover:text-navy"
-                  >
-                    Sign in
-                  </button>
-                )
               )}
             </div>
 
             {loggedInEmail ? (
               <p className="mt-3 font-body text-sm text-navy/70">
-                Signed in as <span className="font-semibold text-navy">{loggedInEmail}</span>
+                Signed in as <span className="font-semibold text-navy">{loggedInEmail}</span>{" "}
+                &middot;{" "}
+                <Link href="/account/orders" className="font-semibold text-brass hover:text-navy">
+                  My orders
+                </Link>
               </p>
             ) : (
               <div className="mt-4">
+                <div className="flex gap-2 rounded-full bg-navy/6 p-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowSignIn(false);
+                      setSignInPassword("");
+                      setSignInError(null);
+                    }}
+                    className={`flex-1 rounded-full px-4 py-2.5 font-body text-sm font-semibold transition-colors ${
+                      !showSignIn ? "bg-navy text-cream" : "text-navy/60 hover:text-navy"
+                    }`}
+                  >
+                    Continue as guest
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowSignIn(true)}
+                    className={`flex-1 rounded-full px-4 py-2.5 font-body text-sm font-semibold transition-colors ${
+                      showSignIn ? "bg-navy text-cream" : "text-navy/60 hover:text-navy"
+                    }`}
+                  >
+                    Sign in
+                  </button>
+                </div>
+
                 <input
                   type="email"
                   placeholder="Email"
@@ -521,7 +548,7 @@ export default function CheckoutPage() {
                     update("email", e.target.value);
                     setFieldErrors((f) => ({ ...f, email: undefined }));
                   }}
-                  className={`w-full ${errorFieldClass(!!fieldErrors.email)}`}
+                  className={`mt-4 w-full ${errorFieldClass(!!fieldErrors.email)}`}
                 />
                 {fieldErrors.email && (
                   <p className="mt-1 font-body text-xs text-brass">{fieldErrors.email}</p>
@@ -563,27 +590,14 @@ export default function CheckoutPage() {
                     {resetError && <p className="font-body text-xs text-brass">{resetError}</p>}
                     {signInError && <p className="font-body text-xs text-brass">{signInError}</p>}
 
-                    <div className="flex items-center gap-3">
-                      <button
-                        type="button"
-                        onClick={handleSignIn}
-                        disabled={signInSubmitting}
-                        className="rounded-full bg-navy px-5 py-2.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-navy/90 disabled:opacity-60"
-                      >
-                        {signInSubmitting ? "Signing in…" : "Sign in"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setShowSignIn(false);
-                          setSignInPassword("");
-                          setSignInError(null);
-                        }}
-                        className="font-body text-sm text-navy/50 hover:text-navy"
-                      >
-                        Cancel
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={handleSignIn}
+                      disabled={signInSubmitting}
+                      className="rounded-full bg-navy px-5 py-2.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-navy/90 disabled:opacity-60"
+                    >
+                      {signInSubmitting ? "Signing in…" : "Sign in"}
+                    </button>
                     <Link
                       href="/account/signup"
                       className="font-body text-xs text-navy/50 hover:text-brass"
@@ -609,7 +623,7 @@ export default function CheckoutPage() {
             </div>
             {loadedSaved && (
               <p className="mt-2 font-body text-xs text-sage">
-                Loaded your saved address — edit anything that&rsquo;s changed.
+                Loaded your saved address. Edit anything that&rsquo;s changed.
               </p>
             )}
 

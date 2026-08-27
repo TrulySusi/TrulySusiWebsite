@@ -58,7 +58,7 @@ function VariantFields({
       <Field label="Price (₹)">
         <input name="price_inr" type="number" step="0.01" defaultValue={variant?.price_inr} required className={fieldClass} />
       </Field>
-      <Field label="Compare-at price (₹)" hint="Optional — shown struck through">
+      <Field label="Compare-at price (₹)" hint="Optional: shown struck through">
         <input
           name="compare_at_price_inr"
           type="number"
@@ -217,7 +217,7 @@ export function AdminVariantsEditor({
     <div className="rounded-2xl border border-navy/10 bg-white p-6">
       <h2 className="font-body text-xl font-semibold text-navy">Variants</h2>
       <p className="mt-1 font-body text-xs text-navy/50">
-        Pack sizes customers can choose from — price, stock, and whether it&rsquo;s buyable.
+        Pack sizes customers can choose from: price, stock, and whether it&rsquo;s buyable.
       </p>
       <div className="mt-4 flex flex-col gap-2">
         {variants.map((v) => (
