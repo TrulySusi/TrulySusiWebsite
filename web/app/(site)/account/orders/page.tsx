@@ -16,7 +16,7 @@ export default async function MyOrdersPage() {
           Please sign in to see your order history.
         </p>
         <Link
-          href="/checkout"
+          href="/account/login?redirect=%2Faccount%2Forders"
           className="mt-6 inline-block rounded-full bg-navy px-7 py-3 font-body text-sm font-semibold text-cream transition-colors hover:bg-navy/90"
         >
           Sign in
