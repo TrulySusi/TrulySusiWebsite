@@ -134,7 +134,3 @@ export function startingPrice(variants: ProductVariant[]) {
   if (active.length === 0) return null;
   return Math.min(...active.map((v) => v.price_inr));
 }
-
-export function defaultVariant(variants: ProductVariant[]) {
-  return variants.find((v) => v.is_default && v.is_active) ?? variants.find((v) => v.is_active) ?? null;
-}
