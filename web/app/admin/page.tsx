@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { getAdminNotifications, type NotificationSeverity } from "@/lib/admin-notifications";
+import { formatRelativeTime } from "@/lib/format-relative-time";
+
+const SEVERITY_DOT: Record<NotificationSeverity, string> = {
+  green: "bg-sage",
+  yellow: "bg-amber-500",
+  red: "bg-red-500",
+};
 
 const STATUS_LIST = [
   "pending_payment",
@@ -61,6 +69,7 @@ function StatCard({ label, value, color }: { label: string; value: number; color
 
 export default async function AdminDashboardPage() {
   const supabase = createAdminClient();
+  const activity = await getAdminNotifications(15);
 
   const { data: orders } = await supabase
     .from("orders")
@@ -115,66 +124,103 @@ export default async function AdminDashboardPage() {
             </div>
           </section>
 
-          <section>
-            <div className="max-w-2xl rounded-2xl border border-navy/10 bg-white p-6">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brass/15 text-brass">
-                  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
-                    <path d="M10 2 18 17H2L10 2Z" strokeLinejoin="round" />
-                    <path d="M10 8v4" strokeLinecap="round" />
-                    <circle cx="10" cy="14.5" r="0.75" fill="currentColor" stroke="none" />
-                  </svg>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <section>
+              <div className="rounded-2xl border border-navy/10 bg-white p-6">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brass/15 text-brass">
+                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
+                      <path d="M10 2 18 17H2L10 2Z" strokeLinejoin="round" />
+                      <path d="M10 8v4" strokeLinecap="round" />
+                      <circle cx="10" cy="14.5" r="0.75" fill="currentColor" stroke="none" />
+                    </svg>
+                  </div>
+                  <h2 className="font-body text-lg font-semibold text-navy">Needs attention</h2>
                 </div>
-                <h2 className="font-body text-lg font-semibold text-navy">Needs attention</h2>
+                {stuckPayments.length === 0 && awaitingPacking.length === 0 ? (
+                  <p className="mt-3 font-body text-sm text-navy/50">Nothing waiting - all caught up.</p>
+                ) : (
+                  <div className="mt-4 space-y-5">
+                    {stuckPayments.length > 0 && (
+                      <div>
+                        <p className="font-body text-xs font-semibold uppercase tracking-wide text-amber-600">
+                          Pending payment &gt; 24h
+                        </p>
+                        <ul className="mt-2 divide-y divide-navy/6">
+                          {stuckPayments.map((o) => (
+                            <li key={o.id} className="flex items-center justify-between py-2">
+                              <Link
+                                href={`/admin/orders/${o.id}`}
+                                className="font-body text-sm font-semibold text-navy hover:text-brass"
+                              >
+                                {o.order_number}
+                              </Link>
+                              <span className="font-body text-xs text-navy/50">{o.customer_name}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {awaitingPacking.length > 0 && (
+                      <div>
+                        <p className="font-body text-xs font-semibold uppercase tracking-wide text-red-600">
+                          Paid, not packed &gt; 48h
+                        </p>
+                        <ul className="mt-2 divide-y divide-navy/6">
+                          {awaitingPacking.map((o) => (
+                            <li key={o.id} className="flex items-center justify-between py-2">
+                              <Link
+                                href={`/admin/orders/${o.id}`}
+                                className="font-body text-sm font-semibold text-navy hover:text-brass"
+                              >
+                                {o.order_number}
+                              </Link>
+                              <span className="font-body text-xs text-navy/50">{o.customer_name}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
-              {stuckPayments.length === 0 && awaitingPacking.length === 0 ? (
-                <p className="mt-3 font-body text-sm text-navy/50">Nothing waiting - all caught up.</p>
-              ) : (
-                <div className="mt-4 space-y-5">
-                  {stuckPayments.length > 0 && (
-                    <div>
-                      <p className="font-body text-xs font-semibold uppercase tracking-wide text-brass">
-                        Pending payment &gt; 24h
-                      </p>
-                      <ul className="mt-2 divide-y divide-navy/6">
-                        {stuckPayments.map((o) => (
-                          <li key={o.id} className="flex items-center justify-between py-2">
-                            <Link
-                              href={`/admin/orders/${o.id}`}
-                              className="font-body text-sm font-semibold text-navy hover:text-brass"
-                            >
-                              {o.order_number}
-                            </Link>
-                            <span className="font-body text-xs text-navy/50">{o.customer_name}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  {awaitingPacking.length > 0 && (
-                    <div>
-                      <p className="font-body text-xs font-semibold uppercase tracking-wide text-brass">
-                        Paid, not packed &gt; 48h
-                      </p>
-                      <ul className="mt-2 divide-y divide-navy/6">
-                        {awaitingPacking.map((o) => (
-                          <li key={o.id} className="flex items-center justify-between py-2">
-                            <Link
-                              href={`/admin/orders/${o.id}`}
-                              className="font-body text-sm font-semibold text-navy hover:text-brass"
-                            >
-                              {o.order_number}
-                            </Link>
-                            <span className="font-body text-xs text-navy/50">{o.customer_name}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+            </section>
+
+            <section>
+              <div className="rounded-2xl border border-navy/10 bg-white p-6">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sage/15 text-sage">
+                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
+                      <path d="M10 2v16M2 10h16" strokeLinecap="round" />
+                    </svg>
+                  </div>
+                  <h2 className="font-body text-lg font-semibold text-navy">Recent activity</h2>
                 </div>
-              )}
-            </div>
-          </section>
+                {activity.length === 0 ? (
+                  <p className="mt-3 font-body text-sm text-navy/50">Nothing yet.</p>
+                ) : (
+                  <ul className="mt-4 max-h-80 divide-y divide-navy/6 overflow-y-auto">
+                    {activity.map((n) => (
+                      <li key={n.id}>
+                        <Link
+                          href={`/admin/orders/${n.orderId}`}
+                          className="flex items-start gap-2.5 py-2.5 transition-colors hover:text-brass"
+                        >
+                          <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${SEVERITY_DOT[n.severity]}`} />
+                          <span className="min-w-0 flex-1">
+                            <span className="block font-body text-sm text-navy">{n.message}</span>
+                            <span className="mt-0.5 block font-body text-xs text-navy/50">
+                              {n.orderNumber} &middot; {formatRelativeTime(n.at)}
+                            </span>
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </section>
+          </div>
         </div>
       </div>
     </div>

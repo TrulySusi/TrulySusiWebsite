@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createAdminSessionClient } from "@/lib/supabase/admin-session-client";
+import { AdminNotificationBell } from "@/components/admin/AdminNotificationBell";
 
 const NAV_LINKS = [
   {
@@ -127,7 +128,11 @@ export function AdminNav({ name, role }: { name: string; role: string }) {
         <p className="mt-0.5 font-body text-xs uppercase tracking-wider text-cream/50">Admin</p>
       )}
 
-      <nav className={`mt-8 flex w-full flex-col gap-1 ${collapsed ? "items-center" : ""}`}>
+      <div className={`mt-5 w-full border-t border-white/10 pt-3 ${collapsed ? "flex justify-center" : ""}`}>
+        <AdminNotificationBell collapsed={collapsed} />
+      </div>
+
+      <nav className={`mt-3 flex w-full flex-col gap-1 ${collapsed ? "items-center" : ""}`}>
         {NAV_LINKS.map((link) => {
           const active = link.exact ? pathname === link.href : pathname === link.href || pathname.startsWith(`${link.href}/`);
           const content = (

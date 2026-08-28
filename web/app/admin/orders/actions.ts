@@ -79,6 +79,7 @@ export async function createManualOrder(formData: FormData, items: ManualOrderIt
       order_channel: String(formData.get("order_channel") ?? "whatsapp"),
       status: paymentStatus === "paid" ? "paid" : "pending_payment",
       payment_status: paymentStatus,
+      paid_at: paymentStatus === "paid" ? new Date().toISOString() : null,
       notes: String(formData.get("notes") ?? "") || null,
     })
     .select("id")
@@ -139,10 +140,9 @@ export async function updateOrderFulfillment(orderId: string, formData: FormData
 export async function updatePaymentStatus(orderId: string, paymentStatus: string) {
   await requireAdmin();
   const supabase = createAdminClient();
-  const { error } = await supabase
-    .from("orders")
-    .update({ payment_status: paymentStatus })
-    .eq("id", orderId);
+  const update: Record<string, unknown> = { payment_status: paymentStatus };
+  if (paymentStatus === "paid") update.paid_at = new Date().toISOString();
+  const { error } = await supabase.from("orders").update(update).eq("id", orderId);
   if (error) throw error;
 
   if (paymentStatus === "paid") await syncOrderToZohoIfNeeded(orderId);
