@@ -599,7 +599,7 @@ export default function CheckoutPage() {
                       {signInSubmitting ? "Signing in…" : "Sign in"}
                     </button>
                     <Link
-                      href="/account/signup"
+                      href="/account/signup?redirect=%2Fcheckout"
                       className="font-body text-xs text-navy/50 hover:text-brass"
                     >
                       New here? Create an account

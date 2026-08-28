@@ -120,6 +120,7 @@ create table orders (
   courier_name text,             -- see migrations/0007
   tracking_number text,
   tracking_url text,
+  paid_at timestamptz,            -- see migrations/0012
   shipped_at timestamptz,
   delivered_at timestamptz,
   notes text,
@@ -161,7 +162,8 @@ create table admin_users (
   id uuid primary key references auth.users(id) on delete cascade,
   email text not null,
   full_name text,
-  role admin_role not null default 'staff'
+  role admin_role not null default 'staff',
+  notifications_seen_at timestamptz  -- see migrations/0012
 );
 
 create table site_settings (

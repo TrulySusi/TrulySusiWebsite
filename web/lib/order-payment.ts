@@ -36,7 +36,7 @@ export async function completeOrderPayment(params: {
 
   const { error: updateError } = await supabase
     .from("orders")
-    .update({ status: "paid", payment_status: "paid" })
+    .update({ status: "paid", payment_status: "paid", paid_at: new Date().toISOString() })
     .eq("id", dbOrderId);
   if (updateError) throw new Error(updateError.message);
 
