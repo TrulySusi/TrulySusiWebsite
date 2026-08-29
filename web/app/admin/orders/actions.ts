@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getAdminSession } from "@/lib/admin-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { syncOrderToZohoIfNeeded } from "@/lib/zoho";
+import { insertOrderWithUniqueNumber } from "@/lib/order-number";
 import {
   sendOrderConfirmationEmail,
   sendShippingNotificationEmail,
@@ -14,16 +15,6 @@ import {
 async function requireAdmin() {
   const { admin } = await getAdminSession();
   if (!admin) throw new Error("Not authorized");
-}
-
-async function generateOrderNumber(supabase: ReturnType<typeof createAdminClient>) {
-  const year = new Date().getFullYear();
-  const { count } = await supabase
-    .from("orders")
-    .select("id", { count: "exact", head: true })
-    .like("order_number", `TS-${year}-%`);
-  const seq = String((count ?? 0) + 1).padStart(6, "0");
-  return `TS-${year}-${seq}`;
 }
 
 export type ManualOrderItem = {
@@ -46,7 +37,6 @@ export async function createManualOrder(formData: FormData, items: ManualOrderIt
   const total = subtotal + shippingFee - discount;
 
   const paymentStatus = String(formData.get("payment_status") ?? "pending");
-  const orderNumber = await generateOrderNumber(supabase);
 
   const shippingAddress = {
     firstName: String(formData.get("first_name") ?? ""),
@@ -63,29 +53,23 @@ export async function createManualOrder(formData: FormData, items: ManualOrderIt
     notes: "",
   };
 
-  const { data: order, error: orderError } = await supabase
-    .from("orders")
-    .insert({
-      order_number: orderNumber,
-      customer_name: `${shippingAddress.firstName} ${shippingAddress.lastName}`.trim(),
-      customer_email: String(formData.get("email") ?? "") || null,
-      customer_phone: shippingAddress.phone,
-      shipping_address: shippingAddress,
-      subtotal_inr: subtotal,
-      shipping_fee_inr: shippingFee,
-      discount_inr: discount,
-      total_inr: total,
-      payment_method: String(formData.get("payment_method") ?? "manual"),
-      order_channel: String(formData.get("order_channel") ?? "whatsapp"),
-      status: paymentStatus === "paid" ? "paid" : "pending_payment",
-      payment_status: paymentStatus,
-      paid_at: paymentStatus === "paid" ? new Date().toISOString() : null,
-      notes: String(formData.get("notes") ?? "") || null,
-    })
-    .select("id")
-    .single();
-
-  if (orderError) throw orderError;
+  const order = await insertOrderWithUniqueNumber<{ id: string }>(supabase, (orderNumber) => ({
+    order_number: orderNumber,
+    customer_name: `${shippingAddress.firstName} ${shippingAddress.lastName}`.trim(),
+    customer_email: String(formData.get("email") ?? "") || null,
+    customer_phone: shippingAddress.phone,
+    shipping_address: shippingAddress,
+    subtotal_inr: subtotal,
+    shipping_fee_inr: shippingFee,
+    discount_inr: discount,
+    total_inr: total,
+    payment_method: String(formData.get("payment_method") ?? "manual"),
+    order_channel: String(formData.get("order_channel") ?? "whatsapp"),
+    status: paymentStatus === "paid" ? "paid" : "pending_payment",
+    payment_status: paymentStatus,
+    paid_at: paymentStatus === "paid" ? new Date().toISOString() : null,
+    notes: String(formData.get("notes") ?? "") || null,
+  }));
 
   const { error: itemsError } = await supabase.from("order_items").insert(
     items.map((item) => ({

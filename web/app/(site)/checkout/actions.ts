@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createRazorpayClient } from "@/lib/razorpay";
 import { getCustomerSession } from "@/lib/customer-session";
 import { completeOrderPayment } from "@/lib/order-payment";
+import { insertOrderWithUniqueNumber } from "@/lib/order-number";
 
 // Same dummy figures as /policies/shipping and the checkout page's own
 // display copy — kept in one place so the server-computed total can
@@ -30,16 +31,6 @@ export type DeliveryInput = {
   state: string;
   notes: string;
 };
-
-async function generateOrderNumber(supabase: ReturnType<typeof createAdminClient>) {
-  const year = new Date().getFullYear();
-  const { count } = await supabase
-    .from("orders")
-    .select("id", { count: "exact", head: true })
-    .like("order_number", `TS-${year}-%`);
-  const seq = String((count ?? 0) + 1).padStart(6, "0");
-  return `TS-${year}-${seq}`;
-}
 
 export async function createRazorpayOrder(cartItems: CartItemInput[], delivery: DeliveryInput) {
   if (cartItems.length === 0) throw new Error("Your cart is empty.");
@@ -110,11 +101,9 @@ export async function createRazorpayOrder(cartItems: CartItemInput[], delivery: 
     notes: delivery.notes,
   };
 
-  const orderNumber = await generateOrderNumber(supabase);
-
-  const { data: order, error: orderError } = await supabase
-    .from("orders")
-    .insert({
+  const order = await insertOrderWithUniqueNumber<{ id: string; order_number: string }>(
+    supabase,
+    (orderNumber) => ({
       order_number: orderNumber,
       customer_id: customerSession?.id ?? null,
       customer_name: `${delivery.firstName} ${delivery.lastName}`.trim(),
@@ -129,10 +118,10 @@ export async function createRazorpayOrder(cartItems: CartItemInput[], delivery: 
       order_channel: "website",
       status: "pending_payment",
       payment_status: "pending",
-    })
-    .select("id")
-    .single();
-  if (orderError) throw new Error(orderError.message);
+    }),
+    "id, order_number",
+  );
+  const orderNumber = order.order_number;
 
   const { error: itemsError } = await supabase
     .from("order_items")
