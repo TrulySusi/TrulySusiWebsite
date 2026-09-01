@@ -15,12 +15,27 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { getCustomerSession } from "@/lib/customer-session";
 import { INDIA_STATES, lookupPincode } from "@/lib/india";
-import { createRazorpayOrder, verifyRazorpayPayment } from "./actions";
+import { Breadcrumb } from "@/components/Breadcrumb";
+import { createRazorpayOrder, verifyRazorpayPayment, logFailedPayment } from "./actions";
 
 type RazorpayResponse = {
   razorpay_payment_id: string;
   razorpay_order_id: string;
   razorpay_signature: string;
+};
+
+// The shape Razorpay's checkout.js passes to a "payment.failed" listener —
+// a genuine decline/rejection (bad card, bank refusal), distinct from the
+// customer just closing the modal (that's modal.ondismiss instead).
+type RazorpayFailureResponse = {
+  error: {
+    code: string;
+    description: string;
+    source?: string;
+    step?: string;
+    reason?: string;
+    metadata?: { order_id?: string; payment_id?: string };
+  };
 };
 
 type RazorpayOptions = {
@@ -35,9 +50,14 @@ type RazorpayOptions = {
   modal?: { ondismiss?: () => void };
 };
 
+type RazorpayInstance = {
+  open: () => void;
+  on: (event: "payment.failed", handler: (response: RazorpayFailureResponse) => void) => void;
+};
+
 declare global {
   interface Window {
-    Razorpay?: new (options: RazorpayOptions) => { open: () => void };
+    Razorpay?: new (options: RazorpayOptions) => RazorpayInstance;
   }
 }
 
@@ -164,6 +184,9 @@ export default function CheckoutPage() {
   const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
   const [loadedSaved, setLoadedSaved] = useState(false);
+  const [deliveryFieldErrors, setDeliveryFieldErrors] = useState<
+    Partial<Record<keyof DeliveryDetails, string>>
+  >({});
 
   const [saveAddress, setSaveAddress] = useState(true);
 
@@ -251,10 +274,12 @@ export default function CheckoutPage() {
 
   function update<K extends keyof DeliveryDetails>(field: K, value: DeliveryDetails[K]) {
     setForm((f) => ({ ...f, [field]: value }));
+    setDeliveryFieldErrors((f) => ({ ...f, [field]: undefined }));
   }
 
   function updatePincode(value: string) {
     setForm((f) => ({ ...f, pincode: value }));
+    setDeliveryFieldErrors((f) => ({ ...f, pincode: undefined }));
     if (/^\d{6}$/.test(value.trim())) {
       lookupPincode(value.trim()).then((result) => {
         if (result) setForm((f) => ({ ...f, city: result.city, state: result.state }));
@@ -342,27 +367,44 @@ export default function CheckoutPage() {
       return;
     }
 
-    const required: Array<keyof DeliveryDetails> = [
-      "firstName",
-      "lastName",
-      "phone",
-      "line1",
-      "line2",
-      "pincode",
-      "city",
-      "state",
-    ];
-    const filled = required.every((k) => form[k].trim().length > 0);
-    const phoneValid = /^\d{10}$/.test(form.phone.trim());
-    const altPhoneValid = !form.alternatePhone.trim() || /^\d{10}$/.test(form.alternatePhone.trim());
-    const pincodeValid = /^\d{6}$/.test(form.pincode.trim());
+    // Light-touch validation: block obviously-wrong input (empty, a name
+    // that's just digits/symbols, a malformed phone/pincode) without
+    // restricting character sets — a real Indian address routinely has
+    // "#", "/", or other punctuation in it, and a strict allow-list would
+    // reject valid input.
+    const hasLetter = (v: string) => /\p{L}/u.test(v);
+    const errors: Partial<Record<keyof DeliveryDetails, string>> = {};
 
-    if (!filled || !phoneValid || !altPhoneValid || !pincodeValid) {
-      setError(
-        "Please fill every required field (phone numbers must be 10 digits, pincode must be 6 digits).",
-      );
+    if (!form.firstName.trim()) errors.firstName = "Required.";
+    else if (!hasLetter(form.firstName)) errors.firstName = "Doesn't look like a name.";
+
+    if (!form.lastName.trim()) errors.lastName = "Required.";
+    else if (!hasLetter(form.lastName)) errors.lastName = "Doesn't look like a name.";
+
+    if (!form.phone.trim()) errors.phone = "Required.";
+    else if (!/^\d{10}$/.test(form.phone.trim())) errors.phone = "Enter a 10-digit number.";
+
+    if (form.alternatePhone.trim() && !/^\d{10}$/.test(form.alternatePhone.trim())) {
+      errors.alternatePhone = "Enter a 10-digit number.";
+    }
+
+    if (!form.line1.trim()) errors.line1 = "Required.";
+    if (!form.line2.trim()) errors.line2 = "Required.";
+
+    if (!form.pincode.trim()) errors.pincode = "Required.";
+    else if (!/^\d{6}$/.test(form.pincode.trim())) errors.pincode = "Enter a 6-digit pincode.";
+
+    if (!form.city.trim()) errors.city = "Required.";
+    else if (!hasLetter(form.city)) errors.city = "Doesn't look like a city.";
+
+    if (!form.state.trim()) errors.state = "Required.";
+
+    if (Object.keys(errors).length > 0) {
+      setDeliveryFieldErrors(errors);
+      setError("Please fix the highlighted fields below.");
       return;
     }
+    setDeliveryFieldErrors({});
 
     setSubmitting(true);
     setDelivery(form);
@@ -459,6 +501,25 @@ export default function CheckoutPage() {
           },
         },
       });
+
+      // A real decline/rejection (bad card, bank refusal) — distinct from
+      // the customer just closing the modal, which ondismiss above covers.
+      razorpay.on("payment.failed", (response) => {
+        logFailedPayment({
+          dbOrderId: result.dbOrderId,
+          razorpayOrderId: result.razorpayOrderId,
+          razorpayPaymentId: response.error.metadata?.payment_id ?? null,
+          amountInr: total,
+          errorCode: response.error.code,
+          errorDescription: response.error.description,
+          rawPayload: response,
+        });
+        setError(
+          "Payment failed — your bank or card didn't approve this transaction. Please try again or use a different payment method.",
+        );
+        setSubmitting(false);
+      });
+
       razorpay.open();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Couldn't start payment. Please try again.");
@@ -474,7 +535,8 @@ export default function CheckoutPage() {
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-16 sm:px-10">
-      <h1 className="font-display text-4xl text-navy">Checkout</h1>
+      <Breadcrumb items={[{ label: "Cart", href: "/cart" }, { label: "Checkout" }]} />
+      <h1 className="mt-8 font-display text-4xl text-navy">Checkout</h1>
 
       <form
         onSubmit={handleSubmit}
@@ -681,77 +743,132 @@ export default function CheckoutPage() {
             </div>
 
             <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <input
-                placeholder="First name"
-                value={form.firstName}
-                onChange={(e) => update("firstName", e.target.value)}
-                className={fieldClass}
-              />
-              <input
-                placeholder="Last name"
-                value={form.lastName}
-                onChange={(e) => update("lastName", e.target.value)}
-                className={fieldClass}
-              />
-              <input
-                placeholder="Phone number"
-                inputMode="numeric"
-                value={form.phone}
-                onChange={(e) => update("phone", e.target.value)}
-                className={fieldClass}
-              />
-              <input
-                placeholder="Alternate phone (optional)"
-                inputMode="numeric"
-                value={form.alternatePhone}
-                onChange={(e) => update("alternatePhone", e.target.value)}
-                className={fieldClass}
-              />
-              <input
-                placeholder="House / Flat / Building no."
-                value={form.line1}
-                onChange={(e) => update("line1", e.target.value)}
-                className={`sm:col-span-2 ${fieldClass}`}
-              />
-              <input
-                placeholder="Street / Area / Locality"
-                value={form.line2}
-                onChange={(e) => update("line2", e.target.value)}
-                className={`sm:col-span-2 ${fieldClass}`}
-              />
+              <div>
+                <input
+                  placeholder="First name"
+                  value={form.firstName}
+                  onChange={(e) => update("firstName", e.target.value)}
+                  className={`w-full ${errorFieldClass(!!deliveryFieldErrors.firstName)}`}
+                />
+                {deliveryFieldErrors.firstName && (
+                  <p className="mt-1 font-body text-xs text-brass">{deliveryFieldErrors.firstName}</p>
+                )}
+              </div>
+              <div>
+                <input
+                  placeholder="Last name"
+                  value={form.lastName}
+                  onChange={(e) => update("lastName", e.target.value)}
+                  className={`w-full ${errorFieldClass(!!deliveryFieldErrors.lastName)}`}
+                />
+                {deliveryFieldErrors.lastName && (
+                  <p className="mt-1 font-body text-xs text-brass">{deliveryFieldErrors.lastName}</p>
+                )}
+              </div>
+              <div>
+                <div className="relative">
+                  <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 font-body text-sm text-navy/50">
+                    +91
+                  </span>
+                  <input
+                    placeholder="Phone number"
+                    inputMode="numeric"
+                    value={form.phone}
+                    onChange={(e) => update("phone", e.target.value)}
+                    className={`w-full pl-11 ${errorFieldClass(!!deliveryFieldErrors.phone)}`}
+                  />
+                </div>
+                {deliveryFieldErrors.phone && (
+                  <p className="mt-1 font-body text-xs text-brass">{deliveryFieldErrors.phone}</p>
+                )}
+              </div>
+              <div>
+                <div className="relative">
+                  <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 font-body text-sm text-navy/50">
+                    +91
+                  </span>
+                  <input
+                    placeholder="Alternate phone (optional)"
+                    inputMode="numeric"
+                    value={form.alternatePhone}
+                    onChange={(e) => update("alternatePhone", e.target.value)}
+                    className={`w-full pl-11 ${errorFieldClass(!!deliveryFieldErrors.alternatePhone)}`}
+                  />
+                </div>
+                {deliveryFieldErrors.alternatePhone && (
+                  <p className="mt-1 font-body text-xs text-brass">{deliveryFieldErrors.alternatePhone}</p>
+                )}
+              </div>
+              <div className="sm:col-span-2">
+                <input
+                  placeholder="House / Flat / Building no."
+                  value={form.line1}
+                  onChange={(e) => update("line1", e.target.value)}
+                  className={`w-full ${errorFieldClass(!!deliveryFieldErrors.line1)}`}
+                />
+                {deliveryFieldErrors.line1 && (
+                  <p className="mt-1 font-body text-xs text-brass">{deliveryFieldErrors.line1}</p>
+                )}
+              </div>
+              <div className="sm:col-span-2">
+                <input
+                  placeholder="Street / Area / Locality"
+                  value={form.line2}
+                  onChange={(e) => update("line2", e.target.value)}
+                  className={`w-full ${errorFieldClass(!!deliveryFieldErrors.line2)}`}
+                />
+                {deliveryFieldErrors.line2 && (
+                  <p className="mt-1 font-body text-xs text-brass">{deliveryFieldErrors.line2}</p>
+                )}
+              </div>
               <input
                 placeholder="Landmark (optional)"
                 value={form.landmark}
                 onChange={(e) => update("landmark", e.target.value)}
                 className={`sm:col-span-2 ${fieldClass}`}
               />
-              <input
-                placeholder="Pincode"
-                inputMode="numeric"
-                value={form.pincode}
-                onChange={(e) => updatePincode(e.target.value)}
-                className={fieldClass}
-              />
-              <input
-                placeholder="City"
-                value={form.city}
-                onChange={(e) => update("city", e.target.value)}
-                className={fieldClass}
-              />
-              <select
-                value={form.state}
-                onChange={(e) => update("state", e.target.value)}
-                className={`sm:col-span-2 ${fieldClass} ${form.state ? "text-navy" : "text-navy/40"}`}
-              >
-                <option value="" disabled>
-                  State
-                </option>
-                {INDIA_STATES.map((s) => (
-                  <option key={s} value={s} className="text-navy">
-                    {s}
+              <div>
+                <input
+                  placeholder="Pincode"
+                  inputMode="numeric"
+                  value={form.pincode}
+                  onChange={(e) => updatePincode(e.target.value)}
+                  className={`w-full ${errorFieldClass(!!deliveryFieldErrors.pincode)}`}
+                />
+                {deliveryFieldErrors.pincode && (
+                  <p className="mt-1 font-body text-xs text-brass">{deliveryFieldErrors.pincode}</p>
+                )}
+              </div>
+              <div>
+                <input
+                  placeholder="City"
+                  value={form.city}
+                  onChange={(e) => update("city", e.target.value)}
+                  className={`w-full ${errorFieldClass(!!deliveryFieldErrors.city)}`}
+                />
+                {deliveryFieldErrors.city && (
+                  <p className="mt-1 font-body text-xs text-brass">{deliveryFieldErrors.city}</p>
+                )}
+              </div>
+              <div className="sm:col-span-2">
+                <select
+                  value={form.state}
+                  onChange={(e) => update("state", e.target.value)}
+                  className={`w-full ${errorFieldClass(!!deliveryFieldErrors.state)} ${form.state ? "text-navy" : "text-navy/40"}`}
+                >
+                  <option value="" disabled>
+                    State
                   </option>
-                ))}
-              </select>
+                  {INDIA_STATES.map((s) => (
+                    <option key={s} value={s} className="text-navy">
+                      {s}
+                    </option>
+                  ))}
+                </select>
+                {deliveryFieldErrors.state && (
+                  <p className="mt-1 font-body text-xs text-brass">{deliveryFieldErrors.state}</p>
+                )}
+              </div>
               <textarea
                 placeholder="Delivery instructions (optional), e.g. leave with security, call before delivery"
                 value={form.notes}
