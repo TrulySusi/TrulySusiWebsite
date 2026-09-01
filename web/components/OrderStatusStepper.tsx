@@ -6,8 +6,12 @@ const STEPS = [
 ];
 
 function stepIndexForStatus(status: string) {
-  if (status === "pending_payment" || status === "paid") return 0;
-  if (status === "packed") return 1;
+  if (status === "pending_payment") return 0;
+  // Once paid, prep genuinely starts — matches the "Preparing" label
+  // already used for both paid and packed elsewhere (admin dashboard,
+  // My Orders), so the stepper shouldn't lag behind and still say
+  // "Order placed" for a paid order that just hasn't been packed yet.
+  if (status === "paid" || status === "packed") return 1;
   if (status === "shipped") return 2;
   if (status === "delivered") return 3;
   return -1; // cancelled / refunded — no stepper

@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 export const metadata: Metadata = { title: "Terms & Conditions · Truly Susi's" };
 
 export default function TermsPage() {
   return (
     <main className="mx-auto max-w-2xl px-6 py-20 sm:px-10">
-      <h1 className="font-display text-4xl text-navy">Terms &amp; Conditions</h1>
+      <Breadcrumb items={[{ label: "Terms & Conditions" }]} />
+      <h1 className="mt-8 font-display text-4xl text-navy">Terms &amp; Conditions</h1>
       <p className="mt-3 font-body text-sm text-navy/50">Last updated 21 August 2026</p>
 
       <div className="mt-8 space-y-8 font-body text-[15px] leading-relaxed text-navy/70">

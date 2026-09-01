@@ -5,6 +5,7 @@ import Image from "next/image";
 import { lookupOrder, type TrackedOrder } from "./actions";
 import { placeholderImageUrl } from "@/lib/catalog-shared";
 import { OrderStatusStepper } from "@/components/OrderStatusStepper";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 export default function TrackOrderPage() {
   const [orderNumber, setOrderNumber] = useState("");
@@ -25,7 +26,8 @@ export default function TrackOrderPage() {
 
   return (
     <main className="mx-auto max-w-xl px-6 py-24 sm:px-10">
-      <h1 className="text-center font-display text-4xl text-navy">Track your order</h1>
+      <Breadcrumb items={[{ label: "Track Order" }]} />
+      <h1 className="mt-8 text-center font-display text-4xl text-navy">Track your order</h1>
       <p className="mt-3 text-center font-body text-sm text-navy/60">
         Enter your order number and the phone number used at checkout.
       </p>

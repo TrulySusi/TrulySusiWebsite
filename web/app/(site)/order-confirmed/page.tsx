@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { placeholderImageUrl } from "@/lib/catalog-shared";
 import { getOrderSummary, type OrderSummary } from "../checkout/actions";
 import { getCustomerSession } from "@/lib/customer-session";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 function formatInr(amount: number) {
   return `₹${amount.toLocaleString("en-IN")}`;
@@ -30,7 +31,8 @@ function OrderConfirmedContent() {
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-24 sm:px-10">
-      <div className="text-center">
+      <Breadcrumb items={[{ label: "Order Confirmed" }]} />
+      <div className="mt-8 text-center">
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-sage/20 text-sage">
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.75" className="h-7 w-7">
             <path d="M4 10.5 8 14.5 16 6" strokeLinecap="round" strokeLinejoin="round" />
@@ -131,9 +133,6 @@ function OrderConfirmedContent() {
             View my orders
           </Link>
         )}
-        <Link href="/" className="font-body text-sm text-navy/50 hover:text-brass">
-          Back to home
-        </Link>
       </div>
     </main>
   );

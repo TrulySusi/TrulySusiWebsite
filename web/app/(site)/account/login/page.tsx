@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCheckoutStore } from "@/lib/checkout-store";
 import { createClient } from "@/lib/supabase/client";
 import { getCustomerSession } from "@/lib/customer-session";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 function isValidEmail(v: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
@@ -88,7 +89,8 @@ function LoginContent() {
 
   return (
     <main className="mx-auto max-w-md px-6 py-24 sm:px-10">
-      <div className="rounded-2xl border border-navy/10 bg-white p-10 shadow-sm">
+      <Breadcrumb items={[{ label: "Sign In" }]} />
+      <div className="mt-8 rounded-2xl border border-navy/10 bg-white p-10 shadow-sm">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brass/20 text-brass">
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.75" className="h-8 w-8">
             <circle cx="10" cy="7" r="3.25" />

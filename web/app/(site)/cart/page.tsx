@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCartStore, cartSubtotal } from "@/lib/cart-store";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 export default function CartPage() {
   const items = useCartStore((s) => s.items);
@@ -20,7 +21,10 @@ export default function CartPage() {
   if (items.length === 0) {
     return (
       <main className="mx-auto max-w-xl px-6 py-24 text-center sm:px-10">
-        <h1 className="font-display text-4xl text-navy">Your cart is empty</h1>
+        <div className="text-left">
+          <Breadcrumb items={[{ label: "Cart" }]} />
+        </div>
+        <h1 className="mt-8 font-display text-4xl text-navy">Your cart is empty</h1>
         <p className="mt-4 font-body text-navy/60">
           Nothing here yet. Go find something sweet.
         </p>
@@ -38,7 +42,8 @@ export default function CartPage() {
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-16 sm:px-10">
-      <h1 className="font-display text-4xl text-navy">Your cart</h1>
+      <Breadcrumb items={[{ label: "Cart" }]} />
+      <h1 className="mt-8 font-display text-4xl text-navy">Your cart</h1>
 
       <div className="mt-8 grid grid-cols-1 items-start gap-8 lg:grid-cols-[1fr_320px]">
         <div className="flex flex-col gap-4">
