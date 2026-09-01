@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createAdminSessionClient } from "@/lib/supabase/admin-session-client";
-import { AdminNotificationBell } from "@/components/admin/AdminNotificationBell";
 
 const NAV_LINKS = [
   {
@@ -96,10 +95,25 @@ export function AdminNav({ name, role }: { name: string; role: string }) {
 
   return (
     <aside
-      className={`relative flex shrink-0 flex-col bg-navy py-6 shadow-[4px_0_16px_-8px_rgba(4,28,53,.3)] transition-all ${
-        mounted && collapsed ? "w-[72px] items-center px-2" : "w-56 px-4"
+      className={`relative flex shrink-0 shadow-[4px_0_16px_-8px_rgba(4,28,53,.3)] transition-all ${
+        mounted && collapsed ? "w-[72px]" : "w-56"
       }`}
     >
+      {/* Image already fills exactly its own absolute inset-0 box, so it
+          doesn't need overflow-hidden on the aside to stay contained —
+          and that overflow-hidden was clipping the collapse toggle
+          (positioned slightly outside the aside at -right-3) and the
+          notification dropdown (which intentionally extends past the
+          sidebar's edge). */}
+      <div className="absolute inset-0 overflow-hidden">
+        <Image src="/brand/05_sweet_making.png" alt="" fill sizes="224px" className="object-cover object-center" />
+        <div className="absolute inset-0 bg-navy/88" />
+      </div>
+      <div
+        className={`relative z-10 flex w-full flex-col py-6 ${
+          mounted && collapsed ? "items-center px-2" : "px-4"
+        }`}
+      >
       <button
         type="button"
         onClick={toggleCollapsed}
@@ -120,19 +134,12 @@ export function AdminNav({ name, role }: { name: string; role: string }) {
       {collapsed ? (
         <Image src="/brand/icon-cream.png" alt="Truly Susi's" width={32} height={32} className="h-8 w-8" />
       ) : (
-        <Link href="/admin" className="font-body text-xl font-semibold text-cream">
-          Truly Susi&rsquo;s
+        <Link href="/admin" className="relative h-7 w-32 shrink-0 self-start">
+          <Image src="/brand/wordmark-cream.png" alt="Truly Susi's" fill sizes="128px" className="object-contain object-left" />
         </Link>
       )}
-      {!collapsed && (
-        <p className="mt-0.5 font-body text-xs uppercase tracking-wider text-cream/50">Admin</p>
-      )}
 
-      <div className={`mt-5 w-full border-t border-white/10 pt-3 ${collapsed ? "flex justify-center" : ""}`}>
-        <AdminNotificationBell collapsed={collapsed} />
-      </div>
-
-      <nav className={`mt-3 flex w-full flex-col gap-1 ${collapsed ? "items-center" : ""}`}>
+      <nav className={`mt-5 flex w-full flex-col gap-1 border-t border-white/10 pt-3 ${collapsed ? "items-center" : ""}`}>
         {NAV_LINKS.map((link) => {
           const active = link.exact ? pathname === link.href : pathname === link.href || pathname.startsWith(`${link.href}/`);
           const content = (
@@ -174,7 +181,10 @@ export function AdminNav({ name, role }: { name: string; role: string }) {
         {!collapsed && (
           <div className="mb-2 border-t border-white/10 pt-3">
             <p className="truncate font-body text-sm font-medium text-cream">{name}</p>
-            <p className="font-body text-xs capitalize text-cream/50">{role}</p>
+            {/* No staff accounts yet — only "owner" is real right now, and
+                that's an internal role name, not something to show a user.
+                Revisit once staff logins actually exist. */}
+            <p className="font-body text-xs capitalize text-cream/50">{role === "owner" ? "Admin" : role}</p>
           </div>
         )}
         <button
@@ -191,6 +201,7 @@ export function AdminNav({ name, role }: { name: string; role: string }) {
           </svg>
           {!collapsed && (loggingOut ? "Logging out…" : "Log out")}
         </button>
+      </div>
       </div>
     </aside>
   );

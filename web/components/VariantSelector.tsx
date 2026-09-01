@@ -102,6 +102,9 @@ export function VariantSelector({
           {lineTotal !== null ? `₹${lineTotal.toFixed(0)}` : ""}
         </span>
       </div>
+      {lineTotal !== null && (
+        <p className="mt-1 font-body text-xs text-navy/45">Inclusive of all taxes</p>
+      )}
 
       <button
         type="button"

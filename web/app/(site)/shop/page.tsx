@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getActiveProducts, getCategories } from "@/lib/catalog";
 import { MenuGrid } from "@/components/MenuGrid";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 export const metadata: Metadata = {
   title: "Products · Truly Susi's",
@@ -19,11 +20,9 @@ export default async function ShopPage({ searchParams }: Props) {
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-20 sm:px-10">
-      <div className="max-w-2xl">
+      <Breadcrumb items={[{ label: "Shop" }]} />
+      <div className="mt-8 max-w-2xl">
         <h1 className="font-display text-5xl text-navy">Our Products</h1>
-        <p className="mt-3 font-body text-navy/60">
-          Made in small batches, always fresh.
-        </p>
       </div>
 
       {q?.trim() && (

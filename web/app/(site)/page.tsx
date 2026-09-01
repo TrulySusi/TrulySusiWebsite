@@ -63,16 +63,11 @@ export default async function Home() {
         </div>
         <div className="relative mx-auto max-w-2xl px-6 py-28 text-center sm:px-10">
           <span className="inline-block rounded-full bg-white/10 px-3.5 py-1.5 font-body text-[11px] font-semibold uppercase tracking-wider text-brass">
-            Homemade Tamil Sweets &middot; Salem
+            Homemade Sweets &middot; Salem &middot; Shipped Anywhere in India
           </span>
           <h1 className="mt-6 font-display text-6xl font-medium text-white sm:text-7xl">
             Sweeter together.
           </h1>
-          <p className="mx-auto mt-5 max-w-md font-body text-base leading-relaxed text-white/85">
-            Badam Halwa slow-cooked in ghee, Mysore Pak stirred until it
-            just holds its shape, and Thenkulal fried the way festivals
-            call for made by hand in Salem, shipped anywhere in India.
-          </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link
               href="/shop"
@@ -123,9 +118,6 @@ export default async function Home() {
       <section className="mx-auto max-w-6xl px-6 py-16 sm:px-10">
         <div className="text-center">
           <h2 className="font-display text-3xl text-navy">Why Truly Susi&rsquo;s</h2>
-          <p className="mt-2 font-body text-sm text-navy/60">
-            Three things we&rsquo;ve never compromised on
-          </p>
         </div>
         <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-3">
           {PILLARS.map((p) => (
@@ -162,12 +154,12 @@ export default async function Home() {
             className="mx-auto h-[104px] w-auto"
           />
           <h2 className="mt-6 font-display text-3xl text-navy">Meet our Kuruvi</h2>
-          <p className="mx-auto mt-4 max-w-md text-center font-body text-[15px] leading-relaxed text-navy/70">
+          <p className="mx-auto mt-4 max-w-md text-center! font-body text-[15px] leading-relaxed text-navy/70">
             In Tamil, குருவி means House Sparrow, the little bird that always finds its way
             home. Our Kuruvi is the messenger that flies between Susi&rsquo;s kitchen and your
             doorstep, carrying something sweet every time.
           </p>
-          <p className="mt-4 text-center font-body text-xs uppercase tracking-[0.2em] text-navy/45">
+          <p className="mt-4 text-center! font-body text-xs uppercase tracking-[0.2em] text-navy/45">
             குருவி -  The Little Messenger
           </p>
         </div>

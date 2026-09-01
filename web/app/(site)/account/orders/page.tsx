@@ -4,6 +4,7 @@ import { getCustomerSession } from "@/lib/customer-session";
 import { listMyOrders } from "./actions";
 import { OrderStatusStepper } from "@/components/OrderStatusStepper";
 import { placeholderImageUrl } from "@/lib/catalog-shared";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 export default async function MyOrdersPage() {
   const session = await getCustomerSession();
@@ -11,7 +12,10 @@ export default async function MyOrdersPage() {
   if (!session) {
     return (
       <main className="mx-auto max-w-xl px-6 py-24 text-center sm:px-10">
-        <h1 className="font-display text-4xl text-navy">My orders</h1>
+        <div className="text-left">
+          <Breadcrumb items={[{ label: "My Orders" }]} />
+        </div>
+        <h1 className="mt-8 font-display text-4xl text-navy">My orders</h1>
         <p className="mt-3 font-body text-sm text-navy/60">
           Please sign in to see your order history.
         </p>
@@ -29,7 +33,8 @@ export default async function MyOrdersPage() {
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-24 sm:px-10">
-      <h1 className="text-center font-display text-4xl text-navy">My orders</h1>
+      <Breadcrumb items={[{ label: "My Orders" }]} />
+      <h1 className="mt-8 text-center font-display text-4xl text-navy">My orders</h1>
 
       {orders.length === 0 ? (
         <p className="mt-8 text-center font-body text-sm text-navy/60">

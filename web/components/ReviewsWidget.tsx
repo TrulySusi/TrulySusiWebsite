@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { StarRatingDisplay } from "@/components/StarRating";
 import { ReviewForm } from "@/components/ReviewForm";
+import { useReviewsWidget } from "@/components/ReviewsWidgetContext";
 
 type Review = {
   id: string;
@@ -14,7 +15,7 @@ type Review = {
 };
 
 export function ReviewsWidget() {
-  const [open, setOpen] = useState(false);
+  const { open, openReviews, closeReviews } = useReviewsWidget();
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -51,7 +52,7 @@ export function ReviewsWidget() {
     <>
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={() => openReviews()}
         style={{ writingMode: "vertical-rl" }}
         className="fixed right-0 top-[48%] z-40 -translate-y-1/2 rounded-l-lg bg-brass px-2.5 py-4 font-body text-xs font-semibold uppercase tracking-wider text-navy shadow-lg transition-colors hover:bg-brass/90"
       >
@@ -61,7 +62,7 @@ export function ReviewsWidget() {
       {open && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-navy/50 px-4 py-8"
-          onClick={() => setOpen(false)}
+          onClick={() => closeReviews()}
         >
           <div
             className="flex max-h-full w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white"
@@ -70,7 +71,7 @@ export function ReviewsWidget() {
             <div className="relative shrink-0 border-b border-navy/10 px-6 pb-5 pt-6 text-center">
               <button
                 type="button"
-                onClick={() => setOpen(false)}
+                onClick={() => closeReviews()}
                 aria-label="Close"
                 className="absolute right-4 top-4 text-navy/40 transition-colors hover:text-navy"
               >

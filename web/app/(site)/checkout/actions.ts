@@ -147,6 +147,35 @@ export async function createRazorpayOrder(cartItems: CartItemInput[], delivery: 
   };
 }
 
+// Fired from Razorpay's payment.failed event — a genuine decline/rejection,
+// not the customer just closing the modal. Never blocks the customer (the
+// UI shows a retry message regardless of whether this succeeds); this is
+// purely so a failed attempt is visible in admin if a customer reports
+// trouble, instead of vanishing with no trace.
+export async function logFailedPayment(params: {
+  dbOrderId: string;
+  razorpayOrderId: string;
+  razorpayPaymentId: string | null;
+  amountInr: number;
+  errorCode: string;
+  errorDescription: string;
+  rawPayload: unknown;
+}): Promise<void> {
+  try {
+    const supabase = createAdminClient();
+    await supabase.from("payments").insert({
+      order_id: params.dbOrderId,
+      razorpay_order_id: params.razorpayOrderId,
+      razorpay_payment_id: params.razorpayPaymentId ?? `failed_${params.razorpayOrderId}_${Date.now()}`,
+      amount_inr: params.amountInr,
+      status: "failed",
+      raw_payload: { code: params.errorCode, description: params.errorDescription, details: params.rawPayload },
+    });
+  } catch (err) {
+    console.error("Couldn't log failed payment:", err instanceof Error ? err.message : err);
+  }
+}
+
 export type OrderSummaryItem = {
   nameSnapshot: string;
   variantLabelSnapshot: string;

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCheckoutStore } from "@/lib/checkout-store";
 import { createClient } from "@/lib/supabase/client";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 function isValidEmail(v: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
@@ -95,7 +96,8 @@ function SignupContent() {
   if (checkEmail) {
     return (
       <main className="mx-auto max-w-md px-6 py-24 sm:px-10">
-        <div className="rounded-2xl border border-navy/10 bg-white p-10 text-center shadow-sm">
+        <Breadcrumb items={[{ label: "Create Account" }]} />
+        <div className="mt-8 rounded-2xl border border-navy/10 bg-white p-10 text-center shadow-sm">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-sage/20 text-sage">
             <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.75" className="h-8 w-8">
               <rect x="2.5" y="4.5" width="15" height="11" rx="1.5" />
@@ -103,7 +105,7 @@ function SignupContent() {
             </svg>
           </div>
           <h1 className="mt-4 font-display text-3xl text-navy">Confirm your email</h1>
-          <p className="mt-3 font-body text-sm text-navy/60">
+          <p className="mt-3 text-center! font-body text-sm text-navy/60">
             We&rsquo;ve sent a confirmation link to {email}. Once you&rsquo;ve confirmed, come back
             and log in.
           </p>
@@ -112,7 +114,7 @@ function SignupContent() {
             type="button"
             onClick={handleResend}
             disabled={resending}
-            className="mt-4 font-body text-xs text-navy/50 hover:text-brass disabled:opacity-60"
+            className="mt-4 font-body text-xs font-semibold text-brass hover:text-navy disabled:opacity-60"
           >
             {resending ? "Resending…" : "Didn't get it? Resend the email"}
           </button>
@@ -134,7 +136,8 @@ function SignupContent() {
 
   return (
     <main className="mx-auto max-w-md px-6 py-24 sm:px-10">
-      <div className="rounded-2xl border border-navy/10 bg-white p-10 shadow-sm">
+      <Breadcrumb items={[{ label: "Create Account" }]} />
+      <div className="mt-8 rounded-2xl border border-navy/10 bg-white p-10 shadow-sm">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brass/20 text-brass">
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.75" className="h-8 w-8">
             <circle cx="10" cy="7" r="3.25" />

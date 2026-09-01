@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useReviewsWidget } from "@/components/ReviewsWidgetContext";
 
 const BRAND_LINKS = [
   { href: "/#our-story", label: "Our Story" },
@@ -13,6 +16,8 @@ const POLICY_LINKS = [
 ];
 
 export function SiteFooter() {
+  const { openReviews } = useReviewsWidget();
+
   return (
     <footer className="bg-navy text-cream">
       <div className="mx-auto max-w-6xl px-6 py-9 sm:px-10">
@@ -20,14 +25,52 @@ export function SiteFooter() {
           <div>
             <h3 className="font-body text-sm font-bold text-cream">Get in touch</h3>
             <ul className="mt-3 space-y-2 font-body text-sm text-cream/80">
-              <li>
+              <li className="flex items-center gap-2">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-3.5 w-3.5 shrink-0 text-cream/50">
+                  <rect x="2.5" y="4.5" width="15" height="11" rx="1.5" />
+                  <path d="m3 5.5 7 5.5 7-5.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
                 {/* Real support inbox from the product label — not the
                     placeholder email/phone the reference mockup shows. */}
                 <a href="mailto:feedback@trulysusi.in" className="transition-colors hover:text-cream">
                   feedback@trulysusi.in
                 </a>
               </li>
-              <li>Salem, Tamil Nadu</li>
+              <li className="flex items-center gap-2">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-3.5 w-3.5 shrink-0 text-cream/50">
+                  <path
+                    d="M4 3h3l1.5 4-2 1.5a10 10 0 0 0 5 5l1.5-2 4 1.5v3a1.5 1.5 0 0 1-1.6 1.5A15 15 0 0 1 3.5 4.6 1.5 1.5 0 0 1 5 3Z"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                {/* Explicitly user-authorized dummy number — replace with
+                    the real one before this goes in front of customers. */}
+                <a href="tel:+919876543210" className="transition-colors hover:text-cream">
+                  +91 98765 43210
+                </a>
+              </li>
+              <li className="flex items-center gap-2">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-3.5 w-3.5 shrink-0 text-cream/50">
+                  <path d="M10 18s6-5.2 6-9.6A6 6 0 0 0 4 8.4C4 12.8 10 18 10 18Z" strokeLinejoin="round" />
+                  <circle cx="10" cy="8.4" r="2" />
+                </svg>
+                Salem, Tamil Nadu
+              </li>
+              <li className="flex items-center gap-2">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-3.5 w-3.5 shrink-0 text-cream/50">
+                  <path
+                    d="M10 2.8l2.14 4.53 4.96.62-3.63 3.5.94 4.95L10 13.9l-4.41 2.5.94-4.95-3.63-3.5 4.96-.62L10 2.8Z"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <button
+                  type="button"
+                  onClick={openReviews}
+                  className="font-body text-sm text-left text-cream/80 transition-colors hover:text-cream"
+                >
+                  Customer Reviews
+                </button>
+              </li>
             </ul>
           </div>
 

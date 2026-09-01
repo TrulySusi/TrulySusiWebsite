@@ -181,46 +181,6 @@ export function AdminOrderDetail({ order, items }: { order: Order; items: OrderI
           </div>
         </section>
 
-        <section className="rounded-2xl border border-navy/10 bg-white p-6">
-          <SectionHeading
-            color="sage"
-            icon={
-              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
-                <path d="M10 18s6-5.2 6-9.6A6 6 0 0 0 4 8.4C4 12.8 10 18 10 18Z" strokeLinejoin="round" />
-                <circle cx="10" cy="8.4" r="2" />
-              </svg>
-            }
-          >
-            Customer &amp; delivery
-          </SectionHeading>
-          <div className="mt-4 grid grid-cols-1 gap-x-6 gap-y-1 font-body text-sm text-navy/80 sm:grid-cols-2">
-            <p>
-              <span className="text-navy/50">Name: </span>
-              {addr.firstName} {addr.lastName}
-            </p>
-            <p>
-              <span className="text-navy/50">Phone: </span>
-              {order.customer_phone}
-            </p>
-            {order.customer_email && (
-              <p>
-                <span className="text-navy/50">Email: </span>
-                {order.customer_email}
-              </p>
-            )}
-            <p>
-              <span className="text-navy/50">Channel: </span>
-              <span className="capitalize">{order.order_channel}</span>
-            </p>
-            <p className="sm:col-span-2">
-              <span className="text-navy/50">Address: </span>
-              {addr.line1}, {addr.line2}
-              {addr.landmark ? `, near ${addr.landmark}` : ""}, {addr.city}, {addr.state} -{" "}
-              {addr.pincode}
-            </p>
-          </div>
-        </section>
-
         <form onSubmit={handleSubmit} className="rounded-2xl border border-navy/10 bg-white p-6">
           <SectionHeading
             color="brass"
@@ -285,36 +245,78 @@ export function AdminOrderDetail({ order, items }: { order: Order; items: OrderI
         </form>
       </div>
 
-      <div className="rounded-2xl border border-navy/10 bg-white p-6">
-        <SectionHeading
-          color="sage"
-          icon={
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
-              <rect x="2" y="5" width="16" height="10" rx="1.5" />
-              <path d="M2 8.5h16" />
-            </svg>
-          }
-        >
-          Payment
-        </SectionHeading>
-        <p className="mt-3 font-body text-sm text-navy/70">
-          <span className="text-navy/50">Method: </span>
-          <span className="capitalize">{order.payment_method}</span>
-        </p>
-        <p className="mt-1 font-body text-sm text-navy/70">
-          <span className="text-navy/50">Status: </span>
-          <span className="capitalize">{order.payment_status}</span>
-        </p>
-        {order.payment_status !== "paid" && (
-          <button
-            type="button"
-            onClick={handleMarkPaid}
-            disabled={markingPaid}
-            className="mt-4 w-full rounded-full bg-sage px-5 py-2.5 font-body text-sm font-semibold text-navy transition-colors hover:bg-sage/90 disabled:opacity-60"
+      <div className="flex flex-col gap-6">
+        <section className="rounded-2xl border border-navy/10 bg-white p-6">
+          <SectionHeading
+            color="sage"
+            icon={
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
+                <path d="M10 18s6-5.2 6-9.6A6 6 0 0 0 4 8.4C4 12.8 10 18 10 18Z" strokeLinejoin="round" />
+                <circle cx="10" cy="8.4" r="2" />
+              </svg>
+            }
           >
-            {markingPaid ? "Updating…" : "Mark as paid"}
-          </button>
-        )}
+            Customer &amp; delivery
+          </SectionHeading>
+          <div className="mt-4 flex flex-col gap-1 font-body text-sm text-navy/80">
+            <p>
+              <span className="text-navy/50">Name: </span>
+              {addr.firstName} {addr.lastName}
+            </p>
+            <p>
+              <span className="text-navy/50">Phone: </span>
+              {order.customer_phone}
+            </p>
+            {order.customer_email && (
+              <p>
+                <span className="text-navy/50">Email: </span>
+                {order.customer_email}
+              </p>
+            )}
+            <p>
+              <span className="text-navy/50">Channel: </span>
+              <span className="capitalize">{order.order_channel}</span>
+            </p>
+            <p>
+              <span className="text-navy/50">Address: </span>
+              {addr.line1}, {addr.line2}
+              {addr.landmark ? `, near ${addr.landmark}` : ""}, {addr.city}, {addr.state} -{" "}
+              {addr.pincode}
+            </p>
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-navy/10 bg-white p-6">
+          <SectionHeading
+            color="sage"
+            icon={
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
+                <rect x="2" y="5" width="16" height="10" rx="1.5" />
+                <path d="M2 8.5h16" />
+              </svg>
+            }
+          >
+            Payment
+          </SectionHeading>
+          <p className="mt-3 font-body text-sm text-navy/70">
+            <span className="text-navy/50">Method: </span>
+            <span className="capitalize">{order.payment_method}</span>
+          </p>
+          <p className="mt-1 font-body text-sm text-navy/70">
+            <span className="text-navy/50">Status: </span>
+            <span className="capitalize">{order.payment_status}</span>
+          </p>
+          {order.payment_status !== "paid" && (
+            <button
+              type="button"
+              onClick={handleMarkPaid}
+              disabled={markingPaid}
+              className="mt-4 w-full rounded-full bg-sage px-5 py-2.5 font-body text-sm font-semibold text-navy transition-colors hover:bg-sage/90 disabled:opacity-60"
+            >
+              {markingPaid ? "Updating…" : "Mark as paid"}
+            </button>
+          )}
+        </section>
       </div>
     </div>
   );
