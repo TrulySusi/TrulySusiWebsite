@@ -29,8 +29,8 @@ export function AdminNewProductForm({ categories }: { categories: { id: string; 
     try {
       const id = await createProduct(new FormData(e.currentTarget));
       router.push(`/admin/products/${id}`);
-    } catch {
-      setError("Couldn't create the product. Check the name/slug and try again.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Couldn't create the product. Please try again.");
       setSubmitting(false);
     }
   }

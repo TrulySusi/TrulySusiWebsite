@@ -42,7 +42,12 @@ export async function createProduct(formData: FormData) {
     .select("id")
     .single();
 
-  if (error) throw error;
+  if (error) {
+    if (error.code === "23505") {
+      throw new Error(`A product with the slug "${slug}" already exists. Try a different name or slug.`);
+    }
+    throw new Error(error.message);
+  }
   revalidatePath("/admin/products");
   return data.id as string;
 }

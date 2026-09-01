@@ -35,19 +35,17 @@ export default async function AdminProductsPage({
 
   return (
     <div>
-      <AdminPageHeader
-        title="Products"
-        action={
-          <Link
-            href="/admin/products/new"
-            className="rounded-full bg-brass px-5 py-2.5 font-body text-sm font-semibold text-navy transition-colors hover:bg-brass/90"
-          >
-            + New product
-          </Link>
-        }
-      />
+      <AdminPageHeader title="Products" />
       <div className="p-5 sm:p-8">
         <div className="mx-auto max-w-7xl">
+          <div className="mb-4 flex justify-end">
+            <Link
+              href="/admin/products/new"
+              className="rounded-full bg-brass px-5 py-2.5 font-body text-sm font-semibold text-navy transition-colors hover:bg-brass/90"
+            >
+              + New product
+            </Link>
+          </div>
           <Suspense fallback={null}>
             <AdminProductsFilters />
           </Suspense>

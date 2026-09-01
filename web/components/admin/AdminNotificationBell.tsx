@@ -6,13 +6,13 @@ import { fetchAdminNotifications, markNotificationsSeen } from "@/app/admin/acti
 import type { AdminNotification, NotificationSeverity } from "@/lib/admin-notifications";
 import { formatRelativeTime } from "@/lib/format-relative-time";
 
-const SEVERITY_STYLES: Record<NotificationSeverity, { dot: string; badge: string }> = {
-  green: { dot: "bg-sage", badge: "bg-sage" },
-  yellow: { dot: "bg-amber-500", badge: "bg-amber-500" },
-  red: { dot: "bg-red-500", badge: "bg-red-500" },
+const SEVERITY_STYLES: Record<NotificationSeverity, { dot: string }> = {
+  green: { dot: "bg-sage" },
+  yellow: { dot: "bg-amber-500" },
+  red: { dot: "bg-red-500" },
 };
 
-export function AdminNotificationBell({ collapsed }: { collapsed: boolean }) {
+export function AdminNotificationBell() {
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState<AdminNotification[]>([]);
   const [unseenCount, setUnseenCount] = useState(0);
@@ -48,37 +48,26 @@ export function AdminNotificationBell({ collapsed }: { collapsed: boolean }) {
   }
 
   return (
-    <div ref={containerRef} className={`relative w-full ${collapsed ? "flex justify-center" : ""}`}>
+    <div ref={containerRef} className="relative shrink-0">
       <button
         type="button"
         onClick={handleToggle}
-        title={collapsed ? "Notifications" : undefined}
-        className={`relative flex items-center gap-2.5 rounded-lg px-3 py-2 font-body text-sm font-medium text-cream/70 transition-colors hover:bg-white/10 hover:text-cream ${
-          collapsed ? "justify-center" : "w-full"
-        }`}
+        aria-label="Notifications"
+        className="relative flex h-8 w-8 items-center justify-center rounded-full text-cream/70 transition-colors hover:bg-white/10 hover:text-cream"
       >
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5 shrink-0">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
           <path d="M5 8a5 5 0 0 1 10 0c0 3.5 1.2 4.8 1.2 4.8H3.8S5 11.5 5 8Z" strokeLinejoin="round" />
           <path d="M8.3 15.5a1.8 1.8 0 0 0 3.4 0" strokeLinecap="round" />
         </svg>
-        {!collapsed && <span className="flex-1 text-left">Notifications</span>}
         {unseenCount > 0 && (
-          <span
-            className={`flex h-4.5 min-w-4.5 items-center justify-center rounded-full px-1 font-body text-[10px] font-bold text-navy ${
-              collapsed ? "absolute -right-0.5 -top-0.5" : ""
-            } bg-brass`}
-          >
+          <span className="absolute -right-0.5 -top-0.5 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-brass px-1 font-body text-[10px] font-bold text-navy">
             {unseenCount > 9 ? "9+" : unseenCount}
           </span>
         )}
       </button>
 
       {open && (
-        <div
-          className={`absolute z-30 mt-1 max-h-[70vh] w-80 overflow-y-auto rounded-xl border border-navy/10 bg-white shadow-lg ${
-            collapsed ? "left-full ml-2 top-0" : "left-0 top-full"
-          }`}
-        >
+        <div className="absolute right-0 top-full z-30 mt-1 max-h-[70vh] w-80 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-xl border border-navy/10 bg-white shadow-lg">
           <div className="border-b border-navy/10 px-4 py-3">
             <p className="font-body text-sm font-semibold text-navy">Notifications</p>
           </div>

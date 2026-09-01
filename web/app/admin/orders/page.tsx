@@ -46,19 +46,17 @@ export default async function AdminOrdersPage({
 
   return (
     <div>
-      <AdminPageHeader
-        title="Orders"
-        action={
-          <Link
-            href="/admin/orders/new"
-            className="rounded-full bg-brass px-5 py-2.5 font-body text-sm font-semibold text-navy transition-colors hover:bg-brass/90"
-          >
-            + New order
-          </Link>
-        }
-      />
+      <AdminPageHeader title="Orders" />
       <div className="p-5 sm:p-8">
         <div className="mx-auto max-w-7xl">
+          <div className="mb-4 flex justify-end">
+            <Link
+              href="/admin/orders/new"
+              className="rounded-full bg-brass px-5 py-2.5 font-body text-sm font-semibold text-navy transition-colors hover:bg-brass/90"
+            >
+              + New order
+            </Link>
+          </div>
           <Suspense fallback={null}>
             <AdminOrdersFilters />
           </Suspense>

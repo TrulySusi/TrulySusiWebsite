@@ -140,7 +140,7 @@ export default async function AdminDashboardPage() {
                 {stuckPayments.length === 0 && awaitingPacking.length === 0 ? (
                   <p className="mt-3 font-body text-sm text-navy/50">Nothing waiting - all caught up.</p>
                 ) : (
-                  <div className="mt-4 space-y-5">
+                  <div className="mt-4 max-h-80 space-y-5 overflow-y-auto pr-3">
                     {stuckPayments.length > 0 && (
                       <div>
                         <p className="font-body text-xs font-semibold uppercase tracking-wide text-amber-600">
@@ -199,7 +199,7 @@ export default async function AdminDashboardPage() {
                 {activity.length === 0 ? (
                   <p className="mt-3 font-body text-sm text-navy/50">Nothing yet.</p>
                 ) : (
-                  <ul className="mt-4 max-h-80 divide-y divide-navy/6 overflow-y-auto">
+                  <ul className="mt-4 max-h-80 divide-y divide-navy/6 overflow-y-auto pr-3">
                     {activity.map((n) => (
                       <li key={n.id}>
                         <Link
