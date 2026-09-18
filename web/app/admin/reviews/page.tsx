@@ -16,7 +16,7 @@ export default async function AdminReviewsPage() {
         subtitle="Approve reviews to show them in the site-wide reviews widget."
       />
       <div className="p-5 sm:p-8">
-        <div className="mx-auto max-w-4xl">
+        <div className="mx-auto max-w-300">
           <AdminReviewsList reviews={data ?? []} />
         </div>
       </div>

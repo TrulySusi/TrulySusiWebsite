@@ -19,7 +19,7 @@ export default async function ShopPage({ searchParams }: Props) {
   ]);
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-20 sm:px-10">
+    <main className="mx-auto max-w-480 px-6 py-20 sm:px-10 xl:px-16">
       <Breadcrumb items={[{ label: "Shop" }]} />
       <div className="mt-8 max-w-2xl">
         <h1 className="font-display text-5xl text-navy">Our Products</h1>

@@ -2,9 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { createAdminSessionClient } from "@/lib/supabase/admin-session-client";
 
 const NAV_LINKS = [
   {
@@ -53,22 +52,12 @@ const NAV_LINKS = [
   },
 ];
 
-const LOGOUT_ICON = (
-  <path
-    d="M8 17H4.5A1.5 1.5 0 0 1 3 15.5v-11A1.5 1.5 0 0 1 4.5 3H8 M13 14l4-4-4-4 M17 10H7.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  />
-);
-
 const COLLAPSE_ICON = (
   <path d="M12.5 5 7.5 10l5 5" strokeLinecap="round" strokeLinejoin="round" />
 );
 
-export function AdminNav({ name, role }: { name: string; role: string }) {
+export function AdminNav() {
   const pathname = usePathname();
-  const router = useRouter();
-  const [loggingOut, setLoggingOut] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -84,13 +73,6 @@ export function AdminNav({ name, role }: { name: string; role: string }) {
       localStorage.setItem("admin-nav-collapsed", !c ? "1" : "0");
       return !c;
     });
-  }
-
-  async function handleLogout() {
-    setLoggingOut(true);
-    const supabase = createAdminSessionClient();
-    await supabase.auth.signOut();
-    router.refresh();
   }
 
   return (
@@ -171,37 +153,6 @@ export function AdminNav({ name, role }: { name: string; role: string }) {
           );
         })}
       </nav>
-
-      <div className={`mt-auto flex w-full flex-col ${collapsed ? "items-center" : ""}`}>
-        {!collapsed && (
-          <Link href="/" className="mb-3 font-body text-xs text-cream/50 hover:text-brass">
-            ← View site
-          </Link>
-        )}
-        {!collapsed && (
-          <div className="mb-2 border-t border-white/10 pt-3">
-            <p className="truncate font-body text-sm font-medium text-cream">{name}</p>
-            {/* No staff accounts yet — only "owner" is real right now, and
-                that's an internal role name, not something to show a user.
-                Revisit once staff logins actually exist. */}
-            <p className="font-body text-xs capitalize text-cream/50">{role === "owner" ? "Admin" : role}</p>
-          </div>
-        )}
-        <button
-          type="button"
-          onClick={handleLogout}
-          disabled={loggingOut}
-          title={collapsed ? "Log out" : undefined}
-          className={`flex items-center gap-2.5 rounded-lg px-3 py-2 font-body text-sm font-medium text-cream/70 transition-colors hover:bg-white/10 hover:text-brass disabled:opacity-60 ${
-            collapsed ? "justify-center" : "w-full"
-          }`}
-        >
-          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5 shrink-0">
-            {LOGOUT_ICON}
-          </svg>
-          {!collapsed && (loggingOut ? "Logging out…" : "Log out")}
-        </button>
-      </div>
       </div>
     </aside>
   );

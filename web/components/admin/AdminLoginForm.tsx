@@ -79,20 +79,20 @@ export function AdminLoginForm() {
   }
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center bg-navy px-6 py-16 lg:justify-end lg:pr-24 xl:pr-32">
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-navy px-6 py-16 lg:justify-end lg:pr-24 xl:pr-32">
       <Image
         src="/brand/admin_bg.png"
         alt=""
         fill
         priority
         sizes="100vw"
-        className="object-cover object-center"
+        className="animate-bg-breathe object-cover object-center"
       />
       <div className="absolute inset-0 bg-navy/45" />
 
       <form
         onSubmit={handleSubmit}
-        className="relative z-10 w-full max-w-sm rounded-2xl border border-white/10 bg-black/50 p-8 text-center backdrop-blur-md"
+        className="animate-auth-card-in relative z-10 w-full max-w-sm rounded-2xl border border-white/10 bg-black/50 p-8 text-center backdrop-blur-md"
       >
         <h1 className="font-display text-2xl text-white">Admin sign in</h1>
         <p className="mt-1 text-center font-body text-sm text-white/70">

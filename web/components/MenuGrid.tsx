@@ -54,7 +54,7 @@ export function MenuGrid({
           Nothing here yet -  check back shortly.
         </p>
       ) : (
-        <div className="mt-12 grid grid-cols-[repeat(auto-fill,minmax(220px,280px))] gap-x-8 gap-y-14">
+        <div className="mt-12 grid grid-cols-2 gap-x-6 gap-y-14 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {filtered.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}

@@ -25,6 +25,117 @@ p {
   text-align: justify;
 }
 
+/* Product card photos set their base crop scale via the --photo-scale
+   custom property (computed per-photo in lib/catalog-shared.ts — depends
+   on the photo's real aspect ratio, so it can't be a plain Tailwind
+   class). Hovering the card multiplies a bit further on top of that,
+   whatever it is, instead of fighting it with a second fixed transform. */
+.product-photo {
+  transform: scale(var(--photo-scale, 1));
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.group:hover .product-photo {
+  transform: scale(calc(var(--photo-scale, 1) * 1.06));
+}
+
+/* Continuous vertical scroll for the reviews widget's testimonial column
+   (only applied once there are enough real reviews to loop meaningfully —
+   see components/ReviewsColumn.tsx). The list is duplicated once, so
+   translating by exactly -50% loops seamlessly back to the start. */
+@keyframes reviews-scroll {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
+.animate-reviews-scroll {
+  animation: reviews-scroll 22s linear infinite;
+}
+.animate-reviews-scroll:hover {
+  animation-play-state: paused;
+}
+
+/* Slow-drifting soft blobs behind the login/signup cards (components/AuthBackground.tsx). */
+@keyframes blob-drift-a {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(40px, 30px) scale(1.1); }
+}
+@keyframes blob-drift-b {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-30px, 40px) scale(1.15); }
+}
+@keyframes blob-drift-c {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(25px, -35px) scale(1.08); }
+}
+.animate-blob-a { animation: blob-drift-a 14s ease-in-out infinite; }
+.animate-blob-b { animation: blob-drift-b 18s ease-in-out infinite; }
+.animate-blob-c { animation: blob-drift-c 16s ease-in-out infinite; }
+
+/* Very slow "breathing" zoom for the admin login's background photo. */
+@keyframes bg-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+.animate-bg-breathe { animation: bg-breathe 24s ease-in-out infinite; }
+
+/* Card entrance for auth pages. */
+@keyframes auth-card-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-auth-card-in { animation: auth-card-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-blob-a, .animate-blob-b, .animate-blob-c, .animate-bg-breathe, .animate-auth-card-in {
+    animation: none;
+  }
+}
+
+/* Staggered fade-in for admin table rows (AdminOrdersTable) as the page loads. */
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-row-in {
+  animation: row-in 0.35s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-row-in {
+    animation: none;
+  }
+}
+
+/* Blinking cursor for the hero's typewriter text (components/TypewriterText.tsx). */
+@keyframes caret-blink {
+  0%, 45% {
+    opacity: 1;
+  }
+  50%, 95% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.animate-caret-blink {
+  animation: caret-blink 1s step-end infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-caret-blink {
+    animation: none;
+  }
+}
+
 /* Auto-hide overlay scrollbar (OverlayScrollbars) recolored to the brand
    palette — navy thumb at rest, brass on hover/drag. Extends the library's
    built-in light theme rather than rebuilding the box model from scratch. */

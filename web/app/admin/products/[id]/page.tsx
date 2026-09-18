@@ -30,7 +30,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
     <div>
       <AdminPageHeader title={product.name} />
       <div className="p-5 sm:p-8">
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-375">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
             <Link
               href="/admin/products"

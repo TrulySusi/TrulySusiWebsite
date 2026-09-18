@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import { createVariant, updateVariant, deleteVariant } from "@/app/admin/products/actions";
+import { weightLabel } from "@/lib/catalog-shared";
 
 const fieldClass =
   "w-full rounded-lg border border-navy/15 bg-white px-2.5 py-2 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 focus:ring-navy/20";
@@ -18,12 +19,9 @@ function Field({ label, hint, className, children }: { label: string; hint?: str
 
 type Variant = {
   id: string;
-  label: string;
   weight_grams: number;
-  sku: string;
   price_inr: number;
   compare_at_price_inr: number | null;
-  stock_qty: number;
   is_default: boolean;
   is_active: boolean;
 };
@@ -39,10 +37,7 @@ function VariantFields({
     servingSizeG && variant?.weight_grams ? Math.round(variant.weight_grams / servingSizeG) : null;
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-      <Field label="Label" hint="e.g. 250g box" className="sm:col-span-2">
-        <input name="label" defaultValue={variant?.label} required className={fieldClass} />
-      </Field>
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
       <Field label="Weight (g)" hint={pieces !== null ? `≈ ${pieces} pieces` : undefined}>
         <input
           name="weight_grams"
@@ -51,9 +46,6 @@ function VariantFields({
           required
           className={fieldClass}
         />
-      </Field>
-      <Field label="SKU">
-        <input name="sku" defaultValue={variant?.sku} required className={fieldClass} />
       </Field>
       <Field label="Price (₹)">
         <input name="price_inr" type="number" step="0.01" defaultValue={variant?.price_inr} required className={fieldClass} />
@@ -67,10 +59,7 @@ function VariantFields({
           className={fieldClass}
         />
       </Field>
-      <Field label="Stock quantity">
-        <input name="stock_qty" type="number" defaultValue={variant?.stock_qty ?? 0} className={fieldClass} />
-      </Field>
-      <div className="flex items-center gap-4 sm:col-span-2">
+      <div className="flex items-center gap-4 sm:col-span-3">
         <label className="flex items-center gap-1.5 font-body text-xs text-navy/70">
           <input type="checkbox" name="is_default" defaultChecked={variant?.is_default} className="h-3.5 w-3.5" />
           Default variant
@@ -104,15 +93,15 @@ function VariantRow({
     try {
       await updateVariant(productId, variant.id, new FormData(e.currentTarget));
       setEditing(false);
-    } catch {
-      setError("Couldn't save.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Couldn't save.");
     } finally {
       setSubmitting(false);
     }
   }
 
   async function handleDelete() {
-    if (!confirm(`Delete "${variant.label}"?`)) return;
+    if (!confirm(`Delete "${weightLabel(variant.weight_grams)}"?`)) return;
     await deleteVariant(productId, variant.id);
   }
 
@@ -137,12 +126,10 @@ function VariantRow({
     <div className="flex items-center justify-between gap-3 rounded-lg border border-navy/10 px-4 py-3">
       <div className="min-w-0">
         <p className="font-body text-sm font-semibold text-navy">
-          {variant.label} {!variant.is_active && <span className="text-navy/40">(inactive)</span>}
+          {weightLabel(variant.weight_grams)} {!variant.is_active && <span className="text-navy/40">(inactive)</span>}
           {variant.is_default && <span className="ml-1.5 text-[10px] font-semibold uppercase text-brass">default</span>}
         </p>
-        <p className="font-body text-xs text-navy/50">
-          {variant.weight_grams}g &middot; {variant.sku} &middot; ₹{variant.price_inr} &middot; stock {variant.stock_qty}
-        </p>
+        <p className="font-body text-xs text-navy/50">₹{variant.price_inr}</p>
       </div>
       <div className="flex shrink-0 gap-2">
         <button type="button" onClick={() => setEditing(true)} className="rounded-full border border-navy/20 px-3 py-1.5 font-body text-xs font-semibold text-navy hover:bg-navy/6">
@@ -163,14 +150,15 @@ function NewVariantForm({ productId, servingSizeG }: { productId: string; servin
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = e.currentTarget;
     setError(null);
     setSubmitting(true);
     try {
-      await createVariant(productId, new FormData(e.currentTarget));
-      e.currentTarget.reset();
+      await createVariant(productId, new FormData(form));
+      form.reset();
       setOpen(false);
-    } catch {
-      setError("Couldn't add the variant. Check the fields (label/weight/SKU/price are required).");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Couldn't add the variant. Try again.");
     } finally {
       setSubmitting(false);
     }
@@ -217,7 +205,7 @@ export function AdminVariantsEditor({
     <div className="rounded-2xl border border-navy/10 bg-white p-6">
       <h2 className="font-body text-xl font-semibold text-navy">Variants</h2>
       <p className="mt-1 font-body text-xs text-navy/50">
-        Pack sizes customers can choose from: price, stock, and whether it&rsquo;s buyable.
+        Pack sizes customers can choose from: price and whether it&rsquo;s buyable.
       </p>
       <div className="mt-4 flex flex-col gap-2">
         {variants.map((v) => (

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { StarRatingDisplay } from "@/components/StarRating";
 import { ReviewForm } from "@/components/ReviewForm";
+import { ReviewsColumn } from "@/components/ReviewsColumn";
 import { useReviewsWidget } from "@/components/ReviewsWidgetContext";
 
 type Review = {
@@ -133,21 +134,7 @@ export function ReviewsWidget() {
                     </p>
                   </div>
 
-                  {reviews.length > 1 && (
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                      {reviews.slice(1).map((review) => (
-                        <div key={review.id} className="rounded-xl border border-navy/10 p-4">
-                          <StarRatingDisplay rating={review.rating} className="h-3.5 w-3.5" />
-                          <p className="mt-2 font-body text-sm leading-relaxed text-navy/75">
-                            {review.review_text}
-                          </p>
-                          <p className="mt-2 font-body text-xs font-semibold text-navy/50">
-                            {review.customer_name}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  {reviews.length > 1 && <ReviewsColumn reviews={reviews.slice(1)} />}
                 </div>
               )}
             </div>

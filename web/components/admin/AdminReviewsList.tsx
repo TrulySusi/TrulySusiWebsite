@@ -4,6 +4,9 @@ import { useState, useTransition } from "react";
 import { StarRatingDisplay } from "@/components/StarRating";
 import { AdminProductTabs } from "@/components/admin/AdminProductTabs";
 import { approveReview, unapproveReview, deleteReview } from "@/app/admin/reviews/actions";
+import { KpiCard } from "@/components/admin/KpiCard";
+import { KPI_ICONS } from "@/components/admin/kpi-icons";
+import { ScrollReveal } from "@/components/ScrollReveal";
 
 type Review = {
   id: string;
@@ -13,20 +16,6 @@ type Review = {
   approved: boolean;
   created_at: string;
 };
-
-function StatCard({ label, value, color }: { label: string; value: string; color: "navy" | "brass" | "sage" }) {
-  const styles = {
-    navy: { bg: "bg-navy/5", border: "border-navy/15", text: "text-navy" },
-    brass: { bg: "bg-brass/10", border: "border-brass/25", text: "text-brass" },
-    sage: { bg: "bg-sage/10", border: "border-sage/25", text: "text-sage" },
-  }[color];
-  return (
-    <div className={`rounded-2xl border p-5 ${styles.bg} ${styles.border}`}>
-      <p className="font-body text-xs font-semibold uppercase tracking-wide text-navy/50">{label}</p>
-      <p className={`mt-2 font-body text-3xl font-bold ${styles.text}`}>{value}</p>
-    </div>
-  );
-}
 
 function ReviewCard({ review }: { review: Review }) {
   const [isPending, startTransition] = useTransition();
@@ -114,10 +103,18 @@ export function AdminReviewsList({ reviews }: { reviews: Review[] }) {
   return (
     <div className="flex flex-col gap-6">
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <StatCard label="Total reviews" value={String(reviews.length)} color="navy" />
-        <StatCard label="Pending" value={String(pending.length)} color="brass" />
-        <StatCard label="Live" value={String(approved.length)} color="sage" />
-        <StatCard label="Average rating" value={reviews.length > 0 ? average.toFixed(1) : "N/A"} color="navy" />
+        <ScrollReveal delayMs={0}>
+          <KpiCard label="Total reviews" value={reviews.length} color="navy" icon={KPI_ICONS.chat} />
+        </ScrollReveal>
+        <ScrollReveal delayMs={70}>
+          <KpiCard label="Pending" value={pending.length} color="brass" icon={KPI_ICONS.clock} />
+        </ScrollReveal>
+        <ScrollReveal delayMs={140}>
+          <KpiCard label="Live" value={approved.length} color="sage" icon={KPI_ICONS.eye} />
+        </ScrollReveal>
+        <ScrollReveal delayMs={210}>
+          <KpiCard label="Average rating" value={average} decimals={1} color="navy" icon={KPI_ICONS.star} />
+        </ScrollReveal>
       </div>
 
       <AdminProductTabs

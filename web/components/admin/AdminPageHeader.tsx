@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { AdminNotificationBell } from "@/components/admin/AdminNotificationBell";
+import { AdminUserMenu } from "@/components/admin/AdminUserMenu";
 
 export function AdminPageHeader({
   title,
@@ -27,6 +28,8 @@ export function AdminPageHeader({
         <div className="flex shrink-0 items-center gap-3">
           {action}
           <AdminNotificationBell />
+          <div className="h-6 w-px bg-white/15" />
+          <AdminUserMenu />
         </div>
       </div>
     </div>

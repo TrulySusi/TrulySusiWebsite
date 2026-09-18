@@ -5,6 +5,7 @@ import {
   getProductBySlug,
   getRelatedProducts,
   productPhotoUrl,
+  productPhotoStyle,
   tamilName,
 } from "@/lib/catalog";
 import { VariantSelector } from "@/components/VariantSelector";
@@ -32,7 +33,7 @@ export default async function ProductPage({ params }: Props) {
   const related = await getRelatedProducts(slug);
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-16 sm:px-10">
+    <main className="mx-auto max-w-350 px-6 py-16 sm:px-10">
       <Breadcrumb
         items={[
           { label: "Shop", href: "/shop" },
@@ -49,7 +50,7 @@ export default async function ProductPage({ params }: Props) {
             fill
             sizes="(min-width: 1024px) 50vw, 100vw"
             priority
-            className="object-cover"
+            style={productPhotoStyle(product)}
           />
         </div>
 

@@ -41,7 +41,7 @@ export default function CartPage() {
   const subtotal = cartSubtotal(items);
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-16 sm:px-10">
+    <main className="mx-auto max-w-325 px-6 py-16 sm:px-10">
       <Breadcrumb items={[{ label: "Cart" }]} />
       <h1 className="mt-8 font-display text-4xl text-navy">Your cart</h1>
 

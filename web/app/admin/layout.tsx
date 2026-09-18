@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getAdminSession } from "@/lib/admin-auth";
 import { AdminLoginForm } from "@/components/admin/AdminLoginForm";
 import { AdminNav } from "@/components/admin/AdminNav";
+import { AdminSessionProvider } from "@/components/admin/AdminSessionContext";
 
 export const metadata: Metadata = {
   // Kept out of search results — this isn't a page for customers.
@@ -28,10 +29,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     );
   }
 
+  const name = admin.full_name ?? admin.email;
+
   return (
-    <div className="flex min-h-screen bg-cream">
-      <AdminNav name={admin.full_name ?? admin.email} role={admin.role} />
-      <main className="flex-1 overflow-x-auto">{children}</main>
-    </div>
+    <AdminSessionProvider value={{ name, role: admin.role }}>
+      <div className="flex min-h-screen bg-cream">
+        <AdminNav />
+        <main className="flex-1 overflow-x-auto">{children}</main>
+      </div>
+    </AdminSessionProvider>
   );
 }

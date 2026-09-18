@@ -5,6 +5,15 @@ const supabaseHostname = process.env.NEXT_PUBLIC_SUPABASE_URL
   : undefined;
 
 const nextConfig: NextConfig = {
+  // Server Actions default to a 1MB request body — too small for a real
+  // product photo straight off a phone or camera. Product image uploads
+  // (app/admin/products/actions.ts uploadProductImage) go through a Server
+  // Action, so this needs raising to fit real photography.
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "15mb",
+    },
+  },
   images: {
     remotePatterns: [
       ...(supabaseHostname

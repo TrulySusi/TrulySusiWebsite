@@ -18,7 +18,7 @@ export default async function NewOrderPage() {
         subtitle="For orders taken over WhatsApp or Instagram DM."
       />
       <div className="p-5 sm:p-8">
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-350">
           <Link
             href="/admin/orders"
             className="mb-6 inline-block font-body text-sm font-semibold text-navy/60 hover:text-navy"

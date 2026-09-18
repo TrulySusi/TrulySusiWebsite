@@ -1,8 +1,12 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { getAdminNotifications, type NotificationSeverity } from "@/lib/admin-notifications";
 import { formatRelativeTime } from "@/lib/format-relative-time";
+import { ScrollReveal } from "@/components/ScrollReveal";
+import { KpiCard, type KpiColor } from "@/components/admin/KpiCard";
+import { KPI_ICONS } from "@/components/admin/kpi-icons";
 
 const SEVERITY_DOT: Record<NotificationSeverity, string> = {
   green: "bg-sage",
@@ -41,13 +45,7 @@ function istDayRange(now = new Date()) {
   return { start: new Date(startUtcMs), end: new Date(startUtcMs + 24 * 60 * 60 * 1000) };
 }
 
-const CARD_STYLES = {
-  navy: { bg: "bg-navy/5", border: "border-navy/15", text: "text-navy" },
-  brass: { bg: "bg-brass/10", border: "border-brass/25", text: "text-brass" },
-  sage: { bg: "bg-sage/10", border: "border-sage/25", text: "text-sage" },
-};
-
-const STATUS_COLOR: Record<string, keyof typeof CARD_STYLES> = {
+const STATUS_COLOR: Record<string, KpiColor> = {
   pending_payment: "navy",
   paid: "sage",
   packed: "brass",
@@ -57,15 +55,15 @@ const STATUS_COLOR: Record<string, keyof typeof CARD_STYLES> = {
   refunded: "navy",
 };
 
-function StatCard({ label, value, color }: { label: string; value: number; color: keyof typeof CARD_STYLES }) {
-  const s = CARD_STYLES[color];
-  return (
-    <div className={`rounded-2xl border p-5 ${s.bg} ${s.border}`}>
-      <p className="font-body text-xs font-semibold uppercase tracking-wide text-navy/50">{label}</p>
-      <p className={`mt-2 font-body text-3xl font-bold ${s.text}`}>{value}</p>
-    </div>
-  );
-}
+const STATUS_ICON: Record<string, ReactNode> = {
+  pending_payment: KPI_ICONS.hourglass,
+  paid: KPI_ICONS.rupee,
+  packed: KPI_ICONS.box,
+  shipped: KPI_ICONS.truck,
+  delivered: KPI_ICONS.home,
+  cancelled: KPI_ICONS.xCircle,
+  refunded: KPI_ICONS.undo,
+};
 
 export default async function AdminDashboardPage() {
   const supabase = createAdminClient();
@@ -104,29 +102,44 @@ export default async function AdminDashboardPage() {
     <div>
       <AdminPageHeader title="Dashboard" subtitle="Today and overall, at a glance" />
       <div className="p-5 sm:p-8">
-        <div className="mx-auto max-w-6xl space-y-8">
+        <div className="mx-auto max-w-450 space-y-8">
           <section>
             <h2 className="font-body text-sm font-semibold uppercase tracking-wide text-navy/50">Today</h2>
             <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <StatCard label="Orders placed" value={ordersToday} color="navy" />
-              <StatCard label="Preparing" value={preparingToday} color="brass" />
-              <StatCard label="Completed" value={completedToday} color="sage" />
+              <ScrollReveal delayMs={0}>
+                <KpiCard label="Orders placed" value={ordersToday} color="navy" icon={KPI_ICONS.bag} />
+              </ScrollReveal>
+              <ScrollReveal delayMs={70}>
+                <KpiCard label="Preparing" value={preparingToday} color="brass" icon={KPI_ICONS.clock} />
+              </ScrollReveal>
+              <ScrollReveal delayMs={140}>
+                <KpiCard label="Completed" value={completedToday} color="sage" icon={KPI_ICONS.check} />
+              </ScrollReveal>
             </div>
           </section>
 
           <section>
             <h2 className="font-body text-sm font-semibold uppercase tracking-wide text-navy/50">Overall</h2>
             <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-4">
-              <StatCard label="Total orders" value={allOrders.length} color="navy" />
-              {STATUS_LIST.map((s) => (
-                <StatCard key={s} label={STATUS_LABELS[s]} value={statusCounts[s]} color={STATUS_COLOR[s]} />
+              <ScrollReveal delayMs={0}>
+                <KpiCard label="Total orders" value={allOrders.length} color="navy" icon={KPI_ICONS.stack} />
+              </ScrollReveal>
+              {STATUS_LIST.map((s, i) => (
+                <ScrollReveal key={s} delayMs={(i + 1) * 60}>
+                  <KpiCard
+                    label={STATUS_LABELS[s]}
+                    value={statusCounts[s]}
+                    color={STATUS_COLOR[s]}
+                    icon={STATUS_ICON[s]}
+                  />
+                </ScrollReveal>
               ))}
             </div>
           </section>
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <section>
-              <div className="rounded-2xl border border-navy/10 bg-white p-6">
+            <ScrollReveal>
+              <div className="rounded-3xl border border-navy/10 bg-white p-6 shadow-lg shadow-navy/5">
                 <div className="flex items-center gap-2.5">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brass/15 text-brass">
                     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
@@ -184,10 +197,10 @@ export default async function AdminDashboardPage() {
                   </div>
                 )}
               </div>
-            </section>
+            </ScrollReveal>
 
-            <section>
-              <div className="rounded-2xl border border-navy/10 bg-white p-6">
+            <ScrollReveal delayMs={100}>
+              <div className="rounded-3xl border border-navy/10 bg-white p-6 shadow-lg shadow-navy/5">
                 <div className="flex items-center gap-2.5">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sage/15 text-sage">
                     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
@@ -219,7 +232,7 @@ export default async function AdminDashboardPage() {
                   </ul>
                 )}
               </div>
-            </section>
+            </ScrollReveal>
           </div>
         </div>
       </div>
