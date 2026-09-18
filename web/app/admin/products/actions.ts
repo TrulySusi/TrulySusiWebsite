@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getAdminSession } from "@/lib/admin-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { NUTRITION_FIELDS, weightLabel } from "@/lib/catalog-shared";
 
 const MAX_IMAGES_PER_PRODUCT = 6;
 const IMAGE_BUCKET = "product-images";
@@ -22,40 +23,10 @@ function slugify(input: string) {
 
 // ---------- products ----------
 
-export async function createProduct(formData: FormData) {
-  await requireAdmin();
-  const supabase = createAdminClient();
-
-  const name = String(formData.get("name") ?? "").trim();
-  if (!name) throw new Error("Name is required");
-  const slug = slugify(String(formData.get("slug") ?? "") || name);
-
-  const { data, error } = await supabase
-    .from("products")
-    .insert({
-      name,
-      slug,
-      category_id: formData.get("category_id") || null,
-      short_description: String(formData.get("short_description") ?? "") || null,
-      status: "draft",
-    })
-    .select("id")
-    .single();
-
-  if (error) {
-    if (error.code === "23505") {
-      throw new Error(`A product with the slug "${slug}" already exists. Try a different name or slug.`);
-    }
-    throw new Error(error.message);
-  }
-  revalidatePath("/admin/products");
-  return data.id as string;
-}
-
-export async function updateProduct(productId: string, formData: FormData) {
-  await requireAdmin();
-  const supabase = createAdminClient();
-
+// Shared by createProduct and updateProduct so the "new product" wizard's
+// first step and the full edit page's Basic info tab accept exactly the
+// same fields.
+function buildProductFields(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
   if (!name) throw new Error("Name is required");
 
@@ -72,22 +43,47 @@ export async function updateProduct(productId: string, formData: FormData) {
     }
   }
 
+  return {
+    name,
+    slug: slugify(String(formData.get("slug") ?? "") || name),
+    category_id: formData.get("category_id") || null,
+    short_description: String(formData.get("short_description") ?? "") || null,
+    description: String(formData.get("description") ?? "") || null,
+    ingredients: String(formData.get("ingredients") ?? "") || null,
+    allergen_info: String(formData.get("allergen_info") ?? "") || null,
+    shelf_life_days: shelfLife ? Number(shelfLife) : null,
+    serving_size_g: servingSize ? Number(servingSize) : null,
+    status: String(formData.get("status") ?? "draft"),
+    is_featured: formData.get("is_featured") === "on",
+    nutrition_per_100g: hasNutrition ? nutrition : null,
+  };
+}
+
+export async function createProduct(formData: FormData) {
+  await requireAdmin();
+  const supabase = createAdminClient();
+
+  const fields = buildProductFields(formData);
+
+  const { data, error } = await supabase.from("products").insert(fields).select("id").single();
+
+  if (error) {
+    if (error.code === "23505") {
+      throw new Error(`A product with the slug "${fields.slug}" already exists. Try a different name or slug.`);
+    }
+    throw new Error(error.message);
+  }
+  revalidatePath("/admin/products");
+  return data.id as string;
+}
+
+export async function updateProduct(productId: string, formData: FormData) {
+  await requireAdmin();
+  const supabase = createAdminClient();
+
   const { error } = await supabase
     .from("products")
-    .update({
-      name,
-      slug: slugify(String(formData.get("slug") ?? "") || name),
-      category_id: formData.get("category_id") || null,
-      short_description: String(formData.get("short_description") ?? "") || null,
-      description: String(formData.get("description") ?? "") || null,
-      ingredients: String(formData.get("ingredients") ?? "") || null,
-      allergen_info: String(formData.get("allergen_info") ?? "") || null,
-      shelf_life_days: shelfLife ? Number(shelfLife) : null,
-      serving_size_g: servingSize ? Number(servingSize) : null,
-      status: String(formData.get("status") ?? "draft"),
-      is_featured: formData.get("is_featured") === "on",
-      nutrition_per_100g: hasNutrition ? nutrition : null,
-    })
+    .update(buildProductFields(formData))
     .eq("id", productId);
 
   if (error) throw error;
@@ -103,49 +99,34 @@ export async function deleteProduct(productId: string) {
   revalidatePath("/admin/products");
 }
 
-export const NUTRITION_FIELDS = [
-  "energy_kcal",
-  "protein_g",
-  "total_carb_g",
-  "total_fat_g",
-  "saturated_fat_g",
-  "trans_fat_g",
-  "mono_unsat_fat_g",
-  "poly_unsat_fat_g",
-  "added_sugar_g",
-  "total_sugar_g",
-  "cholesterol_mg",
-  "dietary_fibre_g",
-  "sodium_mg",
-] as const;
-
 // ---------- variants ----------
 
 export async function createVariant(productId: string, formData: FormData) {
   await requireAdmin();
   const supabase = createAdminClient();
 
-  const label = String(formData.get("label") ?? "").trim();
   const weight = Number(formData.get("weight_grams") ?? 0);
-  const sku = String(formData.get("sku") ?? "").trim();
   const price = Number(formData.get("price_inr") ?? 0);
-  if (!label || !weight || !sku || !price) throw new Error("Missing required variant fields");
+  if (!weight || !price) throw new Error("Missing required variant fields");
 
   const { error } = await supabase.from("product_variants").insert({
     product_id: productId,
-    label,
+    label: weightLabel(weight),
     weight_grams: weight,
-    sku,
     price_inr: price,
     compare_at_price_inr: formData.get("compare_at_price_inr")
       ? Number(formData.get("compare_at_price_inr"))
       : null,
-    stock_qty: Number(formData.get("stock_qty") ?? 0),
     is_default: formData.get("is_default") === "on",
     is_active: formData.get("is_active") === "on",
   });
 
-  if (error) throw error;
+  if (error) {
+    if (error.code === "23505") {
+      throw new Error(`This product already has a variant with that weight (${weight}g).`);
+    }
+    throw new Error(error.message);
+  }
   revalidatePath(`/admin/products/${productId}`);
 }
 
@@ -153,23 +134,28 @@ export async function updateVariant(productId: string, variantId: string, formDa
   await requireAdmin();
   const supabase = createAdminClient();
 
+  const weight = Number(formData.get("weight_grams") ?? 0);
+
   const { error } = await supabase
     .from("product_variants")
     .update({
-      label: String(formData.get("label") ?? "").trim(),
-      weight_grams: Number(formData.get("weight_grams") ?? 0),
-      sku: String(formData.get("sku") ?? "").trim(),
+      label: weightLabel(weight),
+      weight_grams: weight,
       price_inr: Number(formData.get("price_inr") ?? 0),
       compare_at_price_inr: formData.get("compare_at_price_inr")
         ? Number(formData.get("compare_at_price_inr"))
         : null,
-      stock_qty: Number(formData.get("stock_qty") ?? 0),
       is_default: formData.get("is_default") === "on",
       is_active: formData.get("is_active") === "on",
     })
     .eq("id", variantId);
 
-  if (error) throw error;
+  if (error) {
+    if (error.code === "23505") {
+      throw new Error("This product already has a variant with that weight.");
+    }
+    throw new Error(error.message);
+  }
   revalidatePath(`/admin/products/${productId}`);
 }
 
@@ -179,6 +165,18 @@ export async function deleteVariant(productId: string, variantId: string) {
   const { error } = await supabase.from("product_variants").delete().eq("id", variantId);
   if (error) throw error;
   revalidatePath(`/admin/products/${productId}`);
+}
+
+export async function listVariants(productId: string) {
+  await requireAdmin();
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("product_variants")
+    .select("id, label")
+    .eq("product_id", productId)
+    .order("weight_grams");
+  if (error) throw error;
+  return data as { id: string; label: string }[];
 }
 
 // ---------- images ----------
@@ -208,6 +206,8 @@ export async function uploadProductImage(productId: string, formData: FormData) 
 
   const variantId = String(formData.get("variant_id") ?? "") || null;
   const altText = String(formData.get("alt_text") ?? "") || null;
+  const width = formData.get("width") ? Number(formData.get("width")) : null;
+  const height = formData.get("height") ? Number(formData.get("height")) : null;
 
   const { error: insertError } = await supabase.from("product_images").insert({
     product_id: productId,
@@ -215,6 +215,12 @@ export async function uploadProductImage(productId: string, formData: FormData) 
     storage_path: path,
     alt_text: altText,
     sort_order: count ?? 0,
+    width,
+    height,
+    // Default to the whole photo visible, not cropped — the client wants
+    // every upload to show completely by default, letting them zoom in
+    // deliberately rather than starting cropped and having to zoom out.
+    zoom: 0,
   });
   if (insertError) throw insertError;
 
@@ -230,6 +236,38 @@ export async function deleteProductImage(productId: string, imageId: string, sto
   if (error) throw error;
 
   revalidatePath(`/admin/products/${productId}`);
+}
+
+export async function updateImageFocalPoint(productId: string, imageId: string, focalY: number) {
+  await requireAdmin();
+  const supabase = createAdminClient();
+
+  const clamped = Math.max(0, Math.min(100, Math.round(focalY)));
+  const { error } = await supabase
+    .from("product_images")
+    .update({ focal_y: clamped })
+    .eq("id", imageId);
+  if (error) throw error;
+
+  revalidatePath(`/admin/products/${productId}`);
+  revalidatePath("/admin/products");
+  revalidatePath("/shop");
+}
+
+export async function updateImageZoom(productId: string, imageId: string, zoom: number) {
+  await requireAdmin();
+  const supabase = createAdminClient();
+
+  const clamped = Math.max(0, Math.min(200, Math.round(zoom)));
+  const { error } = await supabase
+    .from("product_images")
+    .update({ zoom: clamped })
+    .eq("id", imageId);
+  if (error) throw error;
+
+  revalidatePath(`/admin/products/${productId}`);
+  revalidatePath("/admin/products");
+  revalidatePath("/shop");
 }
 
 // Takes the full desired image order and rewrites sort_order 0..n for all

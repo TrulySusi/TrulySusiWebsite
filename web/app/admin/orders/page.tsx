@@ -48,7 +48,7 @@ export default async function AdminOrdersPage({
     <div>
       <AdminPageHeader title="Orders" />
       <div className="p-5 sm:p-8">
-        <div className="mx-auto max-w-7xl">
+        <div className="mx-auto max-w-450">
           <div className="mb-4 flex justify-end">
             <Link
               href="/admin/orders/new"

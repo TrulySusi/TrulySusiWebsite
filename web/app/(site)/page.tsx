@@ -1,7 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getFeaturedProducts } from "@/lib/catalog";
-import { ProductCard } from "@/components/ProductCard";
+import { FavouritesCarousel } from "@/components/FavouritesCarousel";
+import { ScrollReveal } from "@/components/ScrollReveal";
+import { TypewriterText } from "@/components/TypewriterText";
 
 const PILLARS = [
   {
@@ -43,7 +45,7 @@ const PILLARS = [
 ];
 
 export default async function Home() {
-  const favourites = await getFeaturedProducts();
+  const favourites = await getFeaturedProducts(10);
 
   return (
     <main>
@@ -65,8 +67,8 @@ export default async function Home() {
           <span className="inline-block rounded-full bg-white/10 px-3.5 py-1.5 font-body text-[11px] font-semibold uppercase tracking-wider text-brass">
             Homemade Sweets &middot; Salem &middot; Shipped Anywhere in India
           </span>
-          <h1 className="mt-6 font-display text-6xl font-medium text-white sm:text-7xl">
-            Sweeter together.
+          <h1 className="mt-6 font-display text-6xl font-medium text-white sm:text-7xl" aria-label="Sweeter together.">
+            <TypewriterText text="Sweeter together." />
           </h1>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link
@@ -88,14 +90,16 @@ export default async function Home() {
       {/* Our Story */}
       <section id="our-story" className="mx-auto max-w-5xl px-6 py-20 sm:px-10">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[420px_1fr]">
-          <Image
-            src="/brand/susi_photo.jpg"
-            alt="Susi with her family"
-            width={700}
-            height={613}
-            className="mx-auto w-full max-w-sm rounded-2xl shadow-[0_1px_2px_rgba(4,28,53,.06),0_16px_36px_-16px_rgba(4,28,53,.28)] lg:max-w-none"
-          />
-          <div className="text-center lg:text-left">
+          <ScrollReveal>
+            <Image
+              src="/brand/susi_photo.jpg"
+              alt="Susi with her family"
+              width={700}
+              height={613}
+              className="mx-auto w-full max-w-sm rounded-2xl shadow-[0_1px_2px_rgba(4,28,53,.06),0_16px_36px_-16px_rgba(4,28,53,.28)] lg:max-w-none"
+            />
+          </ScrollReveal>
+          <ScrollReveal delayMs={150} className="text-center lg:text-left">
             <span className="font-body text-xs font-semibold uppercase tracking-[0.28em] text-brass">
               Our Story
             </span>
@@ -110,42 +114,41 @@ export default async function Home() {
             <div className="mx-auto mt-9 max-w-md border-t border-navy/10 pt-7 font-display text-2xl italic leading-snug text-navy lg:mx-0">
               &ldquo;Some sweets you eat. This one, you remember.&rdquo;
             </div>
-          </div>
+          </ScrollReveal>
         </div>
       </section>
 
       {/* Why Truly Susi's */}
       <section className="mx-auto max-w-6xl px-6 py-16 sm:px-10">
-        <div className="text-center">
+        <ScrollReveal className="text-center">
           <h2 className="font-display text-3xl text-navy">Why Truly Susi&rsquo;s</h2>
-        </div>
+        </ScrollReveal>
         <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-3">
-          {PILLARS.map((p) => (
-            <div
-              key={p.title}
-              className="rounded-2xl bg-white p-7 shadow-[0_1px_2px_rgba(4,28,53,.04),0_8px_24px_-12px_rgba(4,28,53,.12)]"
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sage/20 text-sage">
-                  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" className="h-5 w-5">
-                    {p.icon}
-                  </svg>
+          {PILLARS.map((p, i) => (
+            <ScrollReveal key={p.title} delayMs={i * 120}>
+              <div className="rounded-2xl bg-white p-7 shadow-[0_1px_2px_rgba(4,28,53,.04),0_8px_24px_-12px_rgba(4,28,53,.12)]">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sage/20 text-sage">
+                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" className="h-5 w-5">
+                      {p.icon}
+                    </svg>
+                  </div>
+                  <h3 className="font-body text-base font-semibold text-navy">
+                    {p.title}
+                  </h3>
                 </div>
-                <h3 className="font-body text-base font-semibold text-navy">
-                  {p.title}
-                </h3>
+                <p className="mt-3 font-body text-sm leading-relaxed text-navy/65">
+                  {p.body}
+                </p>
               </div>
-              <p className="mt-3 font-body text-sm leading-relaxed text-navy/65">
-                {p.body}
-              </p>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </section>
 
       {/* Kuruvi — the brand's little-messenger mascot */}
       <section>
-        <div className="mx-auto max-w-2xl px-6 py-16 text-center sm:px-10">
+        <ScrollReveal className="mx-auto max-w-2xl px-6 py-16 text-center sm:px-10">
           <Image
             src="/brand/06_kuruvi.png"
             alt="Kuruvi, the little sparrow messenger"
@@ -162,13 +165,13 @@ export default async function Home() {
           <p className="mt-4 text-center! font-body text-xs uppercase tracking-[0.2em] text-navy/45">
             குருவி -  The Little Messenger
           </p>
-        </div>
+        </ScrollReveal>
       </section>
 
       {/* Favourites */}
       {favourites.length > 0 && (
-        <section className="mx-auto max-w-6xl px-6 py-16 sm:px-10">
-          <div className="flex items-baseline justify-between">
+        <section className="mx-auto max-w-480 px-6 py-16 sm:px-10 xl:px-16">
+          <ScrollReveal className="flex items-baseline justify-between">
             <h2 className="font-display text-3xl text-navy">This week&rsquo;s favourites</h2>
             <Link
               href="/shop"
@@ -176,12 +179,10 @@ export default async function Home() {
             >
               View all →
             </Link>
-          </div>
-          <div className="mt-10 grid grid-cols-[repeat(auto-fill,minmax(220px,260px))] gap-x-8 gap-y-14">
-            {favourites.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          </ScrollReveal>
+          <ScrollReveal delayMs={150} className="mt-10">
+            <FavouritesCarousel products={favourites} />
+          </ScrollReveal>
         </section>
       )}
     </main>

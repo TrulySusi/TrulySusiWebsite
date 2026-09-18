@@ -4,7 +4,7 @@ import Image from "next/image";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminProductsFilters } from "@/components/admin/AdminProductsFilters";
-import { productImageUrl } from "@/lib/catalog-shared";
+import { productImageUrl, photoZoomStyle } from "@/lib/catalog-shared";
 
 const STATUS_STYLES: Record<string, string> = {
   active: "bg-sage/20 text-sage",
@@ -23,7 +23,7 @@ export default async function AdminProductsPage({
   let query = supabase
     .from("products")
     .select(
-      "id, slug, name, status, sort_order, product_variants ( price_inr, is_active ), categories ( name ), product_images ( storage_path, sort_order )",
+      "id, slug, name, status, sort_order, product_variants ( price_inr, is_active ), categories ( name ), product_images ( storage_path, sort_order, focal_y, zoom, width, height )",
     )
     .order("sort_order");
 
@@ -37,7 +37,7 @@ export default async function AdminProductsPage({
     <div>
       <AdminPageHeader title="Products" />
       <div className="p-5 sm:p-8">
-        <div className="mx-auto max-w-7xl">
+        <div className="mx-auto max-w-450">
           <div className="mb-4 flex justify-end">
             <Link
               href="/admin/products/new"
@@ -64,7 +64,14 @@ export default async function AdminProductsPage({
               const category = p.categories as unknown as { name: string }[] | { name: string } | null;
               const categoryName = Array.isArray(category) ? category[0]?.name : category?.name;
 
-              const images = (p.product_images ?? []) as { storage_path: string; sort_order: number }[];
+              const images = (p.product_images ?? []) as {
+                storage_path: string;
+                sort_order: number;
+                focal_y: number;
+                zoom: number;
+                width: number | null;
+                height: number | null;
+              }[];
               const cover = [...images].sort((a, b) => a.sort_order - b.sort_order)[0];
 
               return (
@@ -73,14 +80,14 @@ export default async function AdminProductsPage({
                   href={`/admin/products/${p.id}`}
                   className="group flex flex-col overflow-hidden rounded-xl border border-navy/10 bg-white transition-colors hover:border-navy/25"
                 >
-                  <div className="relative aspect-square bg-navy/4">
+                  <div className="relative aspect-square overflow-hidden bg-navy/4">
                     {cover ? (
                       <Image
                         src={productImageUrl(cover.storage_path)}
                         alt=""
                         fill
                         sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
-                        className="object-cover transition-transform group-hover:scale-[1.03]"
+                        style={photoZoomStyle(cover.focal_y, cover.zoom, cover.width, cover.height)}
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center font-body text-xs uppercase text-navy/30">

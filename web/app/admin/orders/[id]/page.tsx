@@ -42,7 +42,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
     <div>
       <AdminPageHeader title={order.order_number} subtitle={order.customer_name} />
       <div className="p-5 sm:p-8">
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-375">
           <div className="mb-6 flex items-center justify-between">
             <Link
               href="/admin/orders"

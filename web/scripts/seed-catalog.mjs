@@ -60,7 +60,7 @@ async function upsertVariants(productId, variants) {
   const rows = variants.map((v) => ({ ...v, product_id: productId }));
   const { error } = await supabase
     .from("product_variants")
-    .upsert(rows, { onConflict: "sku" });
+    .upsert(rows, { onConflict: "product_id,weight_grams" });
   if (error) throw error;
 }
 
@@ -152,10 +152,10 @@ async function main() {
     sort_order: 1,
   });
   await upsertVariants(mysorePakId, [
-    { label: "100g box", weight_grams: 100, sku: "TS-MYSPAK-100", price_inr: 95.0, stock_qty: 15, is_default: false, is_active: true },
-    { label: "200g box", weight_grams: 200, sku: "TS-MYSPAK-200", price_inr: 190.0, stock_qty: 15, is_default: false, is_active: true },
-    { label: "250g box", weight_grams: 250, sku: "TS-MYSPAK-250", price_inr: 240.0, stock_qty: 15, is_default: true, is_active: true },
-    { label: "500g box", weight_grams: 500, sku: "TS-MYSPAK-500", price_inr: 475.0, stock_qty: 15, is_default: false, is_active: true },
+    { label: "100g box", weight_grams: 100, price_inr: 95.0, is_default: false, is_active: true },
+    { label: "200g box", weight_grams: 200, price_inr: 190.0, is_default: false, is_active: true },
+    { label: "250g box", weight_grams: 250, price_inr: 240.0, is_default: true, is_active: true },
+    { label: "500g box", weight_grams: 500, price_inr: 475.0, is_default: false, is_active: true },
   ]);
   await upsertProductImage(mysorePakId, {
     localPath: "../public/brand/mysore_pak_image.png",
@@ -186,10 +186,10 @@ async function main() {
     sort_order: 2,
   });
   await upsertVariants(badamHalwaId, [
-    { label: "100g box", weight_grams: 100, sku: "TS-BDMHLW-100", price_inr: 150.0, stock_qty: 15, is_default: false, is_active: true },
-    { label: "200g box", weight_grams: 200, sku: "TS-BDMHLW-200", price_inr: 295.0, stock_qty: 15, is_default: false, is_active: true },
-    { label: "250g box", weight_grams: 250, sku: "TS-BDMHLW-250", price_inr: 370.0, stock_qty: 15, is_default: true, is_active: true },
-    { label: "500g box", weight_grams: 500, sku: "TS-BDMHLW-500", price_inr: 735.0, stock_qty: 15, is_default: false, is_active: true },
+    { label: "100g box", weight_grams: 100, price_inr: 150.0, is_default: false, is_active: true },
+    { label: "200g box", weight_grams: 200, price_inr: 295.0, is_default: false, is_active: true },
+    { label: "250g box", weight_grams: 250, price_inr: 370.0, is_default: true, is_active: true },
+    { label: "500g box", weight_grams: 500, price_inr: 735.0, is_default: false, is_active: true },
   ]);
   await upsertProductImage(badamHalwaId, {
     localPath: "../public/brand/badam_halwa_image.png",

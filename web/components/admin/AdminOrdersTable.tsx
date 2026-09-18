@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { bulkDeleteOrders, bulkMarkShipped } from "@/app/admin/orders/actions";
+import { bulkDeleteOrders, bulkMarkShipped, deleteOrder } from "@/app/admin/orders/actions";
 
 const STATUS_STYLES: Record<string, string> = {
   pending_payment: "bg-navy/10 text-navy/60",
@@ -39,6 +39,7 @@ export function AdminOrdersTable({ orders }: { orders: Order[] }) {
   const [courierName, setCourierName] = useState("");
   const [applying, setApplying] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [deletingRowId, setDeletingRowId] = useState<string | null>(null);
 
   function toggle(id: string) {
     setSelected((prev) => {
@@ -69,6 +70,15 @@ export function AdminOrdersTable({ orders }: { orders: Order[] }) {
     await bulkDeleteOrders([...selected]);
     setDeleting(false);
     setSelected(new Set());
+    router.refresh();
+  }
+
+  async function handleRowDelete(e: React.MouseEvent, order: Order) {
+    e.stopPropagation();
+    if (!confirm(`Permanently delete order ${order.order_number}? This can't be undone.`)) return;
+    setDeletingRowId(order.id);
+    await deleteOrder(order.id);
+    setDeletingRowId(null);
     router.refresh();
   }
 
@@ -143,21 +153,29 @@ export function AdminOrdersTable({ orders }: { orders: Order[] }) {
               <th className="px-3 py-3 font-body text-xs font-semibold uppercase tracking-wide text-navy/50">
                 Status
               </th>
+              <th className="px-3 py-3 font-body text-xs font-semibold uppercase tracking-wide text-navy/50">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
             {orders.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-4 py-8 text-center font-body text-sm text-navy/50">
+                <td colSpan={9} className="px-4 py-8 text-center font-body text-sm text-navy/50">
                   No orders match.
                 </td>
               </tr>
             )}
-            {orders.map((order) => {
+            {orders.map((order, i) => {
               const itemCount = order.order_items.reduce((sum, i) => sum + i.quantity, 0);
               return (
-                <tr key={order.id} className="border-b border-navy/6 last:border-0 hover:bg-navy/3">
-                  <td className="px-4 py-3">
+                <tr
+                  key={order.id}
+                  onClick={() => router.push(`/admin/orders/${order.id}`)}
+                  style={{ animationDelay: `${Math.min(i, 12) * 30}ms` }}
+                  className="animate-row-in cursor-pointer border-b border-navy/6 transition-colors last:border-0 hover:bg-navy/3"
+                >
+                  <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                     <input
                       type="checkbox"
                       checked={selected.has(order.id)}
@@ -167,12 +185,9 @@ export function AdminOrdersTable({ orders }: { orders: Order[] }) {
                     />
                   </td>
                   <td className="px-3 py-3">
-                    <Link
-                      href={`/admin/orders/${order.id}`}
-                      className="font-body text-sm font-semibold text-navy hover:text-brass"
-                    >
+                    <span className="font-body text-sm font-semibold text-navy hover:text-brass">
                       {order.order_number}
-                    </Link>
+                    </span>
                   </td>
                   <td className="px-3 py-3 font-body text-sm text-navy">{order.customer_name}</td>
                   <td className="whitespace-nowrap px-3 py-3 font-body text-xs text-navy/60">
@@ -199,6 +214,41 @@ export function AdminOrdersTable({ orders }: { orders: Order[] }) {
                     >
                       {order.status.replace("_", " ")}
                     </span>
+                  </td>
+                  <td className="px-3 py-3">
+                    <div className="flex items-center gap-1">
+                      <Link
+                        href={`/admin/orders/${order.id}`}
+                        onClick={(e) => e.stopPropagation()}
+                        aria-label={`Edit order ${order.order_number}`}
+                        title="Edit"
+                        className="flex h-7 w-7 items-center justify-center rounded-full text-navy/40 transition-colors hover:bg-navy/8 hover:text-navy"
+                      >
+                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-3.5 w-3.5">
+                          <path
+                            d="M13.5 3.5 16.5 6.5 7 16H4v-3L13.5 3.5Z"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={(e) => handleRowDelete(e, order)}
+                        disabled={deletingRowId === order.id}
+                        aria-label={`Delete order ${order.order_number}`}
+                        title="Delete"
+                        className="flex h-7 w-7 items-center justify-center rounded-full text-navy/40 transition-colors hover:bg-brass/10 hover:text-brass disabled:opacity-60"
+                      >
+                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-3.5 w-3.5">
+                          <path
+                            d="M4 5.5h12M8 5.5V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1.5M6 5.5 6.6 16a1 1 0 0 0 1 1h4.8a1 1 0 0 0 1-1l.6-10.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               );

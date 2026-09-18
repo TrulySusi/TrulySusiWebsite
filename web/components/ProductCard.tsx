@@ -1,28 +1,48 @@
 import Image from "next/image";
 import Link from "next/link";
-import { productPhotoUrl, startingPrice, tamilName, type ProductSummary } from "@/lib/catalog-shared";
+import {
+  productPhotoUrl,
+  productCoverImage,
+  photoScale,
+  startingPrice,
+  tamilName,
+  type ProductSummary,
+} from "@/lib/catalog-shared";
+
+// A little wider than tall, rather than square — shows more of each photo
+// at a glance across a row of cards.
+const FRAME_RATIO = 4 / 3;
 
 export function ProductCard({ product }: { product: ProductSummary }) {
   const price = startingPrice(product.product_variants);
   const tamil = tamilName(product.slug);
+  const cover = productCoverImage(product);
+  const scale = photoScale(cover?.zoom, cover?.width, cover?.height, FRAME_RATIO);
 
   return (
     <Link
       href={`/shop/${product.slug}`}
-      className="group block overflow-hidden rounded-xl border border-navy/12 bg-white shadow-[0_1px_2px_rgba(4,28,53,.04),0_8px_24px_-12px_rgba(4,28,53,.1)] transition-shadow group-hover:shadow-[0_1px_2px_rgba(4,28,53,.06),0_12px_28px_-12px_rgba(4,28,53,.18)]"
+      className="group flex h-full flex-col overflow-hidden rounded-xl border border-navy/12 bg-white shadow-[0_1px_2px_rgba(4,28,53,.04),0_8px_24px_-12px_rgba(4,28,53,.1)] transition-shadow group-hover:shadow-[0_1px_2px_rgba(4,28,53,.06),0_12px_28px_-12px_rgba(4,28,53,.18)]"
     >
-      <div className="relative aspect-square bg-navy/4">
+      <div className="relative aspect-[4/3] overflow-hidden bg-navy/4">
         <Image
           src={productPhotoUrl(product)}
           alt={product.name}
           fill
-          sizes="(min-width: 768px) 33vw, 100vw"
-          className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+          sizes="(min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw"
+          className="product-photo"
+          style={
+            {
+              objectFit: "contain",
+              transformOrigin: `50% ${cover?.focal_y ?? 50}%`,
+              "--photo-scale": scale,
+            } as React.CSSProperties
+          }
         />
       </div>
-      <div className="border-t border-navy/12 p-4">
+      <div className="flex flex-1 flex-col border-t border-navy/12 p-4">
         {product.categories?.name && (
-          <span className="inline-block rounded-full bg-blush px-2.5 py-1 font-body text-[10px] font-semibold uppercase tracking-wider text-brass">
+          <span className="inline-block w-fit rounded-full bg-blush px-2.5 py-1 font-body text-[10px] font-semibold uppercase tracking-wider text-brass">
             {product.categories.name}
           </span>
         )}
@@ -34,7 +54,7 @@ export function ProductCard({ product }: { product: ProductSummary }) {
           </p>
         )}
         {price !== null && (
-          <p className="mt-3 whitespace-nowrap font-body text-base font-bold text-navy">
+          <p className="mt-auto whitespace-nowrap pt-3 font-body text-base font-bold text-navy">
             From &#8377;{price.toFixed(0)}
           </p>
         )}

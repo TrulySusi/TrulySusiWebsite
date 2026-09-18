@@ -6,7 +6,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCheckoutStore } from "@/lib/checkout-store";
 import { createClient } from "@/lib/supabase/client";
 import { getCustomerSession } from "@/lib/customer-session";
-import { Breadcrumb } from "@/components/Breadcrumb";
+import { AuthShell } from "@/components/AuthShell";
+import { AuthInput, MAIL_ICON, LOCK_ICON } from "@/components/AuthInput";
+import { ScrollReveal } from "@/components/ScrollReveal";
 
 function isValidEmail(v: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
@@ -88,22 +90,31 @@ function LoginContent() {
   }
 
   return (
-    <main className="mx-auto max-w-md px-6 py-24 sm:px-10">
-      <Breadcrumb items={[{ label: "Sign In" }]} />
-      <div className="mt-8 rounded-2xl border border-navy/10 bg-white p-10 shadow-sm">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brass/20 text-brass">
-          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.75" className="h-8 w-8">
+    <AuthShell
+      image="/brand/05_sweet_making.png"
+      headline="Welcome back."
+      tagline="Sign in to track your orders, revisit your saved address, and reorder your favourites in a couple of taps."
+    >
+      <ScrollReveal>
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brass/20 text-brass">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.75" className="h-7 w-7">
             <circle cx="10" cy="7" r="3.25" />
             <path d="M3.5 17c0-3.3 2.9-5.5 6.5-5.5s6.5 2.2 6.5 5.5" strokeLinecap="round" />
           </svg>
         </div>
-        <h1 className="mt-4 text-center font-display text-3xl text-navy">Sign in</h1>
+      </ScrollReveal>
+
+      <ScrollReveal delayMs={60}>
+        <h1 className="mt-5 text-center font-display text-4xl text-navy">Sign in</h1>
         <p className="mt-2 text-center font-body text-sm text-navy/60">
           See your past orders and delivery details.
         </p>
+      </ScrollReveal>
 
-        <form onSubmit={handleSubmit} noValidate className="mt-8 flex flex-col">
-          <input
+      <form onSubmit={handleSubmit} noValidate className="mt-8 flex flex-col gap-3.5">
+        <ScrollReveal delayMs={120}>
+          <AuthInput
+            icon={MAIL_ICON}
             type="email"
             placeholder="Email"
             value={email}
@@ -111,13 +122,13 @@ function LoginContent() {
               setEmail(e.target.value);
               setFieldErrors((f) => ({ ...f, email: undefined }));
             }}
-            className={`rounded-lg border bg-white px-4 py-3.5 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 ${
-              fieldErrors.email ? "border-brass focus:ring-brass/40" : "border-navy/15 focus:ring-navy/20"
-            }`}
+            error={fieldErrors.email}
           />
-          {fieldErrors.email && <p className="mt-1 font-body text-xs text-brass">{fieldErrors.email}</p>}
+        </ScrollReveal>
 
-          <input
+        <ScrollReveal delayMs={170}>
+          <AuthInput
+            icon={LOCK_ICON}
             type="password"
             placeholder="Password"
             value={password}
@@ -125,42 +136,46 @@ function LoginContent() {
               setPassword(e.target.value);
               setFieldErrors((f) => ({ ...f, password: undefined }));
             }}
-            className={`mt-3 rounded-lg border bg-white px-4 py-3.5 font-body text-sm text-navy placeholder:text-navy/40 focus:outline-none focus:ring-1 ${
-              fieldErrors.password ? "border-brass focus:ring-brass/40" : "border-navy/15 focus:ring-navy/20"
-            }`}
+            error={fieldErrors.password}
           />
-          {fieldErrors.password && <p className="mt-1 font-body text-xs text-brass">{fieldErrors.password}</p>}
+        </ScrollReveal>
 
+        <ScrollReveal delayMs={220} className="-mt-1 flex justify-end">
           <button
             type="button"
             onClick={handleForgotPassword}
             disabled={resetting}
-            className="mt-2 self-start font-body text-xs text-navy/50 hover:text-brass disabled:opacity-60"
+            className="font-body text-xs text-navy/50 transition-colors hover:text-brass disabled:opacity-60"
           >
             {resetting ? "Sending…" : "Forgot password?"}
           </button>
-          {resetSent && <p className="mt-1 font-body text-xs text-sage">Password reset email sent.</p>}
-          {resetError && <p className="mt-1 font-body text-xs text-brass">{resetError}</p>}
+        </ScrollReveal>
+        {resetSent && <p className="text-right font-body text-xs text-sage">Password reset email sent.</p>}
+        {resetError && <p className="text-right font-body text-xs text-brass">{resetError}</p>}
 
-          {error && <p className="mt-3 font-body text-xs text-brass">{error}</p>}
+        {error && <p className="font-body text-xs text-brass">{error}</p>}
 
+        <ScrollReveal delayMs={270}>
           <button
             type="submit"
             disabled={submitting}
-            className="mt-5 rounded-full bg-navy px-6 py-3.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-navy/90 disabled:opacity-60"
+            className="group relative w-full overflow-hidden rounded-full bg-navy px-6 py-3.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-navy/90 disabled:opacity-60"
           >
-            {submitting ? "Signing in…" : "Sign in"}
+            <span className="relative z-10">{submitting ? "Signing in…" : "Sign in"}</span>
+            <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/15 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
           </button>
-        </form>
-      </div>
+        </ScrollReveal>
+      </form>
 
-      <Link
-        href={`/account/signup?redirect=${encodeURIComponent(redirectTo)}`}
-        className="mt-6 block text-center font-body text-xs text-navy/50 hover:text-brass"
-      >
-        New here? Create an account
-      </Link>
-    </main>
+      <ScrollReveal delayMs={320}>
+        <Link
+          href={`/account/signup?redirect=${encodeURIComponent(redirectTo)}`}
+          className="mt-6 block text-center font-body text-xs text-navy/50 hover:text-brass"
+        >
+          New here? Create an account
+        </Link>
+      </ScrollReveal>
+    </AuthShell>
   );
 }
 

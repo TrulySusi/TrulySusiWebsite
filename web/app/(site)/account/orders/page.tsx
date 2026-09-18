@@ -32,7 +32,7 @@ export default async function MyOrdersPage() {
   const orders = await listMyOrders();
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-24 sm:px-10">
+    <main className="mx-auto max-w-350 px-6 py-24 sm:px-10">
       <Breadcrumb items={[{ label: "My Orders" }]} />
       <h1 className="mt-8 text-center font-display text-4xl text-navy">My orders</h1>
 
