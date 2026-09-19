@@ -217,10 +217,11 @@ export async function uploadProductImage(productId: string, formData: FormData) 
     sort_order: count ?? 0,
     width,
     height,
-    // Default to the whole photo visible, not cropped — the client wants
-    // every upload to show completely by default, letting them zoom in
-    // deliberately rather than starting cropped and having to zoom out.
-    zoom: 0,
+    // Default to filling the frame completely, no letterboxing — a
+    // "show everything" default left visible empty space on the sides
+    // of every portrait photo, which read as broken, not clean. Admins
+    // can still zoom out deliberately per photo if they want that.
+    zoom: 100,
   });
   if (insertError) throw insertError;
 

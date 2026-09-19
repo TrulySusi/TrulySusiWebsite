@@ -188,9 +188,9 @@ export function AdminImagesEditor({
       <p className="mt-1 font-body text-xs text-navy/50">
         Up to {MAX_IMAGES}. The first image is the cover shown on the site. Leave "which pack
         size" unset for a general photo shown for every variant, or tag it to one variant (e.g. a
-        250g box photo showing its actual piece count). New uploads default to showing the whole
-        photo, uncropped. Use "Zoom" if you want to crop in tighter (0 = whole photo, 200 = tightly
-        cropped) and "Pos" to choose which part stays in frame once zoomed in.
+        250g box photo showing its actual piece count). Photos fill the frame by default — use
+        "Zoom" if you want to show more of the photo instead (0 = whole photo, 100 = fills the
+        frame, 200 = tightly cropped) and "Pos" to choose which part stays in frame.
       </p>
 
       <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -270,9 +270,9 @@ export function AdminImagesEditor({
                   type="range"
                   min={0}
                   max={200}
-                  value={zoomDrafts[img.id] ?? 0}
+                  value={zoomDrafts[img.id] ?? 100}
                   onChange={(e) => handleZoomChange(img.id, Number(e.target.value))}
-                  aria-label="Zoom in or out — 0 shows the whole photo (default), 200 is tightly cropped"
+                  aria-label="Zoom in or out — 100 fills the frame (default), 0 shows the whole photo, 200 is tightly cropped"
                   className="h-1 flex-1 accent-navy"
                 />
               </div>
