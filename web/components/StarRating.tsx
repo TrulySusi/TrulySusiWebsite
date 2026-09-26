@@ -13,11 +13,24 @@ function Star({ filled }: { filled: boolean }) {
   );
 }
 
-export function StarRatingDisplay({ rating, className = "h-4 w-4" }: { rating: number; className?: string }) {
+export function StarRatingDisplay({
+  rating,
+  className = "h-4 w-4",
+  animate = false,
+}: {
+  rating: number;
+  className?: string;
+  /** Pops each star in one after another instead of appearing all at once. */
+  animate?: boolean;
+}) {
   return (
     <div className="flex gap-0.5 text-brass" aria-label={`${rating} out of 5 stars`}>
       {[1, 2, 3, 4, 5].map((n) => (
-        <span key={n} className={className}>
+        <span
+          key={n}
+          className={`${className} ${animate ? "animate-star-pop" : ""}`}
+          style={animate ? { animationDelay: `${(n - 1) * 80}ms` } : undefined}
+        >
           <Star filled={n <= rating} />
         </span>
       ))}
