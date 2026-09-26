@@ -1,14 +1,7 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { notFound } from "next/navigation";
-import {
-  getProductBySlug,
-  getRelatedProducts,
-  productPhotoUrl,
-  productPhotoStyle,
-  tamilName,
-} from "@/lib/catalog";
-import { VariantSelector } from "@/components/VariantSelector";
+import { getProductBySlug, getRelatedProducts, tamilName } from "@/lib/catalog";
+import { ProductDetailGallery } from "@/components/ProductDetailGallery";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductAccordion } from "@/components/ProductAccordion";
 import { Breadcrumb } from "@/components/Breadcrumb";
@@ -42,38 +35,15 @@ export default async function ProductPage({ params }: Props) {
         ]}
       />
 
-      <div className="mt-8 grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16">
-        <div className="relative aspect-square overflow-hidden rounded-2xl bg-white shadow-[0_1px_2px_rgba(4,28,53,.04),0_8px_24px_-12px_rgba(4,28,53,.12)]">
-          <Image
-            src={productPhotoUrl(product)}
-            alt={product.name}
-            fill
-            sizes="(min-width: 1024px) 50vw, 100vw"
-            priority
-            style={productPhotoStyle(product)}
-          />
-        </div>
-
-        <div>
-          {product.categories?.name && (
-            <span className="inline-block rounded-full bg-blush px-2.5 py-1 font-body text-[10px] font-semibold uppercase tracking-wider text-brass">
-              {product.categories.name}
-            </span>
-          )}
-          <h1 className="mt-3 font-display text-5xl text-navy">{product.name}</h1>
-          {tamilName(slug) && (
-            <p className="mt-0.5 font-body text-base text-sage">{tamilName(slug)}</p>
-          )}
-
-          <div className="mt-8">
-            <VariantSelector
-              variants={product.product_variants}
-              productSlug={product.slug}
-              productName={product.name}
-              imageUrl={productPhotoUrl(product)}
-            />
-          </div>
-        </div>
+      <div className="mt-8">
+        <ProductDetailGallery
+          slug={product.slug}
+          productName={product.name}
+          categoryName={product.categories?.name ?? null}
+          tamil={tamilName(slug)}
+          images={product.product_images}
+          variants={product.product_variants}
+        />
       </div>
 
       <ProductAccordion

@@ -7,7 +7,7 @@ export * from "@/lib/catalog-shared";
 const SUMMARY_SELECT = `
   id, slug, name, short_description, is_featured,
   product_variants ( id, label, weight_grams, price_inr, compare_at_price_inr, is_default, is_active ),
-  product_images ( storage_path, alt_text, sort_order, focal_y, zoom, width, height ),
+  product_images ( id, storage_path, variant_id, alt_text, sort_order, focal_y, zoom, width, height ),
   categories ( name )
 `;
 

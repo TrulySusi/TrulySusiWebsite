@@ -45,7 +45,9 @@ export type ProductVariant = {
 };
 
 export type ProductImage = {
+  id: string;
   storage_path: string;
+  variant_id: string | null;
   alt_text: string | null;
   sort_order: number;
   focal_y: number;

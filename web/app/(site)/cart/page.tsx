@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCartStore, cartSubtotal } from "@/lib/cart-store";
 import { Breadcrumb } from "@/components/Breadcrumb";
+import { TrashIcon } from "@/components/icons";
 
 export default function CartPage() {
   const items = useCartStore((s) => s.items);
@@ -52,12 +53,12 @@ export default function CartPage() {
               key={item.variantId}
               className="flex flex-wrap items-center gap-4 rounded-xl border border-navy/12 bg-white p-4"
             >
-              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-navy/4">
+              <div className="relative aspect-4/5 h-28 shrink-0 overflow-hidden rounded-xl bg-navy/4">
                 <Image
                   src={item.imageUrl}
                   alt={item.productName}
                   fill
-                  sizes="64px"
+                  sizes="90px"
                   className="object-cover"
                 />
               </div>
@@ -104,12 +105,7 @@ export default function CartPage() {
                 aria-label="Remove item"
                 className="rounded-full p-2 text-navy/40 transition-colors hover:bg-brass/10 hover:text-brass"
               >
-                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4">
-                  <path d="M4 6h12" strokeLinecap="round" />
-                  <path d="M8 6V4.5A1.5 1.5 0 0 1 9.5 3h1A1.5 1.5 0 0 1 12 4.5V6" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M5.5 6.5 6 16a1.5 1.5 0 0 0 1.5 1.4h5a1.5 1.5 0 0 0 1.5-1.4l.5-9.5" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M8.3 9.5v4.5M11.7 9.5v4.5" strokeLinecap="round" />
-                </svg>
+                <TrashIcon />
               </button>
             </div>
           ))}
