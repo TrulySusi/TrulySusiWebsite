@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CartIcon } from "@/components/CartIcon";
-import { AccountIcon } from "@/components/AccountIcon";
+import { AccountMenu } from "@/components/AccountMenu";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -23,8 +23,8 @@ export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 overflow-hidden bg-navy">
-      <div className="absolute inset-0">
+    <header className="sticky top-0 z-50 bg-navy">
+      <div className="absolute inset-0 overflow-hidden">
         <Image
           src="/brand/05_sweet_making.png"
           alt=""
@@ -87,7 +87,7 @@ export function SiteHeader() {
               className="w-40 rounded-full bg-cream/10 py-2 pl-10 pr-4 font-body text-sm text-cream placeholder:text-cream/45 focus:outline-none focus:ring-1 focus:ring-cream/30 xl:w-56"
             />
           </form>
-          <AccountIcon />
+          <AccountMenu />
           <CartIcon />
           <button
             type="button"

@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCheckoutStore } from "@/lib/checkout-store";
 import { createClient } from "@/lib/supabase/client";
 import { getCustomerSession } from "@/lib/customer-session";
+import { upsertCustomerFromAuthUser } from "@/lib/customer-upsert";
 import { AuthShell } from "@/components/AuthShell";
 import { AuthInput, MAIL_ICON, LOCK_ICON } from "@/components/AuthInput";
 import { ScrollReveal } from "@/components/ScrollReveal";
@@ -61,7 +62,7 @@ function LoginContent() {
       return;
     }
 
-    await supabase.from("customers").upsert({ id: data.user.id, email: data.user.email }, { onConflict: "id" });
+    await upsertCustomerFromAuthUser(supabase, data.user);
 
     clearCheckoutDraft();
     router.push(redirectTo);

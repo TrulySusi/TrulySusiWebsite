@@ -70,6 +70,21 @@ async function fetchProductInfo(
   return new Map((products ?? []).map((p) => [p.id, p]));
 }
 
+// Product photos are real, large originals (portrait phone shots, often
+// 1000px+). Handing that raw URL to an <img width="48" height="48"> and
+// letting the EMAIL CLIENT downscale it is what was causing the blur —
+// several clients (Gmail's image proxy, Outlook's Word rendering engine
+// in particular) use a fast, low-quality resample for a large source
+// scaled way down via HTML attributes. Pre-sizing it through the site's
+// own image optimizer to ~2x the display size fixes that the same way a
+// browser would: a small, sharp, purpose-sized image instead of a huge
+// one squeezed down. 256 is one of next.config.ts's default allowed
+// widths for /_next/image.
+function emailThumbUrl(storagePath: string) {
+  const raw = productImageUrl(storagePath);
+  return `${SITE_URL}/_next/image?url=${encodeURIComponent(raw)}&w=256&q=75`;
+}
+
 function buildItemRows(
   items: OrderItemRow[],
   productById: Map<string, ProductInfo>,
@@ -79,20 +94,20 @@ function buildItemRows(
     .map((item) => {
       const product = item.product_id ? productById.get(item.product_id) : undefined;
       const cover = product?.product_images ? [...product.product_images].sort((a, b) => a.sort_order - b.sort_order)[0] : undefined;
-      const imgSrc = cover ? productImageUrl(cover.storage_path) : "";
+      const imgSrc = cover ? emailThumbUrl(cover.storage_path) : "";
       const shelfLife = opts.showShelfLife && product?.shelf_life_days ? ` &middot; Best before ${product.shelf_life_days} days` : "";
       return `
         <tr>
-          <td style="padding:10px 0;border-bottom:1px solid #1c2b4a1a;" width="56">
-            ${imgSrc ? `<img src="${imgSrc}" width="48" height="48" style="border-radius:8px;object-fit:cover;display:block;" alt="">` : ""}
+          <td style="padding:12px 0;border-bottom:1px solid #1c2b4a1a;" width="80">
+            ${imgSrc ? `<img src="${imgSrc}" width="72" height="72" style="border-radius:10px;object-fit:cover;display:block;" alt="">` : ""}
           </td>
-          <td style="padding:10px 12px;border-bottom:1px solid #1c2b4a1a;">
-            <div style="font-weight:600;">${item.name_snapshot}</div>
-            <div style="color:#1c2b4a99;font-size:12px;">${item.variant_label_snapshot} &middot; Qty ${item.quantity}${shelfLife}</div>
+          <td style="padding:12px 14px;border-bottom:1px solid #1c2b4a1a;">
+            <div style="font-weight:600;font-size:15px;">${item.name_snapshot}</div>
+            <div style="color:#1c2b4a99;font-size:13px;margin-top:2px;">${item.variant_label_snapshot} &middot; Qty ${item.quantity}${shelfLife}</div>
           </td>
           ${
             opts.showPrice
-              ? `<td style="padding:10px 0;border-bottom:1px solid #1c2b4a1a;text-align:right;font-weight:600;white-space:nowrap;">
+              ? `<td style="padding:12px 0;border-bottom:1px solid #1c2b4a1a;text-align:right;font-weight:600;white-space:nowrap;">
             ${formatInr(item.line_total_inr!)}
           </td>`
               : ""

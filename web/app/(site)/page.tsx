@@ -49,12 +49,12 @@ export default async function Home() {
 
   return (
     <main>
-      {/* Hero — full-bleed background image, the client's own illustrated
-          sweet-making scene. */}
+      {/* Hero — full-bleed background image, the client's own brass/heirloom
+          flat-lay shot. */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="/brand/05_sweet_making.png"
+            src="/brand/07_brass_collectibles.png"
             alt=""
             fill
             sizes="100vw"

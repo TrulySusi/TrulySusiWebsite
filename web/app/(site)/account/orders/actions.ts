@@ -6,7 +6,12 @@ import { getCustomerSession } from "@/lib/customer-session";
 export type MyOrder = {
   orderNumber: string;
   status: string;
+  paymentStatus: string;
+  paymentMethod: string;
   createdAt: string;
+  subtotalInr: number;
+  shippingFeeInr: number;
+  discountInr: number;
   totalInr: number;
   courierName: string | null;
   trackingNumber: string | null;
@@ -32,7 +37,7 @@ export async function listMyOrders(): Promise<MyOrder[]> {
   const { data: orders } = await supabase
     .from("orders")
     .select(
-      "id, order_number, status, created_at, courier_name, tracking_number, tracking_url, total_inr, customer_name, customer_phone, shipping_address"
+      "id, order_number, status, payment_status, payment_method, created_at, courier_name, tracking_number, tracking_url, subtotal_inr, shipping_fee_inr, discount_inr, total_inr, customer_name, customer_phone, shipping_address"
     )
     .eq("customer_id", session.id)
     .order("created_at", { ascending: false });
@@ -79,7 +84,12 @@ export async function listMyOrders(): Promise<MyOrder[]> {
     return {
       orderNumber: order.order_number,
       status: order.status,
+      paymentStatus: order.payment_status,
+      paymentMethod: order.payment_method,
       createdAt: order.created_at,
+      subtotalInr: order.subtotal_inr,
+      shippingFeeInr: order.shipping_fee_inr,
+      discountInr: order.discount_inr,
       totalInr: order.total_inr,
       courierName: order.courier_name,
       trackingNumber: order.tracking_number,

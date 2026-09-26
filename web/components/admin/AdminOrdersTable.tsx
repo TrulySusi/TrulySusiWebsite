@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { bulkDeleteOrders, bulkMarkShipped, deleteOrder } from "@/app/admin/orders/actions";
+import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { EditIcon, TrashIcon } from "@/components/icons";
 
 const STATUS_STYLES: Record<string, string> = {
   pending_payment: "bg-navy/10 text-navy/60",
@@ -40,6 +42,8 @@ export function AdminOrdersTable({ orders }: { orders: Order[] }) {
   const [applying, setApplying] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deletingRowId, setDeletingRowId] = useState<string | null>(null);
+  const [bulkConfirmOpen, setBulkConfirmOpen] = useState(false);
+  const [rowConfirmOrder, setRowConfirmOrder] = useState<Order | null>(null);
 
   function toggle(id: string) {
     setSelected((prev) => {
@@ -63,22 +67,26 @@ export function AdminOrdersTable({ orders }: { orders: Order[] }) {
     router.refresh();
   }
 
-  async function handleBulkDelete() {
-    if (!confirm(`Permanently delete ${selected.size} order${selected.size === 1 ? "" : "s"}? This can't be undone.`))
-      return;
+  async function confirmBulkDelete() {
     setDeleting(true);
     await bulkDeleteOrders([...selected]);
     setDeleting(false);
     setSelected(new Set());
+    setBulkConfirmOpen(false);
     router.refresh();
   }
 
-  async function handleRowDelete(e: React.MouseEvent, order: Order) {
+  function handleRowDelete(e: React.MouseEvent, order: Order) {
     e.stopPropagation();
-    if (!confirm(`Permanently delete order ${order.order_number}? This can't be undone.`)) return;
-    setDeletingRowId(order.id);
-    await deleteOrder(order.id);
+    setRowConfirmOrder(order);
+  }
+
+  async function confirmRowDelete() {
+    if (!rowConfirmOrder) return;
+    setDeletingRowId(rowConfirmOrder.id);
+    await deleteOrder(rowConfirmOrder.id);
     setDeletingRowId(null);
+    setRowConfirmOrder(null);
     router.refresh();
   }
 
@@ -103,7 +111,7 @@ export function AdminOrdersTable({ orders }: { orders: Order[] }) {
           </button>
           <button
             type="button"
-            onClick={handleBulkDelete}
+            onClick={() => setBulkConfirmOpen(true)}
             disabled={applying || deleting}
             className="rounded-full border border-brass/50 px-4 py-1.5 font-body text-xs font-semibold text-brass transition-colors hover:bg-brass/10 disabled:opacity-60"
           >
@@ -224,13 +232,7 @@ export function AdminOrdersTable({ orders }: { orders: Order[] }) {
                         title="Edit"
                         className="flex h-7 w-7 items-center justify-center rounded-full text-navy/40 transition-colors hover:bg-navy/8 hover:text-navy"
                       >
-                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-3.5 w-3.5">
-                          <path
-                            d="M13.5 3.5 16.5 6.5 7 16H4v-3L13.5 3.5Z"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
+                        <EditIcon />
                       </Link>
                       <button
                         type="button"
@@ -240,13 +242,7 @@ export function AdminOrdersTable({ orders }: { orders: Order[] }) {
                         title="Delete"
                         className="flex h-7 w-7 items-center justify-center rounded-full text-navy/40 transition-colors hover:bg-brass/10 hover:text-brass disabled:opacity-60"
                       >
-                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-3.5 w-3.5">
-                          <path
-                            d="M4 5.5h12M8 5.5V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1.5M6 5.5 6.6 16a1 1 0 0 0 1 1h4.8a1 1 0 0 0 1-1l.6-10.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
+                        <TrashIcon className="h-3.5 w-3.5" />
                       </button>
                     </div>
                   </td>
@@ -256,6 +252,23 @@ export function AdminOrdersTable({ orders }: { orders: Order[] }) {
           </tbody>
         </table>
       </div>
+
+      <ConfirmDialog
+        open={bulkConfirmOpen}
+        title="Delete these orders?"
+        description={`Permanently delete ${selected.size} order${selected.size === 1 ? "" : "s"}? This can't be undone.`}
+        loading={deleting}
+        onConfirm={confirmBulkDelete}
+        onCancel={() => setBulkConfirmOpen(false)}
+      />
+      <ConfirmDialog
+        open={rowConfirmOrder !== null}
+        title="Delete this order?"
+        description={`Permanently delete order ${rowConfirmOrder?.order_number}? This can't be undone.`}
+        loading={deletingRowId === rowConfirmOrder?.id}
+        onConfirm={confirmRowDelete}
+        onCancel={() => setRowConfirmOrder(null)}
+      />
     </div>
   );
 }

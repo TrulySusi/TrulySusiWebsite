@@ -9,15 +9,17 @@ export function VariantSelector({
   productSlug,
   productName,
   imageUrl,
+  selectedId,
+  onSelectedChange,
 }: {
   variants: ProductVariant[];
   productSlug: string;
   productName: string;
   imageUrl: string;
+  selectedId: string | null;
+  onSelectedChange: (id: string) => void;
 }) {
   const active = variants.filter((v) => v.is_active);
-  const initial = active.find((v) => v.is_default) ?? active[0] ?? null;
-  const [selectedId, setSelectedId] = useState(initial?.id ?? null);
   const [qty, setQty] = useState(1);
   const [justAdded, setJustAdded] = useState(false);
   const selected = active.find((v) => v.id === selectedId) ?? null;
@@ -60,7 +62,7 @@ export function VariantSelector({
               <button
                 key={variant.id}
                 type="button"
-                onClick={() => setSelectedId(variant.id)}
+                onClick={() => onSelectedChange(variant.id)}
                 aria-pressed={isSelected}
                 className={`rounded-full px-5 py-2.5 font-body text-sm font-medium transition-colors ${
                   isSelected

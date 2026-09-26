@@ -209,22 +209,28 @@ export async function uploadProductImage(productId: string, formData: FormData) 
   const width = formData.get("width") ? Number(formData.get("width")) : null;
   const height = formData.get("height") ? Number(formData.get("height")) : null;
 
-  const { error: insertError } = await supabase.from("product_images").insert({
-    product_id: productId,
-    variant_id: variantId,
-    storage_path: path,
-    alt_text: altText,
-    sort_order: count ?? 0,
-    width,
-    height,
-    // Default to the whole photo visible, not cropped — the client wants
-    // every upload to show completely by default, letting them zoom in
-    // deliberately rather than starting cropped and having to zoom out.
-    zoom: 0,
-  });
+  const { data: inserted, error: insertError } = await supabase
+    .from("product_images")
+    .insert({
+      product_id: productId,
+      variant_id: variantId,
+      storage_path: path,
+      alt_text: altText,
+      sort_order: count ?? 0,
+      width,
+      height,
+      // Default to filling the frame completely, no letterboxing — a
+      // "show everything" default left visible empty space on the sides
+      // of every portrait photo, which read as broken, not clean. Admins
+      // can still zoom out deliberately per photo if they want that.
+      zoom: 100,
+    })
+    .select("id, storage_path, variant_id, alt_text, sort_order, focal_y, zoom, width, height")
+    .single();
   if (insertError) throw insertError;
 
   revalidatePath(`/admin/products/${productId}`);
+  return inserted;
 }
 
 export async function deleteProductImage(productId: string, imageId: string, storagePath: string) {

@@ -5,8 +5,9 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCheckoutStore } from "@/lib/checkout-store";
 import { createClient } from "@/lib/supabase/client";
+import { upsertCustomerFromAuthUser } from "@/lib/customer-upsert";
 import { AuthShell } from "@/components/AuthShell";
-import { AuthInput, MAIL_ICON, LOCK_ICON } from "@/components/AuthInput";
+import { AuthInput, MAIL_ICON, LOCK_ICON, USER_ICON } from "@/components/AuthInput";
 import { ScrollReveal } from "@/components/ScrollReveal";
 
 function isValidEmail(v: string) {
@@ -19,6 +20,8 @@ function SignupContent() {
   const redirectTo = searchParams.get("redirect") || "/account/orders";
   const clearCheckoutDraft = useCheckoutStore((s) => s.clear);
 
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -26,6 +29,8 @@ function SignupContent() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{
+    firstName?: string;
+    lastName?: string;
     email?: string;
     password?: string;
     confirm?: string;
@@ -38,6 +43,8 @@ function SignupContent() {
 
   function validate() {
     const errors: typeof fieldErrors = {};
+    if (!firstName.trim()) errors.firstName = "Enter your first name.";
+    if (!lastName.trim()) errors.lastName = "Enter your last name.";
     if (!email.trim()) errors.email = "Enter your email.";
     else if (!isValidEmail(email)) errors.email = "Enter a valid email address.";
     if (!password) errors.password = "Choose a password.";
@@ -55,7 +62,11 @@ function SignupContent() {
 
     setSubmitting(true);
     const supabase = createClient();
-    const { data, error: signUpError } = await supabase.auth.signUp({ email, password });
+    const { data, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { first_name: firstName.trim(), last_name: lastName.trim() } },
+    });
 
     if (signUpError) {
       setError(signUpError.message);
@@ -64,16 +75,16 @@ function SignupContent() {
     }
 
     if (!data.session) {
-      // Email confirmation is required before a session is issued.
+      // Email confirmation is required before a session is issued. The name
+      // is safely tucked into user_metadata and picked up by the shared
+      // upsert helper the first time this person actually logs in.
       setCheckEmail(true);
       setSubmitting(false);
       return;
     }
 
     if (data.user) {
-      await supabase
-        .from("customers")
-        .upsert({ id: data.user.id, email: data.user.email }, { onConflict: "id" });
+      await upsertCustomerFromAuthUser(supabase, data.user);
     }
 
     clearCheckoutDraft();
@@ -164,6 +175,35 @@ function SignupContent() {
       </ScrollReveal>
 
       <form onSubmit={handleSubmit} noValidate className="mt-8 flex flex-col gap-3.5">
+        <ScrollReveal delayMs={70}>
+          <div className="flex gap-3">
+            <AuthInput
+              icon={USER_ICON}
+              type="text"
+              placeholder="First name"
+              value={firstName}
+              onChange={(e) => {
+                setFirstName(e.target.value);
+                setFieldErrors((f) => ({ ...f, firstName: undefined }));
+              }}
+              error={fieldErrors.firstName}
+              className="flex-1"
+            />
+            <AuthInput
+              icon={USER_ICON}
+              type="text"
+              placeholder="Last name"
+              value={lastName}
+              onChange={(e) => {
+                setLastName(e.target.value);
+                setFieldErrors((f) => ({ ...f, lastName: undefined }));
+              }}
+              error={fieldErrors.lastName}
+              className="flex-1"
+            />
+          </div>
+        </ScrollReveal>
+
         <ScrollReveal delayMs={110}>
           <AuthInput
             icon={MAIL_ICON}

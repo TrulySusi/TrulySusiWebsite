@@ -9,9 +9,9 @@ import {
   type ProductSummary,
 } from "@/lib/catalog-shared";
 
-// A little wider than tall, rather than square — shows more of each photo
-// at a glance across a row of cards.
-const FRAME_RATIO = 4 / 3;
+// Portrait, not square — matches the brand's styled product photography
+// (props/backdrop shot vertically) better than a wide/square crop.
+const FRAME_RATIO = 4 / 5;
 
 export function ProductCard({ product }: { product: ProductSummary }) {
   const price = startingPrice(product.product_variants);
@@ -24,7 +24,7 @@ export function ProductCard({ product }: { product: ProductSummary }) {
       href={`/shop/${product.slug}`}
       className="group flex h-full flex-col overflow-hidden rounded-xl border border-navy/12 bg-white shadow-[0_1px_2px_rgba(4,28,53,.04),0_8px_24px_-12px_rgba(4,28,53,.1)] transition-shadow group-hover:shadow-[0_1px_2px_rgba(4,28,53,.06),0_12px_28px_-12px_rgba(4,28,53,.18)]"
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-navy/4">
+      <div className="relative aspect-4/5 overflow-hidden bg-navy/4">
         <Image
           src={productPhotoUrl(product)}
           alt={product.name}

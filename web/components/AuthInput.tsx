@@ -7,6 +7,13 @@ export const MAIL_ICON = (
   </svg>
 );
 
+export const USER_ICON = (
+  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
+    <circle cx="10" cy="7" r="3.25" />
+    <path d="M3.5 17c0-3.3 2.9-5.5 6.5-5.5s6.5 2.2 6.5 5.5" strokeLinecap="round" />
+  </svg>
+);
+
 export const LOCK_ICON = (
   <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
     <rect x="4" y="9" width="12" height="8" rx="1.5" />

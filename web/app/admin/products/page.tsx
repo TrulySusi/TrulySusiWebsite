@@ -80,14 +80,14 @@ export default async function AdminProductsPage({
                   href={`/admin/products/${p.id}`}
                   className="group flex flex-col overflow-hidden rounded-xl border border-navy/10 bg-white transition-colors hover:border-navy/25"
                 >
-                  <div className="relative aspect-square overflow-hidden bg-navy/4">
+                  <div className="relative aspect-4/5 overflow-hidden bg-navy/4">
                     {cover ? (
                       <Image
                         src={productImageUrl(cover.storage_path)}
                         alt=""
                         fill
                         sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
-                        style={photoZoomStyle(cover.focal_y, cover.zoom, cover.width, cover.height)}
+                        style={photoZoomStyle(cover.focal_y, cover.zoom, cover.width, cover.height, 4 / 5)}
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center font-body text-xs uppercase text-navy/30">

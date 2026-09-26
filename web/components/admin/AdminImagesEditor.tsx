@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { photoZoomStyle, productImageUrl } from "@/lib/catalog-shared";
+import { TrashIcon } from "@/components/icons";
 import {
   uploadProductImage,
   deleteProductImage,
@@ -54,6 +55,13 @@ export function AdminImagesEditor({
   variants: Variant[];
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
+  // Every mutation below (upload/delete/reorder) writes through a server
+  // action that only revalidates this page for the NEXT navigation to it —
+  // it doesn't touch this already-mounted component's `images` prop. Without
+  // this local copy, a photo would upload/delete/reorder successfully in the
+  // database but the grid would keep showing the old list until a manual
+  // reload, which looked like a silent failure.
+  const [imageList, setImageList] = useState(images);
   const [variantId, setVariantId] = useState("");
   const [altText, setAltText] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -72,7 +80,7 @@ export function AdminImagesEditor({
   const focalSaveTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const zoomSaveTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
-  const sorted = [...images].sort((a, b) => a.sort_order - b.sort_order);
+  const sorted = [...imageList].sort((a, b) => a.sort_order - b.sort_order);
   const variantLabel = (id: string | null) => variants.find((v) => v.id === id)?.label ?? null;
 
   function handleFocalChange(imageId: string, focalY: number) {
@@ -138,7 +146,8 @@ export function AdminImagesEditor({
     }
 
     try {
-      await uploadProductImage(productId, formData);
+      const uploaded = await uploadProductImage(productId, formData);
+      if (uploaded) setImageList((prev) => [...prev, uploaded]);
       if (fileRef.current) fileRef.current.value = "";
       pickFile(null);
       setAltText("");
@@ -154,6 +163,7 @@ export function AdminImagesEditor({
     if (!confirm("Delete this image?")) return;
     setDeletingId(image.id);
     await deleteProductImage(productId, image.id, image.storage_path);
+    setImageList((prev) => prev.filter((img) => img.id !== image.id));
     setDeletingId(null);
   }
 
@@ -163,6 +173,7 @@ export function AdminImagesEditor({
       productId,
       newOrder.map((img) => img.id),
     );
+    setImageList(newOrder.map((img, i) => ({ ...img, sort_order: i })));
     setReordering(false);
   }
 
@@ -188,20 +199,20 @@ export function AdminImagesEditor({
       <p className="mt-1 font-body text-xs text-navy/50">
         Up to {MAX_IMAGES}. The first image is the cover shown on the site. Leave "which pack
         size" unset for a general photo shown for every variant, or tag it to one variant (e.g. a
-        250g box photo showing its actual piece count). New uploads default to showing the whole
-        photo, uncropped. Use "Zoom" if you want to crop in tighter (0 = whole photo, 200 = tightly
-        cropped) and "Pos" to choose which part stays in frame once zoomed in.
+        250g box photo showing its actual piece count). Photos fill the frame by default — use
+        "Zoom" if you want to show more of the photo instead (0 = whole photo, 100 = fills the
+        frame, 200 = tightly cropped) and "Pos" to choose which part stays in frame.
       </p>
 
       <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
         {sorted.map((img, index) => (
           <div key={img.id} className="group relative overflow-hidden rounded-lg border border-navy/10">
-            <div className="relative aspect-square overflow-hidden bg-navy/4">
+            <div className="relative aspect-4/5 overflow-hidden bg-navy/4">
               <Image
                 src={productImageUrl(img.storage_path)}
                 alt={img.alt_text ?? ""}
                 fill
-                style={photoZoomStyle(focalDrafts[img.id], zoomDrafts[img.id], img.width, img.height)}
+                style={photoZoomStyle(focalDrafts[img.id], zoomDrafts[img.id], img.width, img.height, 4 / 5)}
               />
 
               {index === 0 && (
@@ -222,9 +233,7 @@ export function AdminImagesEditor({
                 className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-brass opacity-0 shadow transition-opacity group-hover:opacity-100 disabled:opacity-60"
                 aria-label="Delete image"
               >
-                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-3.5 w-3.5">
-                  <path d="M5 5l10 10M15 5 5 15" strokeLinecap="round" />
-                </svg>
+                <TrashIcon className="h-3.5 w-3.5" />
               </button>
 
               <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-navy/70 px-1.5 py-1 opacity-0 transition-opacity group-hover:opacity-100">
@@ -270,9 +279,9 @@ export function AdminImagesEditor({
                   type="range"
                   min={0}
                   max={200}
-                  value={zoomDrafts[img.id] ?? 0}
+                  value={zoomDrafts[img.id] ?? 100}
                   onChange={(e) => handleZoomChange(img.id, Number(e.target.value))}
-                  aria-label="Zoom in or out — 0 shows the whole photo (default), 200 is tightly cropped"
+                  aria-label="Zoom in or out — 100 fills the frame (default), 0 shows the whole photo, 200 is tightly cropped"
                   className="h-1 flex-1 accent-navy"
                 />
               </div>
@@ -293,7 +302,7 @@ export function AdminImagesEditor({
         ))}
       </div>
 
-      {images.length >= MAX_IMAGES ? (
+      {imageList.length >= MAX_IMAGES ? (
         <p className="mt-4 font-body text-xs text-navy/50">
           Maximum of {MAX_IMAGES} images reached. Delete one to add another.
         </p>

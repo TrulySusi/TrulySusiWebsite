@@ -1,4 +1,5 @@
 import { StarRatingDisplay } from "@/components/StarRating";
+import { ScrollReveal } from "@/components/ScrollReveal";
 
 type Review = {
   id: string;
@@ -13,7 +14,7 @@ function initial(name: string) {
 
 function ReviewCard({ review }: { review: Review }) {
   return (
-    <div className="w-full shrink-0 rounded-3xl border border-navy/10 bg-white p-6 shadow-[0_1px_2px_rgba(4,28,53,.04),0_8px_24px_-12px_rgba(4,28,53,.12)]">
+    <div className="w-full shrink-0 rounded-3xl border border-navy/10 bg-white p-6 shadow-[0_1px_2px_rgba(4,28,53,.04),0_8px_24px_-12px_rgba(4,28,53,.12)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_1px_2px_rgba(4,28,53,.06),0_12px_28px_-12px_rgba(4,28,53,.2)]">
       <StarRatingDisplay rating={review.rating} className="h-3.5 w-3.5" />
       <p className="mt-3 font-body text-sm leading-relaxed text-navy/75">{review.review_text}</p>
       <div className="mt-4 flex items-center gap-2.5">
@@ -40,9 +41,15 @@ export function ReviewsColumn({ reviews }: { reviews: Review[] }) {
   return (
     <div className="max-h-[420px] overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)]">
       <div className={`flex flex-col gap-4 ${animate ? "animate-reviews-scroll" : ""}`}>
-        {items.map((review, i) => (
-          <ReviewCard key={`${review.id}-${i}`} review={review} />
-        ))}
+        {items.map((review, i) =>
+          animate ? (
+            <ReviewCard key={`${review.id}-${i}`} review={review} />
+          ) : (
+            <ScrollReveal key={`${review.id}-${i}`} delayMs={i * 90}>
+              <ReviewCard review={review} />
+            </ScrollReveal>
+          ),
+        )}
       </div>
     </div>
   );

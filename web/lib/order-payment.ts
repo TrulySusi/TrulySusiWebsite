@@ -1,4 +1,5 @@
 import "server-only";
+import { after } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { syncOrderToZohoIfNeeded } from "@/lib/zoho";
 import { sendOrderConfirmationEmail } from "@/lib/email";
@@ -60,8 +61,17 @@ export async function completeOrderPayment(params: {
     throw new Error(paymentError.message);
   }
 
-  await syncOrderToZohoIfNeeded(dbOrderId);
-  await sendOrderConfirmationEmail(dbOrderId);
+  // Zoho sync + the confirmation email (which itself fetches the Zoho
+  // invoice PDF to attach) are each real network round-trips to third-party
+  // APIs — awaiting them here was adding several extra seconds between
+  // "payment captured" and the customer actually reaching the confirmation
+  // page. Neither is needed for that page to render correctly (it reads
+  // the order fresh from the DB), so they run after the response instead
+  // of blocking it. Both already catch and log their own errors internally.
+  after(async () => {
+    await syncOrderToZohoIfNeeded(dbOrderId);
+    await sendOrderConfirmationEmail(dbOrderId);
+  });
 
   return { alreadyPaid: false };
 }

@@ -79,7 +79,7 @@ export function AdminNewProductWizard({ categories }: { categories: { id: string
   }
 
   function finish() {
-    if (productId) router.push(`/admin/products/${productId}`);
+    router.push("/admin/products");
   }
 
   return (
@@ -146,7 +146,7 @@ export function AdminNewProductWizard({ categories }: { categories: { id: string
               onClick={finish}
               className="rounded-full bg-brass px-6 py-3 font-body text-sm font-semibold text-navy transition-colors hover:bg-brass/90"
             >
-              Finish
+              Submit
             </button>
           </div>
         </div>

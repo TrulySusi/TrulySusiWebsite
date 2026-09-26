@@ -62,13 +62,13 @@ function OrderConfirmedContent() {
             <ul className="mt-4 divide-y divide-navy/10">
               {summary.items.map((item, i) => (
                 <li key={i} className="flex items-center gap-4 py-3">
-                  <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-cream">
+                  <div className="relative aspect-4/5 h-28 shrink-0 overflow-hidden rounded-xl bg-cream">
                     <Image
                       src={item.imageUrl ?? placeholderImageUrl(item.nameSnapshot)}
                       alt={item.nameSnapshot}
                       fill
                       className="object-cover"
-                      sizes="56px"
+                      sizes="90px"
                     />
                   </div>
                   <div className="min-w-0 flex-1">

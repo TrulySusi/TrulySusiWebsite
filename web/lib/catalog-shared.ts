@@ -45,7 +45,9 @@ export type ProductVariant = {
 };
 
 export type ProductImage = {
+  id: string;
   storage_path: string;
+  variant_id: string | null;
   alt_text: string | null;
   sort_order: number;
   focal_y: number;
@@ -94,7 +96,7 @@ export function photoScale(
   height?: number | null,
   frameRatio = 1,
 ) {
-  const zoom = zoomPercent ?? 0;
+  const zoom = zoomPercent ?? 100;
   return 1 + (zoom / 100) * (fillScale(width ?? null, height ?? null, frameRatio) - 1);
 }
 
