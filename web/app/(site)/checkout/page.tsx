@@ -14,6 +14,7 @@ import {
 } from "@/lib/checkout-store";
 import { createClient } from "@/lib/supabase/client";
 import { getCustomerSession } from "@/lib/customer-session";
+import { upsertCustomerFromAuthUser } from "@/lib/customer-upsert";
 import { INDIA_STATES, lookupPincode } from "@/lib/india";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { createRazorpayOrder, verifyRazorpayPayment, logFailedPayment } from "./actions";
@@ -323,9 +324,7 @@ export default function CheckoutPage() {
       return;
     }
 
-    await supabase
-      .from("customers")
-      .upsert({ id: data.user.id, email: data.user.email }, { onConflict: "id" });
+    await upsertCustomerFromAuthUser(supabase, data.user);
 
     clearCheckoutDraft();
     setLoggedInEmail(data.user.email ?? form.email);

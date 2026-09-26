@@ -61,13 +61,13 @@ export default async function MyOrdersPage() {
                   <ul className="divide-y divide-navy/10">
                     {order.items.map((item, i) => (
                       <li key={i} className="flex items-center gap-4 py-3 first:pt-0">
-                        <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-cream">
+                        <div className="relative aspect-4/5 h-28 shrink-0 overflow-hidden rounded-xl bg-cream">
                           <Image
                             src={item.imageUrl ?? placeholderImageUrl(item.name)}
                             alt={item.name}
                             fill
                             className="object-cover"
-                            sizes="56px"
+                            sizes="90px"
                           />
                         </div>
                         <div className="min-w-0 flex-1">
@@ -82,9 +82,31 @@ export default async function MyOrdersPage() {
                       </li>
                     ))}
                   </ul>
-                  <div className="mt-4 flex justify-between border-t border-navy/10 pt-4 font-body text-sm font-bold text-navy">
-                    <span>Total</span>
-                    <span>₹{order.totalInr.toFixed(0)}</span>
+                  <div className="mt-4 space-y-1.5 border-t border-navy/10 pt-4 font-body text-sm">
+                    <div className="flex justify-between text-navy/60">
+                      <span>Subtotal</span>
+                      <span>₹{order.subtotalInr.toFixed(0)}</span>
+                    </div>
+                    <div className="flex justify-between text-navy/60">
+                      <span>Shipping</span>
+                      <span>{order.shippingFeeInr === 0 ? "Free" : `₹${order.shippingFeeInr.toFixed(0)}`}</span>
+                    </div>
+                    {order.discountInr > 0 && (
+                      <div className="flex justify-between text-navy/60">
+                        <span>Discount</span>
+                        <span>−₹{order.discountInr.toFixed(0)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between pt-1.5 text-base font-bold text-navy">
+                      <span>Total</span>
+                      <span>₹{order.totalInr.toFixed(0)}</span>
+                    </div>
+                    <div className="flex justify-between pt-1 text-xs text-navy/45">
+                      <span>Payment</span>
+                      <span className="capitalize">
+                        {order.paymentMethod} &middot; {order.paymentStatus === "paid" ? "Paid" : order.paymentStatus}
+                      </span>
+                    </div>
                   </div>
                 </div>
 

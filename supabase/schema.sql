@@ -70,6 +70,8 @@ create table product_images (
 create table customers (
   id uuid primary key references auth.users(id) on delete cascade,
   full_name text,
+  first_name text,       -- see migrations/0017, collected at signup
+  last_name text,
   email text,
   phone text,
   created_at timestamptz not null default now()
