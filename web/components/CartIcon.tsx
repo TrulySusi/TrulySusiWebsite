@@ -3,14 +3,21 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useCartStore, cartCount } from "@/lib/cart-store";
+import { useOrdering } from "@/components/OrderingContext";
 
 export function CartIcon() {
   const items = useCartStore((s) => s.items);
+  const ordering = useOrdering();
   // Avoid SSR/client hydration mismatch: localStorage is only readable
   // after mount, so render the zero-state until then.
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   const count = mounted ? cartCount(items) : 0;
+
+  // Website ordering is switched off while Razorpay is pending — there is
+  // nowhere for this to lead. Declared after every hook so the hook order
+  // stays identical in both states.
+  if (!ordering.enabled) return null;
 
   return (
     <Link

@@ -35,7 +35,10 @@ export function SiteHeader() {
         />
         <div className="absolute inset-0 bg-navy/88" />
       </div>
-      <div className="relative mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-5 sm:px-10 xl:grid xl:grid-cols-3 xl:gap-6">
+      {/* Auto-sized outer tracks, not three equal thirds: `grid-cols-3` uses a
+          minmax(0,1fr) floor, so the right-hand cluster (search + account name
+          + cart) overflowed its track and sat on top of the nav links. */}
+      <div className="relative mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-5 sm:px-10 xl:grid xl:grid-cols-[1fr_auto_1fr] xl:gap-6">
         <Link href="/" className="relative block h-8 w-28 shrink-0 justify-self-start sm:w-36">
           <Image
             src="/brand/wordmark-cream.png"
@@ -83,7 +86,7 @@ export function SiteHeader() {
             <input
               type="search"
               name="q"
-              placeholder="Search sweets"
+              placeholder="Search"
               className="w-40 rounded-full bg-cream/10 py-2 pl-10 pr-4 font-body text-sm text-cream placeholder:text-cream/45 focus:outline-none focus:ring-1 focus:ring-cream/30 xl:w-56"
             />
           </form>
@@ -146,7 +149,7 @@ export function SiteHeader() {
             <input
               type="search"
               name="q"
-              placeholder="Search sweets"
+              placeholder="Search"
               className="w-full rounded-full bg-cream/10 py-2.5 pl-10 pr-4 font-body text-sm text-cream placeholder:text-cream/45 focus:outline-none focus:ring-1 focus:ring-cream/30"
             />
           </form>

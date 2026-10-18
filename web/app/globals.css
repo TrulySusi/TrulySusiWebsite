@@ -38,25 +38,6 @@ p {
   transform: scale(calc(var(--photo-scale, 1) * 1.06));
 }
 
-/* Continuous vertical scroll for the reviews widget's testimonial column
-   (only applied once there are enough real reviews to loop meaningfully —
-   see components/ReviewsColumn.tsx). The list is duplicated once, so
-   translating by exactly -50% loops seamlessly back to the start. */
-@keyframes reviews-scroll {
-  from {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(-50%);
-  }
-}
-.animate-reviews-scroll {
-  animation: reviews-scroll 22s linear infinite;
-}
-.animate-reviews-scroll:hover {
-  animation-play-state: paused;
-}
-
 /* Slow-drifting soft blobs behind the login/signup cards (components/AuthBackground.tsx). */
 @keyframes blob-drift-a {
   0%, 100% { transform: translate(0, 0) scale(1); }

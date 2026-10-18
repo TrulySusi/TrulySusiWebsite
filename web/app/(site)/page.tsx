@@ -50,8 +50,9 @@ export default async function Home() {
   return (
     <main>
       {/* Hero — full-bleed background image, the client's own brass/heirloom
-          flat-lay shot. */}
-      <section className="relative overflow-hidden">
+          flat-lay shot. The id is what the floating side tabs watch so they
+          stay off the banner until it's scrolled past (see lib/floating-tabs). */}
+      <section id="site-hero" className="relative overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src="/brand/07_brass_collectibles.png"
@@ -65,10 +66,10 @@ export default async function Home() {
         </div>
         <div className="relative mx-auto max-w-2xl px-6 py-28 text-center sm:px-10">
           <span className="inline-block rounded-full bg-white/10 px-3.5 py-1.5 font-body text-[11px] font-semibold uppercase tracking-wider text-brass">
-            Homemade Sweets &middot; Salem &middot; Shipped Anywhere in India
+            Homemade Products &middot; Salem &middot; Shipped all over in India
           </span>
-          <h1 className="mt-6 font-display text-6xl font-medium text-white sm:text-7xl" aria-label="Sweeter together.">
-            <TypewriterText text="Sweeter together." />
+          <h1 className="mt-6 font-display text-6xl font-medium text-white sm:text-7xl" aria-label="Sweeter together">
+            <TypewriterText text="Sweeter together" />
           </h1>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link
@@ -106,16 +107,47 @@ export default async function Home() {
             <h2 className="mt-4 font-display text-5xl italic text-navy sm:text-6xl">
               Truly Susi&rsquo;s begins with Susi.
             </h2>
-            <p className="mx-auto mt-5 max-w-md font-body text-[15px] leading-relaxed text-navy/70 lg:mx-0">
-              Born from a mother&rsquo;s lifelong love for feeding people well,
-              Truly Susi&rsquo;s turns family recipes into deeply comforting,
-              homemade food meant to be shared beyond the home.
-            </p>
-            <div className="mx-auto mt-9 max-w-md border-t border-navy/10 pt-7 font-display text-2xl italic leading-snug text-navy lg:mx-0">
-              &ldquo;Some sweets you eat. This one, you remember.&rdquo;
+            <div className="mt-5 flex flex-col gap-4 font-body text-[15px] leading-relaxed text-navy/70">
+              <p>
+                For as long as we can remember, Susi has had a real passion for
+                feeding people, sharing the recipes carried down through
+                generations of our family with everyone around her table.
+              </p>
+              <p>
+                They say the one who truly enjoys food is the one who makes
+                really good food. That has always been Susi. She cooks what she
+                loves, and she loves sharing it. What started as a mother
+                feeding her family slowly became a wish to feed everyone else
+                too, to take the sweets and savouries her family grew up with
+                and share that same warmth beyond our home.
+              </p>
+              <p>That&rsquo;s how Truly Susi&rsquo;s was born.</p>
             </div>
           </ScrollReveal>
         </div>
+
+        <ScrollReveal delayMs={100} className="mx-auto mt-16 max-w-2xl border-t border-navy/10 pt-12 text-center">
+          <div className="flex flex-col gap-4 font-body text-[15px] leading-relaxed text-navy/70">
+            <p>
+              Every laddu, every halwa, every handful of snacks is still made
+              the way Susi makes it at home, with the same recipes, the same
+              patience, and the same care. From her kitchen, and from our
+              generation to the next, we hope it finds a place in yours.
+            </p>
+            <p>
+              For every occasion, every festival, and every little moment in
+              between, Truly Susi&rsquo;s will always be there beside you.
+            </p>
+          </div>
+          {/* text-center! — the global `p { text-align: justify }` rule would
+              otherwise win over the wrapper's text-center and left-align these. */}
+          <p className="mt-9 text-center! font-display text-2xl italic leading-snug text-navy">
+            Some sweets you eat. This one, you remember.
+          </p>
+          <p className="mt-4 text-center! font-body text-xs font-semibold uppercase tracking-[0.28em] text-brass">
+            Sweeter together
+          </p>
+        </ScrollReveal>
       </section>
 
       {/* Why Truly Susi's */}

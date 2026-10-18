@@ -7,6 +7,7 @@ import { ReviewForm } from "@/components/ReviewForm";
 import { ReviewsColumn } from "@/components/ReviewsColumn";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { useReviewsWidget } from "@/components/ReviewsWidgetContext";
+import { REVIEWS_TAB_TOP, useScrolledPastHero } from "@/lib/floating-tabs";
 
 type Review = {
   id: string;
@@ -18,6 +19,7 @@ type Review = {
 
 export function ReviewsWidget() {
   const { open, openReviews, closeReviews } = useReviewsWidget();
+  const pastHero = useScrolledPastHero();
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -56,7 +58,11 @@ export function ReviewsWidget() {
         type="button"
         onClick={() => openReviews()}
         style={{ writingMode: "vertical-rl" }}
-        className="animate-tab-pulse fixed right-0 top-[48%] z-40 -translate-y-1/2 rounded-l-lg bg-brass px-2.5 py-4 font-body text-xs font-semibold uppercase tracking-wider text-navy transition-transform hover:-translate-x-0.5 hover:bg-brass/90"
+        tabIndex={pastHero ? undefined : -1}
+        aria-hidden={pastHero ? undefined : true}
+        className={`animate-tab-pulse fixed right-0 ${REVIEWS_TAB_TOP} z-40 -translate-y-1/2 rounded-l-lg bg-brass px-2.5 py-4 font-body text-xs font-semibold uppercase tracking-wider text-navy transition-[transform,opacity] duration-300 hover:-translate-x-0.5 hover:bg-brass/90 ${
+          pastHero ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
       >
         ★ Customer Reviews
       </button>
@@ -93,13 +99,13 @@ export function ReviewsWidget() {
                   <div className="mt-3 flex justify-center">
                     <StarRatingDisplay rating={Math.round(average)} className="h-5 w-5" animate />
                   </div>
-                  <p className="mt-1.5 font-body text-xs text-navy/50">
+                  <p className="mt-1.5 text-center! font-body text-xs text-navy/50">
                     {average.toFixed(1)} average &middot; {count} review{count === 1 ? "" : "s"}
                   </p>
                 </>
               ) : (
                 !loading && (
-                  <p className="mt-2 font-body text-xs text-navy/50">No reviews yet. Be the first!</p>
+                  <p className="mt-2 text-center! font-body text-xs text-navy/50">No reviews yet. Be the first!</p>
                 )
               )}
               <button
@@ -130,33 +136,12 @@ export function ReviewsWidget() {
               )}
 
               {!loading && count === 0 && !showForm && (
-                <p className="text-center font-body text-sm text-navy/50">
+                <p className="text-center! font-body text-sm text-navy/50">
                   Be the first to share how it went.
                 </p>
               )}
 
-              {!loading && count > 0 && (
-                <div className="space-y-4">
-                  <ScrollReveal className="relative overflow-hidden rounded-2xl bg-blush/40 p-6 text-center">
-                    <span className="font-display text-5xl italic leading-none text-brass/70">&ldquo;</span>
-                    <p className="-mt-2 font-display text-xl italic leading-snug text-navy">
-                      {reviews[0].review_text}
-                    </p>
-                    <div className="mt-3 flex justify-center">
-                      <StarRatingDisplay rating={reviews[0].rating} />
-                    </div>
-                    <p className="mt-2 font-body text-xs font-semibold text-navy/60">
-                      {reviews[0].customer_name}
-                    </p>
-                  </ScrollReveal>
-
-                  {reviews.length > 1 && (
-                    <ScrollReveal delayMs={100}>
-                      <ReviewsColumn reviews={reviews.slice(1)} />
-                    </ScrollReveal>
-                  )}
-                </div>
-              )}
+              {!loading && count > 0 && <ReviewsColumn reviews={reviews} />}
             </div>
           </div>
         </div>

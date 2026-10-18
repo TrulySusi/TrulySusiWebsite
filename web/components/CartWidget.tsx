@@ -4,12 +4,16 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { cartCount, cartSubtotal, useCartStore } from "@/lib/cart-store";
+import { CART_TAB_TOP, useScrolledPastHero } from "@/lib/floating-tabs";
+import { useOrdering } from "@/components/OrderingContext";
 
 export function CartWidget() {
   const router = useRouter();
   const items = useCartStore((s) => s.items);
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const pastHero = useScrolledPastHero();
+  const ordering = useOrdering();
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
@@ -23,6 +27,10 @@ export function CartWidget() {
   const count = mounted ? cartCount(items) : 0;
   const subtotal = cartSubtotal(items);
 
+  // See CartIcon: nothing to open while ordering is closed. After the
+  // hooks, so useScrolledPastHero keeps running identically either way.
+  if (!ordering.enabled) return null;
+
   function goTo(path: string) {
     setOpen(false);
     router.push(path);
@@ -34,7 +42,11 @@ export function CartWidget() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label={`Cart, ${count} item${count === 1 ? "" : "s"}`}
-        className="fixed right-0 top-[calc(48%+130px)] z-40 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-l-lg bg-sage text-navy shadow-lg transition-colors hover:bg-sage/90"
+        tabIndex={pastHero ? undefined : -1}
+        aria-hidden={pastHero ? undefined : true}
+        className={`fixed right-0 ${CART_TAB_TOP} z-40 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-l-lg bg-sage text-navy shadow-lg transition-[background-color,opacity] duration-300 hover:bg-sage/90 ${
+          pastHero ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
       >
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4.5 w-4.5">
           <path d="M3 5h1.6L6 13.5a1.5 1.5 0 0 0 1.5 1.25h6a1.5 1.5 0 0 0 1.48-1.24L16 6.5H5.1" strokeLinecap="round" strokeLinejoin="round" />
