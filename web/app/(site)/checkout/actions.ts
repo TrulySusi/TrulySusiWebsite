@@ -6,6 +6,7 @@ import { createRazorpayClient } from "@/lib/razorpay";
 import { getCustomerSession } from "@/lib/customer-session";
 import { completeOrderPayment } from "@/lib/order-payment";
 import { insertOrderWithUniqueNumber } from "@/lib/order-number";
+import { getSiteSettings } from "@/lib/site-settings";
 
 // Same dummy figures as /policies/shipping and the checkout page's own
 // display copy — kept in one place so the server-computed total can
@@ -34,6 +35,17 @@ export type DeliveryInput = {
 
 export async function createRazorpayOrder(cartItems: CartItemInput[], delivery: DeliveryInput) {
   if (cartItems.length === 0) throw new Error("Your cart is empty.");
+
+  // Defence in depth. The cart and checkout routes are already blocked server
+  // side while ordering is off, but a tab left open before the switch was
+  // thrown — or a request crafted by hand — must not be able to open a
+  // Razorpay order against test keys.
+  const { ordering } = await getSiteSettings();
+  if (!ordering.enabled) {
+    throw new Error(
+      "Online checkout isn't open yet — we're taking orders on WhatsApp and Instagram.",
+    );
+  }
 
   const supabase = createAdminClient();
 

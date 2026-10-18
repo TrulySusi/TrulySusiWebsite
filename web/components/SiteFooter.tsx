@@ -15,7 +15,13 @@ const POLICY_LINKS = [
   { href: "/policies/privacy", label: "Privacy Policy" },
 ];
 
-export function SiteFooter() {
+export function SiteFooter({
+  fssaiLicenceNo,
+  customerCarePhone,
+}: {
+  fssaiLicenceNo: string | null;
+  customerCarePhone: string | null;
+}) {
   const { openReviews } = useReviewsWidget();
 
   return (
@@ -43,11 +49,14 @@ export function SiteFooter() {
                     strokeLinejoin="round"
                   />
                 </svg>
-                {/* Explicitly user-authorized dummy number — replace with
-                    the real one before this goes in front of customers. */}
-                <a href="tel:+919876543210" className="transition-colors hover:text-cream">
-                  +91 98765 43210
-                </a>
+                {customerCarePhone && (
+                  <a
+                    href={`tel:${customerCarePhone.split(" ").join("")}`}
+                    className="transition-colors hover:text-cream"
+                  >
+                    {customerCarePhone}
+                  </a>
+                )}
               </li>
               <li className="flex items-center gap-2">
                 <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-3.5 w-3.5 shrink-0 text-cream/50">
@@ -171,8 +180,23 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="mt-8 border-t border-dashed border-cream/25 pt-5 font-body text-xs text-cream/50">
-          &copy; 2026 Truly Susi&rsquo;s &middot; Sweeter together.
+        <div className="mt-8 flex flex-col gap-2 border-t border-dashed border-cream/25 pt-5 font-body text-xs text-cream/50 sm:flex-row sm:items-center sm:justify-between">
+          <span>&copy; 2026 Truly Susi&rsquo;s &middot; Sweeter together.</span>
+          {/* FSSAI E-commerce Guidelines Order (19.03.2021): the licence
+              number and a route to the consumer grievance portal belong in
+              the footer. The number renders only once it has actually been
+              granted - never a placeholder. */}
+          <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            {fssaiLicenceNo && <span className="tabular-nums">FSSAI Lic. No. {fssaiLicenceNo}</span>}
+            <a
+              href="https://foodlicensing.fssai.gov.in/cmsweb/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-cream"
+            >
+              FSSAI Food Safety Connect
+            </a>
+          </span>
         </div>
       </div>
     </footer>

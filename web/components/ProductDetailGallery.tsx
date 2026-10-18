@@ -10,6 +10,7 @@ import {
   type ProductVariant,
 } from "@/lib/catalog-shared";
 import { VariantSelector } from "@/components/VariantSelector";
+import { VegMark } from "@/components/VegMark";
 
 const FRAME_RATIO = 4 / 5;
 
@@ -18,6 +19,8 @@ export function ProductDetailGallery({
   productName,
   categoryName,
   tamil,
+  description,
+  isVegetarian,
   images,
   variants,
 }: {
@@ -25,6 +28,8 @@ export function ProductDetailGallery({
   productName: string;
   categoryName: string | null;
   tamil: string | null;
+  description: string | null;
+  isVegetarian: boolean;
   images: ProductImage[];
   variants: ProductVariant[];
 }) {
@@ -128,13 +133,21 @@ export function ProductDetailGallery({
       </div>
 
       <div>
-        {categoryName && (
-          <span className="inline-block rounded-full bg-blush px-2.5 py-1 font-body text-[10px] font-semibold uppercase tracking-wider text-brass">
-            {categoryName}
-          </span>
-        )}
+        <div className="flex items-center gap-2.5">
+          <VegMark isVegetarian={isVegetarian} className="h-5 w-5" />
+          {categoryName && (
+            <span className="inline-block rounded-full bg-blush px-2.5 py-1 font-body text-[10px] font-semibold uppercase tracking-wider text-brass">
+              {categoryName}
+            </span>
+          )}
+        </div>
         <h1 className="mt-3 font-display text-5xl text-navy">{productName}</h1>
         {tamil && <p className="mt-0.5 font-body text-base text-sage">{tamil}</p>}
+        {description && (
+          <p className="mt-5 max-w-prose font-body text-[15px] leading-relaxed text-navy/70">
+            {description}
+          </p>
+        )}
 
         <div className="mt-8">
           <VariantSelector

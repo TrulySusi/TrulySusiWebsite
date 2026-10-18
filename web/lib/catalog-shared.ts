@@ -140,6 +140,8 @@ export type ProductDetail = ProductSummary & {
   shelf_life_days: number | null;
   serving_size_g: number | null;
   nutrition_per_100g: NutritionPer100g | null;
+  is_vegetarian: boolean | null;
+  additives: string | null;
 };
 
 const PRODUCT_IMAGE_BUCKET = "product-images";
@@ -216,14 +218,19 @@ export function productPhotoStyle(product: { product_images: ProductImage[] }, f
   return photoZoomStyle(cover?.focal_y, cover?.zoom, cover?.width, cover?.height, frameRatio);
 }
 
-// Tamil-script product names, confirmed from the client's own pre-launch
-// site (agent-6a27e90e6ed607732e9739cc--trulysusiin.netlify.app) — real
-// brand copy, not a translation guess. Only add an entry here once the
-// client has confirmed the exact spelling; leaving a product out just
-// means no Tamil name shows for it yet.
+// Tamil-script product names — real brand copy, not a translation guess.
+// The first two came from the client's own pre-launch site; the rest were
+// confirmed by the client directly. Only add an entry here once the client
+// has confirmed the exact spelling; leaving a product out just means no
+// Tamil name shows for it yet (Makhana has none — it's a North Indian name
+// with no settled Tamil equivalent, and the client hasn't picked one).
 const TAMIL_NAME_BY_SLUG: Record<string, string> = {
   "mysore-pak": "மைசூர் பாக்",
   "badam-halwa": "பாதாம் அல்வா",
+  "sesame-laddu": "எள்ளு உருண்டை",
+  "urid-dal-laddu": "உளுந்து உருண்டை",
+  "kara-bhoondi": "காரா பூந்தி",
+  thenkulal: "தேன்குழல்",
 };
 
 export function tamilName(slug: string): string | null {

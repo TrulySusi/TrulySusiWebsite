@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import type { ProductVariant } from "@/lib/catalog-shared";
 import { useCartStore } from "@/lib/cart-store";
+import { useOrdering } from "@/components/OrderingContext";
+import { OrderOnSocials } from "@/components/OrderOnSocials";
+import { whatsappOrderUrl } from "@/lib/ordering";
 
 export function VariantSelector({
   variants,
@@ -24,6 +27,7 @@ export function VariantSelector({
   const [justAdded, setJustAdded] = useState(false);
   const selected = active.find((v) => v.id === selectedId) ?? null;
   const addItem = useCartStore((s) => s.addItem);
+  const ordering = useOrdering();
 
   useEffect(() => {
     if (!justAdded) return;
@@ -108,20 +112,42 @@ export function VariantSelector({
         <p className="mt-1 font-body text-xs text-navy/45">Inclusive of all taxes</p>
       )}
 
-      <button
-        type="button"
-        onClick={handleAddToCart}
-        disabled={!selected}
-        className="mt-6 w-full rounded-full bg-navy px-6 py-4 font-body text-sm font-semibold text-cream transition-colors hover:bg-navy/90 disabled:cursor-not-allowed disabled:bg-navy/15 disabled:text-navy/40"
-      >
-        {justAdded
-          ? "Added ✓"
-          : lineTotal !== null
-            ? `Add to cart · ₹${lineTotal.toFixed(0)}`
-            : "Add to cart"}
-      </button>
+      {ordering.enabled ? (
+        <>
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            disabled={!selected}
+            className="mt-6 w-full rounded-full bg-navy px-6 py-4 font-body text-sm font-semibold text-cream transition-colors hover:bg-navy/90 disabled:cursor-not-allowed disabled:bg-navy/15 disabled:text-navy/40"
+          >
+            {justAdded
+              ? "Added ✓"
+              : lineTotal !== null
+                ? `Add to cart · ₹${lineTotal.toFixed(0)}`
+                : "Add to cart"}
+          </button>
 
-      <p className="mt-4 font-body text-xs text-navy/45">Packed fresh to order.</p>
+          <p className="mt-4 font-body text-xs text-navy/45">Packed fresh to order.</p>
+        </>
+      ) : (
+        <>
+          {/* Online payment isn't live yet, so the pack size and quantity chosen
+              above are carried into the WhatsApp message instead of into a cart. */}
+          <OrderOnSocials
+            className="mt-6"
+            whatsappUrl={
+              ordering.whatsappUrl && selected
+                ? whatsappOrderUrl(ordering.whatsappUrl, productName, selected.label, qty)
+                : ordering.whatsappUrl
+            }
+            instagramUrl={ordering.instagramUrl}
+          />
+          <p className="mt-4 font-body text-xs text-navy/45">
+            Packed fresh to order. We&rsquo;re setting up online payments &mdash; message us
+            and we&rsquo;ll confirm your total and delivery.
+          </p>
+        </>
+      )}
     </div>
   );
 }

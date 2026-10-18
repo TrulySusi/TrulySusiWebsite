@@ -35,7 +35,7 @@ export async function getProductBySlug(slug: string): Promise<ProductDetail | nu
     .from("products")
     .select(`
       ${SUMMARY_SELECT},
-      description, ingredients, allergen_info, shelf_life_days, serving_size_g, nutrition_per_100g
+      description, ingredients, allergen_info, shelf_life_days, serving_size_g, nutrition_per_100g, is_vegetarian, additives
     `)
     .eq("status", "active")
     .eq("slug", slug)
