@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Breadcrumb } from "@/components/Breadcrumb";
+import { GrievanceOfficer } from "@/components/GrievanceOfficer";
 
 export const metadata: Metadata = { title: "Shipping & Delivery · Truly Susi's" };
 
@@ -8,7 +9,7 @@ export default function ShippingPage() {
     <main className="mx-auto max-w-2xl px-6 py-20 sm:px-10">
       <Breadcrumb items={[{ label: "Shipping & Delivery" }]} />
       <h1 className="mt-8 font-display text-4xl text-navy">Shipping &amp; Delivery</h1>
-      <p className="mt-3 font-body text-sm text-navy/50">Last updated 21 August 2026</p>
+      <p className="mt-3 font-body text-sm text-navy/50">Last updated 1 November 2026</p>
 
       <div className="mt-8 space-y-8 font-body text-[15px] leading-relaxed text-navy/70">
         <section>
@@ -95,6 +96,11 @@ export default function ShippingPage() {
             unable to accept returns for change of mind. Replacements or refunds are only offered
             for items that arrive damaged, spoiled, or incorrect, reported as above.
           </p>
+          <p className="mt-3">
+            Approved refunds are always made to the original payment method you used, through
+            our payment partner Razorpay. Once a refund has been initiated, your bank usually
+            takes 5&ndash;7 working days to credit it to your account.
+          </p>
         </section>
 
         <section>
@@ -119,6 +125,8 @@ export default function ShippingPage() {
             .
           </p>
         </section>
+
+        <GrievanceOfficer />
       </div>
     </main>
   );
